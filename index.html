@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-Hans" xml:lang="zh-Hans">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>东西情报 · ECLab News</title>
+  <meta name="description" content="浙江大学情绪和文化实验室文献汇编《东西情报》在线版" />
+  <link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<header id="eclab-header">
+  <div class="header-content">
+    <a class="header-logo-wrap" href="#/" aria-label="返回首页">
+      <img class="header-logo-img" src="https://emotionculturelab.com/wp-content/uploads/2024/09/e59bbee789874.png" alt="ECLab Logo" onerror="this.style.display='none'" />
+    </a>
+    <h1><a href="#/" id="header-title">东西情报</a></h1>
+    <p class="subtitle">浙江大学情绪和文化实验室 · Emotion &amp; Culture Lab, Zhejiang University</p>
+  </div>
+</header>
+
+<div id="page-wrapper">
+
+  <aside id="toc-sidebar" hidden>
+    <div class="toc-title" id="toc-title">关键词 · Keywords</div>
+    <div id="sidebar-controls">
+      <div class="sidebar-pill-row" id="view-toggle">
+        <div class="pill-thumb" id="view-pill-thumb"></div>
+        <button class="sidebar-pill active" data-view="keywords">关键词</button>
+        <button class="sidebar-pill" data-view="journals">期刊</button>
+      </div>
+      <div class="sidebar-pill-row" id="hide-toggle">
+        <div class="pill-thumb" id="hide-pill-thumb"></div>
+        <button class="sidebar-pill active" data-hide="false">全部显示</button>
+        <button class="sidebar-pill" data-hide="true">仅显示选中</button>
+      </div>
+    </div>
+    <nav id="toc-nav"></nav>
+  </aside>
+  <div id="toc-overlay"></div>
+
+  <main id="content">
+    <div id="loading" class="state-msg">加载中…</div>
+  </main>
+
+</div>
+
+<button id="toc-toggle" aria-label="Toggle table of contents" hidden>☰</button>
+
+<footer id="eclab-footer">
+  <div class="footer-inner">
+    <img class="footer-logo" src="https://emotionculturelab.com/wp-content/uploads/2024/09/e59bbee789871.png" alt="ECLab" onerror="this.style.display='none'" />
+    <div class="footer-text">
+      <p class="footer-name">浙江大学情绪和文化实验室</p>
+      <p class="footer-links"><a href="https://emotionculturelab.wordpress.com">emotionculturelab.wordpress.com</a></p>
+    </div>
+  </div>
+</footer>
+
+<img id="logo-watermark" src="https://emotionculturelab.com/wp-content/uploads/2024/09/e59bbee789871.png" alt="" aria-hidden="true" onerror="this.style.display='none'" />
+
+<script src="assets/app.js"></script>
+
+</body>
+</html>
