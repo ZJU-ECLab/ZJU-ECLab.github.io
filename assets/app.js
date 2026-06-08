@@ -67,8 +67,9 @@
   }
 
   function publicationInfo(a) {
-    var parts = [val(a, 'journal', '期刊信息缺失'), val(a, 'publish_info', '')];
-    return parts.filter(Boolean).join(', ');
+    var pub = val(a, 'publish_info', '');
+    if (pub) return pub;
+    return val(a, 'journal', '期刊信息缺失');
   }
 
   function articleCategories(a) {
