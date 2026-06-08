@@ -1,0 +1,151 @@
+name: Announce new issue
+
+# When the ECLab-News pipeline pushes a new issue file into data/issues/,
+# publish a GitHub Discussion so that repo watchers get notified.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "data/issues/**.json"
+
+permissions:
+  contents: read
+  discussions: write
+
+jobs:
+  announce:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          # Need enough history to diff this push against its parent.
+          fetch-depth: 0
+
+      - name: Find newly added issue files
+        id: added
+        env:
+          BEFORE: ${{ github.event.before }}
+          AFTER: ${{ github.event.after }}
+        run: |
+          set -euo pipefail
+          # github.event.before is all-zeros on the first push to a branch.
+          if [[ -z "${BEFORE}" || "${BEFORE}" == "0000000000000000000000000000000000000000" ]]; then
+            RANGE_ARGS=("${AFTER}^!" )
+          else
+            RANGE_ARGS=("${BEFORE}" "${AFTER}")
+          fi
+          # Only freshly ADDED files under data/issues/ — re-runs that modify an
+          # existing issue won't create a duplicate discussion.
+          FILES=$(git diff --name-only --diff-filter=A "${RANGE_ARGS[@]}" -- 'data/issues/*.json' || true)
+          if [[ -z "${FILES}" ]]; then
+            echo "No newly added issue files in this push."
+            echo "files=" >> "$GITHUB_OUTPUT"
+          else
+            echo "Added issue files:"
+            echo "${FILES}"
+            # Pass as a space-separated list on a single line.
+            echo "files=$(echo "${FILES}" | tr '\n' ' ')" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Resolve discussion category
+        id: category
+        if: steps.added.outputs.files != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          OWNER: ${{ github.repository_owner }}
+          REPO: ${{ github.event.repository.name }}
+        run: |
+          set -euo pipefail
+          RESP=$(gh api graphql -f query='
+            query($owner:String!,$name:String!){
+              repository(owner:$owner,name:$name){
+                id
+                discussionCategories(first:50){ nodes { id name } }
+              }
+            }' -F owner="$OWNER" -F name="$REPO")
+          REPO_ID=$(echo "$RESP" | jq -r '.data.repository.id')
+          # Prefer "Announcements"; fall back to the first available category.
+          CAT_ID=$(echo "$RESP" | jq -r '
+            (.data.repository.discussionCategories.nodes
+              | map(select(.name == "Announcements")) | .[0].id) // empty')
+          if [[ -z "$CAT_ID" || "$CAT_ID" == "null" ]]; then
+            CAT_ID=$(echo "$RESP" | jq -r '.data.repository.discussionCategories.nodes[0].id // empty')
+          fi
+          if [[ -z "$REPO_ID" || "$REPO_ID" == "null" ]]; then
+            echo "::error::Could not resolve repository id. Are Discussions enabled on this repo?"
+            exit 1
+          fi
+          if [[ -z "$CAT_ID" ]]; then
+            echo "::error::No discussion categories found. Enable Discussions in repo settings."
+            exit 1
+          fi
+          echo "repo_id=$REPO_ID" >> "$GITHUB_OUTPUT"
+          echo "category_id=$CAT_ID" >> "$GITHUB_OUTPUT"
+
+      - name: Publish discussions
+        if: steps.added.outputs.files != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO_ID: ${{ steps.category.outputs.repo_id }}
+          CATEGORY_ID: ${{ steps.category.outputs.category_id }}
+          FILES: ${{ steps.added.outputs.files }}
+        run: |
+          set -euo pipefail
+          for f in $FILES; do
+            if [[ ! -f "$f" ]]; then
+              echo "Skipping missing file: $f"
+              continue
+            fi
+            echo "Building discussion for $f"
+
+            # Extract title + body from the issue JSON.
+            TITLE=$(python3 - "$f" <<'PY'
+          import json, sys
+          d = json.load(open(sys.argv[1], encoding="utf-8"))
+          title = d.get("title") or d.get("label") or "新一期已发布"
+          print(f"{title} 已发布")
+          PY
+            )
+
+            BODY=$(python3 - "$f" <<'PY'
+          import json, sys
+          d = json.load(open(sys.argv[1], encoding="utf-8"))
+          label = d.get("label", "")
+          title = d.get("title") or label
+          start = d.get("start", "")
+          end = d.get("end", "")
+          count = d.get("count", len(d.get("articles", []) or []))
+          arts = d.get("articles", []) or []
+          rec = sum(1 for a in arts if a.get("recommended"))
+          url = f"https://zju-eclab.github.io/#/issue/{label}"
+          lines = []
+          lines.append(f"**{title}** 已发布到在线版《东西情报》。")
+          lines.append("")
+          if start and end:
+              lines.append(f"- 时间范围：{start} – {end}")
+          lines.append(f"- 收录文献：{count} 篇")
+          if rec:
+              lines.append(f"- 推荐文献：{rec} 篇")
+          lines.append(f"- 在线阅读：{url}")
+          lines.append("")
+          lines.append("欢迎关注本仓库的 Discussions 以接收后续每期更新通知。")
+          print("\n".join(lines))
+          PY
+            )
+
+            echo "Title: $TITLE"
+            gh api graphql -f query='
+              mutation($repoId:ID!,$categoryId:ID!,$title:String!,$body:String!){
+                createDiscussion(input:{
+                  repositoryId:$repoId,
+                  categoryId:$categoryId,
+                  title:$title,
+                  body:$body
+                }){ discussion { url } }
+              }' \
+              -F repoId="$REPO_ID" \
+              -F categoryId="$CATEGORY_ID" \
+              -F title="$TITLE" \
+              -F body="$BODY" \
+              --jq '.data.createDiscussion.discussion.url'
+          done
