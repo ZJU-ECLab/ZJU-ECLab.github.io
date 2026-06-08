@@ -11,7 +11,7 @@
   var DATA_BASE = 'data/';
   var REC_KEY = '⭐ 推荐阅读';
   var DETAILS_KEY = '文献详情';
-  var DEFAULT_ACCENT = '#8b3a3a';
+  var DEFAULT_ACCENT = '#4c566a';
 
   var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -227,10 +227,9 @@
       var featured = issues[0];
       content.appendChild(featuredCard(featured));
 
-      // Group the rest by year
-      var rest = issues.slice(1);
+      // Group all issues by year (including the featured one)
       var byYear = {};
-      rest.forEach(function (it) {
+      issues.forEach(function (it) {
         var y = it.year || (it.start ? it.start.slice(0, 4) : '其他');
         (byYear[y] = byYear[y] || []).push(it);
       });
