@@ -671,6 +671,11 @@
       if (!thumb || !activeBtn) return;
       var rowRect = row.getBoundingClientRect();
       var btnRect = activeBtn.getBoundingClientRect();
+      // Some Android WebViews (e.g. DuckDuckGo) can report 0-width rects while
+      // the panel is animating/off-screen. Ignore those so we don't shrink the
+      // thumb to 0 and leave the active pill's white text on a bare background;
+      // the CSS default width keeps it visible until a real measurement lands.
+      if (btnRect.width === 0 || rowRect.width === 0) return;
       thumb.style.width = btnRect.width + 'px';
       thumb.style.transform = 'translateX(' + (btnRect.left - rowRect.left - 3) + 'px)';
     }
