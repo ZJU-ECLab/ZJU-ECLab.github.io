@@ -765,6 +765,39 @@
     };
   }
 
+  // ── theme (dark / light) ──────────────────────────────────────────────────
+
+  var html = document.documentElement;
+  var themeBtn = document.getElementById('theme-toggle');
+
+  function getPreferredTheme() {
+    var stored = localStorage.getItem('theme');
+    if (stored === 'dark' || stored === 'light') return stored;
+    return 'light'; // default to light mode
+  }
+
+  function applyTheme(theme) {
+    html.setAttribute('data-theme', theme);
+    if (themeBtn) themeBtn.setAttribute('aria-label', theme === 'dark' ? '切换浅色模式' : '切换深色模式');
+  }
+
+  applyTheme(getPreferredTheme());
+
+  if (themeBtn) {
+    themeBtn.addEventListener('click', function () {
+      var next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      applyTheme(next);
+      try { localStorage.setItem('theme', next); } catch (_) {}
+      // trigger M3-style rotation spin
+      themeBtn.classList.remove('spinning');
+      void themeBtn.offsetWidth; // force reflow to restart animation
+      themeBtn.classList.add('spinning');
+    });
+    themeBtn.addEventListener('animationend', function () {
+      themeBtn.classList.remove('spinning');
+    });
+  }
+
   // ── boot ────────────────────────────────────────────────────────────────────
 
   window.addEventListener('hashchange', route);

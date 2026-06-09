@@ -79,6 +79,89 @@
 }
 
 /* ══════════════════════════════════════════════
+   Dark Mode — M3 dark color roles
+   ══════════════════════════════════════════════ */
+[data-theme="dark"] {
+  /* ── Neutrals tinted by source (M3 dark neutral palette, subdued) ── */
+  --bg: color-mix(in srgb, var(--accent) 5%, #111118);
+  --surface: color-mix(in srgb, var(--accent) 4%, #1d1b20);
+  --surface-1: color-mix(in srgb, var(--accent) 6%, #1d1b20);
+  --surface-2: color-mix(in srgb, var(--accent) 8%, #1d1b20);
+  --surface-3: color-mix(in srgb, var(--accent) 11%, #1d1b20);
+
+  /* ── On-surface text roles ── */
+  --ink: #e6e0e9;
+  --ink-soft: #cac4d0;
+  --muted: #938f99;
+  --outline: color-mix(in srgb, var(--accent) 16%, #5a5660);
+  --outline-soft: color-mix(in srgb, var(--accent) 10%, #3a3640);
+
+  /* ── Primary roles (dark, subdued) ── */
+  --on-primary: #ffffff;
+  --primary-container: color-mix(in srgb, var(--accent) 28%, #1d1b20);
+  --on-primary-container: color-mix(in srgb, var(--accent) 85%, white);
+
+  /* ── Secondary roles (dark, subdued) ── */
+  --secondary-container: color-mix(in srgb, var(--accent) 22%, #1d1b20);
+  --on-secondary-container: color-mix(in srgb, var(--accent) 85%, white);
+
+  /* ── Tonal helpers (dark, subdued) ── */
+  --accent-bg: color-mix(in srgb, var(--accent) 12%, #1d1b20);
+  --accent-h: color-mix(in srgb, var(--accent) 65%, white);
+  --accent-light: color-mix(in srgb, var(--accent) 30%, #1d1b20);
+
+  /* ── State layers (dark: 8% hover, 12% press) ── */
+  --state-hover: color-mix(in srgb, var(--accent) 8%, transparent);
+  --state-press: color-mix(in srgb, var(--accent) 12%, transparent);
+
+  /* ── Elevations (M3: use lighter overlays on dark surfaces) ── */
+  --elev-1: 0 1px 3px 1px rgba(0, 0, 0, 0.25), 0 1px 2px rgba(0, 0, 0, 0.3);
+  --elev-2: 0 2px 6px 2px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.35);
+  --elev-3: 0 4px 8px 3px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0, 0, 0, 0.35);
+}
+
+/* force footer bg in dark mode */
+[data-theme="dark"] #eclab-footer {
+  background: var(--surface-1);
+  border-color: var(--outline-soft);
+}
+/* soften error red for dark backgrounds */
+[data-theme="dark"] .state-msg.error {
+  color: #f2b8b5;
+}
+/* calmer dark tag backgrounds */
+[data-theme="dark"] .tag-rec {
+  background: color-mix(in srgb, color-mix(in srgb, var(--accent) 60%, hsl(35, 70%, 50%)) 22%, #1d1b20);
+  color: color-mix(in srgb, var(--accent) 35%, hsl(35, 70%, 72%));
+  border-color: color-mix(in srgb, var(--accent) 22%, hsl(35, 60%, 45%));
+}
+[data-theme="dark"] .tag-journal {
+  background: color-mix(in srgb, color-mix(in srgb, var(--accent) 60%, hsl(255, 45%, 50%)) 22%, #1d1b20);
+  color: color-mix(in srgb, var(--accent) 35%, hsl(255, 50%, 75%));
+  border-color: color-mix(in srgb, var(--accent) 22%, hsl(255, 40%, 50%));
+}
+[data-theme="dark"] .tag-keyword {
+  background: color-mix(in srgb, color-mix(in srgb, var(--accent) 60%, hsl(150, 35%, 42%)) 22%, #1d1b20);
+  color: color-mix(in srgb, var(--accent) 35%, hsl(150, 40%, 65%));
+  border-color: color-mix(in srgb, var(--accent) 22%, hsl(150, 30%, 42%));
+}
+/* calmer dark featured hero + issue cards */
+[data-theme="dark"] .featured-issue {
+  background: var(--primary-container);
+  border-color: color-mix(in srgb, var(--accent) 32%, #1d1b20);
+}
+[data-theme="dark"] .featured-issue:hover {
+  background: color-mix(in srgb, var(--accent) 38%, #1d1b20);
+}
+[data-theme="dark"] .featured-issue::after {
+  background: color-mix(in srgb, var(--on-primary-container) 6%, transparent);
+}
+[data-theme="dark"] .issue-card:hover {
+  background: color-mix(in srgb, var(--accent) 15%, #1d1b20);
+  border-color: var(--primary);
+}
+
+/* ══════════════════════════════════════════════
    Reset & Base
    ══════════════════════════════════════════════ */
 *,
@@ -252,6 +335,110 @@ body {
 #eclab-header .subtitle-link:hover {
   color: var(--primary);
   background: var(--state-hover);
+}
+
+/* ── Theme toggle — M3 icon button in top-right of header ── */
+#theme-toggle {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--shape-full);
+  background: var(--surface-2);
+  border: 1px solid var(--outline-soft);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  font-size: 1.25rem;
+  line-height: 1;
+  color: var(--muted);
+  transition:
+    color 0.2s var(--ease-standard),
+    background-color 0.2s var(--ease-standard),
+    border-color 0.2s var(--ease-standard),
+    transform 0.25s var(--ease-spring);
+  z-index: 2;
+}
+#theme-toggle:hover {
+  color: var(--ink);
+  background: var(--surface-3);
+  border-color: var(--outline);
+  transform: scale(1.08);
+}
+#theme-toggle:active {
+  transform: scale(0.92);
+}
+
+.theme-icon {
+  position: absolute;
+  transition: opacity .2s var(--ease-standard),
+              transform .5s var(--ease-spring);
+  will-change: transform, opacity;
+}
+/* light mode: show moon, hide sun */
+[data-theme="light"] .icon-sun {
+  opacity: 0;
+  transform: rotate(-90deg) scale(0.5);
+  pointer-events: none;
+}
+[data-theme="light"] .icon-moon {
+  opacity: 1;
+  transform: rotate(0deg) scale(1);
+}
+/* dark mode: show sun, hide moon */
+[data-theme="dark"] .icon-moon {
+  opacity: 0;
+  transform: rotate(90deg) scale(0.5);
+  pointer-events: none;
+}
+[data-theme="dark"] .icon-sun {
+  opacity: 1;
+  transform: rotate(0deg) scale(1);
+}
+/* fallback for before JS runs (no data-theme yet) */
+html:not([data-theme]) .icon-sun {
+  opacity: 0;
+  transform: rotate(-90deg) scale(0.5);
+  pointer-events: none;
+}
+html:not([data-theme]) .icon-moon {
+  opacity: 1;
+  transform: rotate(0deg) scale(1);
+}
+/* M3-style rotation spin on click */
+#theme-toggle.spinning {
+  animation: theme-spin .55s var(--ease-spring) both;
+}
+@keyframes theme-spin {
+  0%   { transform: scale(1) rotate(0deg); }
+  30%  { transform: scale(0.78) rotate(135deg); }
+  60%  { transform: scale(1.12) rotate(290deg); }
+  100% { transform: scale(1) rotate(360deg); }
+}
+/* light mode: show moon (switch to dark), hide sun */
+[data-theme="light"] .icon-sun {
+  display: none;
+}
+[data-theme="light"] .icon-moon {
+  display: block;
+  transform: rotate(15deg);
+}
+/* dark mode: show sun (switch to light), hide moon */
+[data-theme="dark"] .icon-moon {
+  display: none;
+}
+[data-theme="dark"] .icon-sun {
+  display: block;
+  transform: rotate(15deg);
+}
+
+/* fallback for before JS runs (no data-theme yet) */
+html:not([data-theme]) .icon-sun {
+  display: none;
+}
+html:not([data-theme]) .icon-moon {
+  display: block;
 }
 
 /* ══════════════════════════════════════════════
@@ -1180,7 +1367,8 @@ p a:hover {
   #toc-sidebar,
   #toc-toggle,
   #toc-overlay,
-  #progress-bar {
+  #progress-bar,
+  #theme-toggle {
     display: none !important;
   }
   #page-wrapper {
