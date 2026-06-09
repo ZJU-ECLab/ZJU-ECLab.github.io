@@ -11,7 +11,10 @@
   var DATA_BASE = 'data/';
   var REC_KEY = '⭐ 推荐阅读';
   var DETAILS_KEY = '文献详情';
-  var DEFAULT_ACCENT = '#4c566a';
+  // Homepage accent: extracted from the ECLab logo's dominant warm hue (~22°),
+  // saturated for use as a UI accent. Issue pages override this with their own
+  // accent_color from the data; this is the static default + home-page color.
+  var DEFAULT_ACCENT = 'hsl(22, 55%, 43%)';
 
   var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -553,11 +556,22 @@
       var link = key ? linkByKey[key] : null;
       if (!link) { indicator.style.opacity = '0'; return; }
       var li = link.parentElement;
-      if (!animate || reduceMotion) indicator.classList.add('no-anim');
+      var wasHidden = indicator.style.opacity === '' || indicator.style.opacity === '0';
+      // When the pill is hidden (or animation is suppressed), snap straight to the
+      // target position/size with no transition, then just fade it in — this avoids
+      // the "appear at top then slide/stack into place" glitch.
+      if (!animate || reduceMotion || wasHidden) {
+        indicator.classList.add('no-anim');
+        indicator.style.transform = 'translateY(' + li.offsetTop + 'px)';
+        indicator.style.height = li.offsetHeight + 'px';
+        void indicator.offsetWidth;
+        indicator.classList.remove('no-anim');
+        indicator.style.opacity = '1';
+        return;
+      }
       indicator.style.opacity = '1';
       indicator.style.transform = 'translateY(' + li.offsetTop + 'px)';
       indicator.style.height = li.offsetHeight + 'px';
-      if (!animate || reduceMotion) { void indicator.offsetWidth; indicator.classList.remove('no-anim'); }
     }
 
     function setActive(key, animate) {
