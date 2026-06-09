@@ -169,11 +169,28 @@
   // ── progress bar ────────────────────────────────────────────────────────────
 
   var pb = document.getElementById('progress-bar');
-  window.addEventListener('scroll', function () {
+  function updateProgress() {
     if (!pb) return;
-    var h = document.documentElement.scrollHeight - window.innerHeight;
-    pb.style.width = (h > 0 ? window.scrollY / h * 100 : 0) + '%';
-  }, { passive: true });
+    // In issue view the content card scrolls internally; on the home page the
+    // window scrolls. Track whichever is the active scroll container.
+    var h, pos;
+    if (document.body.classList.contains('issue-view')) {
+      h = content.scrollHeight - content.clientHeight;
+      pos = content.scrollTop;
+    } else {
+      h = document.documentElement.scrollHeight - window.innerHeight;
+      pos = window.scrollY;
+    }
+    pb.style.width = (h > 0 ? pos / h * 100 : 0) + '%';
+  }
+  window.addEventListener('scroll', updateProgress, { passive: true });
+  if (content) content.addEventListener('scroll', updateProgress, { passive: true });
+
+  var appbar = document.getElementById('issue-appbar');
+  var appbarTitle = document.getElementById('appbar-title');
+  var appbarDrawerBtn = document.getElementById('appbar-drawer');
+  var issueSearch = document.getElementById('issue-search');
+  var searchClear = document.getElementById('search-clear');
 
   // ── view teardown ───────────────────────────────────────────────────────────
 
@@ -182,6 +199,13 @@
     if (sidebar) { sidebar.hidden = true; sidebar.classList.remove('open'); }
     if (overlay) overlay.classList.remove('open');
     if (tocToggle) { tocToggle.hidden = true; tocToggle.classList.remove('visible'); }
+    // hide issue appbar, restore home header
+    if (appbar) appbar.hidden = true;
+    document.body.classList.remove('issue-view');
+    document.body.classList.remove('sidebar-collapsed');
+    document.body.classList.remove('hide-selected');
+    document.body.classList.remove('view-journals');
+    if (issueSearch) { issueSearch.value = ''; applySearch(''); }
   }
 
   function showState(msg, isError) {
@@ -283,6 +307,10 @@
         setAccent(issue.accent_color || DEFAULT_ACCENT);
         document.title = (issue.title || label) + ' · ECLab News';
         if (headerTitle) headerTitle.textContent = issue.project || '东西情报';
+        if (appbarTitle) appbarTitle.textContent = issue.project || '东西情报';
+        // swap to issue app-bar layout
+        if (appbar) appbar.hidden = false;
+        document.body.classList.add('issue-view');
         buildIssueDOM(issue);
         issueController = wireIssueInteractions();
       })
@@ -408,10 +436,16 @@
     var anchor = 'article-' + index;
     var isRec = recSet[val(article, 'doi', '').toLowerCase()] === true;
     var card = el('div', { class: 'article-card', id: anchor });
+    // click anywhere on the card (except real links) scrolls it to the top
+    card.addEventListener('click', function (e) {
+      if (e.target.closest('a')) return; // don't hijack link clicks
+      scrollToAnchor(anchor);
+    });
     card.appendChild(el('h3', { text: index + '. ' + articleTitle(article) }));
-    if (isRec) {
-      card.appendChild(el('p', {}, [el('span', { class: 'rec-flag', text: '⭐ 推荐阅读' })]));
-    }
+    // tag row (recommended + journal + keywords), mirrors the index; clickable
+    var tagsWrap = el('div', { class: 'article-index-tags article-card-tags' });
+    tagsWrap.appendChild(tagsFor(article, isRec));
+    card.appendChild(tagsWrap);
     card.appendChild(fieldP('作者', val(article, 'authors', '作者信息缺失')));
 
     var link = articleUrl(article);
@@ -439,10 +473,158 @@
     target.scrollIntoView(reduceMotion ? { block: 'start' } : { behavior: 'smooth', block: 'start' });
   }
 
+  // ── search ──────────────────────────────────────────────────────────────────
+
+  // Highlight all occurrences of `query` in text nodes inside `node`.
+  function highlightNode(node, query) {
+    if (node.nodeType === 3) { // text node
+      var idx = node.nodeValue.toLowerCase().indexOf(query);
+      if (idx === -1) return;
+      var mark = document.createElement('mark');
+      mark.className = 'search-hl';
+      var after = node.splitText(idx);
+      after.splitText(query.length);
+      mark.appendChild(after.cloneNode(true));
+      after.parentNode.replaceChild(mark, after);
+    } else if (node.nodeType === 1 && node.nodeName !== 'MARK') {
+      Array.prototype.slice.call(node.childNodes).forEach(function (c) { highlightNode(c, query); });
+    }
+  }
+
+  // Remove all <mark class="search-hl"> highlights from node.
+  function clearHighlights(node) {
+    var marks = node.querySelectorAll('mark.search-hl');
+    marks.forEach(function (m) {
+      var parent = m.parentNode;
+      while (m.firstChild) parent.insertBefore(m.firstChild, m);
+      parent.removeChild(m);
+      parent.normalize();
+    });
+  }
+
+  function applySearch(q) {
+    var query = q.trim().toLowerCase();
+    var cards = content.querySelectorAll('.article-card');
+    var indexSections = content.querySelectorAll('.index-section');
+    var sectionH = content.querySelectorAll('h2.section-h');
+    var hr = content.querySelector('hr');
+    if (!cards.length) return;
+
+    cards.forEach(function (c) { clearHighlights(c); });
+    var oldTagSec = content.querySelector('.search-tag-section');
+    if (oldTagSec) oldTagSec.parentNode.removeChild(oldTagSec);
+    var oldNoResult = content.querySelector('.search-no-result');
+    if (oldNoResult) oldNoResult.parentNode.removeChild(oldNoResult);
+
+    if (!query) {
+      cards.forEach(function (c) { c.style.display = ''; });
+      indexSections.forEach(function (s) { s.style.display = ''; });
+      sectionH.forEach(function (h) {
+        h.style.display = '';
+        if (h.id === '文献详情') h.textContent = '文献详情'; // reset from "搜索结果"
+      });
+      if (hr) hr.style.display = '';
+      if (searchClear) searchClear.hidden = true;
+      return;
+    }
+
+    if (searchClear) searchClear.hidden = false;
+    indexSections.forEach(function (s) { s.style.display = 'none'; });
+    if (hr) hr.style.display = 'none';
+    sectionH.forEach(function (h) { h.style.display = 'none'; });
+
+    // collect matching tags (keyword categories and journals)
+    var matchedTags = [], seenTags = {};
+    content.querySelectorAll('.category-section').forEach(function (cs) {
+      var cat = cs.getAttribute('data-category') || cs.getAttribute('data-journal');
+      if (cat && !seenTags[cat] && cat.toLowerCase().indexOf(query) !== -1) {
+        seenTags[cat] = true;
+        matchedTags.push({
+          cat: cat,
+          cls: cs.getAttribute('data-journal') ? 'tag tag-journal' : 'tag tag-keyword',
+          isJournal: !!cs.getAttribute('data-journal')
+        });
+      }
+    });
+
+    var any = false;
+    cards.forEach(function (c) {
+      var match = c.textContent.toLowerCase().indexOf(query) !== -1;
+      c.style.display = match ? '' : 'none';
+      if (match) { any = true; highlightNode(c, query); }
+    });
+
+    // Show "搜索结果" heading
+    var detailsH = Array.prototype.find.call(
+      content.querySelectorAll('h2.section-h'), function (h) { return h.id === '文献详情'; });
+    if (detailsH) {
+      detailsH.style.display = '';
+      detailsH.textContent = '搜索结果';
+    }
+
+    // Build tag section AFTER heading (not before)
+    if (matchedTags.length && detailsH) {
+      var tagSec = el('div', { class: 'search-tag-section' });
+      var tagsWrap = el('div', { class: 'article-index-tags' });
+      matchedTags.forEach(function (t) {
+        var tagEl = el('span', { class: t.cls, dataset: { tag: t.cat }, text: t.cat });
+        // Prevent the search input from blurring (which would tear down these
+        // chips via applySearch('') before the click can fire and navigate).
+        tagEl.addEventListener('mousedown', function (e) { e.preventDefault(); });
+        tagEl.addEventListener('click', function (e) {
+          e.preventDefault();
+          // clear search to restore normal index view
+          if (issueSearch) issueSearch.value = '';
+          applySearch('');
+          // navigate directly via the controller after clearing search
+          var targetView = t.isJournal ? 'journals' : 'keywords';
+          setTimeout(function () {
+            if (issueController && issueController.navigateToTag) {
+              issueController.navigateToTag(t.cat, targetView);
+            }
+          }, 50);
+        });
+        tagsWrap.appendChild(tagEl);
+      });
+      tagSec.appendChild(tagsWrap);
+      // Insert after the heading
+      detailsH.parentNode.insertBefore(tagSec, detailsH.nextSibling);
+    }
+
+    if (!any) {
+      content.appendChild(el('div', { class: 'state-msg search-no-result', text: '未找到匹配文献' }));
+    }
+
+    // Scroll to top of results when search is active
+    if (query && detailsH) {
+      detailsH.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+    }
+  }
+
+  if (issueSearch) {
+    issueSearch.addEventListener('input', function () { applySearch(this.value); });
+    issueSearch.addEventListener('search', function () { applySearch(this.value); });
+    // blur: restore normal view but keep query in bar
+    issueSearch.addEventListener('blur', function () {
+      var q = this.value.trim();
+      if (q) applySearch('');
+    });
+    // focus: re-apply preserved query immediately
+    issueSearch.addEventListener('focus', function () {
+      var q = this.value.trim();
+      if (q) applySearch(q);
+    });
+  }
+  if (searchClear) {
+    searchClear.addEventListener('click', function () {
+      if (issueSearch) { issueSearch.value = ''; issueSearch.focus(); }
+      applySearch('');
+    });
+  }
+
   // ── issue interactions (ported from template.html) ──────────────────────────
 
   function wireIssueInteractions() {
-    var tocTitle = document.getElementById('toc-title');
     var nav = document.getElementById('toc-nav');
     var viewToggle = document.getElementById('view-toggle');
     var hideToggle = document.getElementById('hide-toggle');
@@ -450,6 +632,10 @@
     var hidePillThumb = document.getElementById('hide-pill-thumb');
     var viewPills = viewToggle.querySelectorAll('.sidebar-pill');
     var hidePills = hideToggle.querySelectorAll('.sidebar-pill');
+    var railView = document.getElementById('rail-view');
+    var railHide = document.getElementById('rail-hide');
+    var railDetails = document.getElementById('rail-details');
+    var detailsLink = document.getElementById('details-link');
 
     var keywordSections = content.querySelectorAll('.index-section[data-view="keywords"]');
     var journalSections = content.querySelectorAll('.index-section[data-view="journals"]');
@@ -473,7 +659,13 @@
     tocToggle.classList.add('visible');
     viewPills.forEach(function (b) { b.classList.toggle('active', b.getAttribute('data-view') === 'keywords'); });
     hidePills.forEach(function (b) { b.classList.toggle('active', b.getAttribute('data-hide') === 'false'); });
-    if (tocTitle) tocTitle.textContent = '关键词 · Keywords';
+
+    // Keep the icon rail in sync with the segmented switches
+    function syncRail() {
+      document.body.classList.toggle('view-journals', currentView === 'journals');
+      document.body.classList.toggle('hide-selected', hideMode);
+    }
+    syncRail();
 
     function movePillThumb(thumb, activeBtn, row) {
       if (!thumb || !activeBtn) return;
@@ -520,7 +712,6 @@
         if (y === REC_KEY) return 1;
         return x.toLowerCase().localeCompare(y.toLowerCase());
       });
-      seen.push(DETAILS_KEY);
       seen.forEach(function (cat) {
         var li = el('li');
         var link = el('a', { href: '#', text: cat, 'data-filter': cat });
@@ -584,6 +775,9 @@
           if (on2) a.setAttribute('aria-current', 'location'); else a.removeAttribute('aria-current');
         });
       });
+      // permanent 文献详情 footer link (rail icon stays un-highlighted)
+      var detailsActive = key === DETAILS_KEY;
+      if (detailsLink) detailsLink.classList.toggle('active', detailsActive);
       moveIndicator(key, animate !== false);
     }
 
@@ -610,13 +804,13 @@
       programmatic = true;
       node.scrollIntoView({ behavior: 'smooth', block: 'start' });
       if ('onscrollend' in window) {
-        window.addEventListener('scrollend', function () { programmatic = false; }, { once: true });
+        content.addEventListener('scrollend', function () { programmatic = false; }, { once: true });
       }
       function onSettle() {
         if (settleTimer) clearTimeout(settleTimer);
-        settleTimer = setTimeout(function () { programmatic = false; window.removeEventListener('scroll', onSettle); }, 140);
+        settleTimer = setTimeout(function () { programmatic = false; content.removeEventListener('scroll', onSettle); }, 140);
       }
-      on(window, 'scroll', onSettle, { passive: true });
+      on(content, 'scroll', onSettle, { passive: true });
     }
     function scrollToKey(key) {
       if (key === DETAILS_KEY) { scrollToTarget(document.getElementById('文献详情')); return; }
@@ -626,7 +820,7 @@
       scrollToTarget(found);
     }
     ['wheel', 'touchstart', 'keydown'].forEach(function (e) {
-      on(window, e, function () { programmatic = false; }, { passive: true });
+      on(content, e, function () { programmatic = false; }, { passive: true });
     });
 
     function onNavClick(cat) {
@@ -653,7 +847,7 @@
       hideMode = false;
       hidePills.forEach(function (b) { b.classList.toggle('active', b.getAttribute('data-hide') === 'false'); });
       if (hidePills[0]) movePillThumb(hidePillThumb, hidePills[0], hideToggle);
-      if (tocTitle) tocTitle.textContent = view === 'keywords' ? '关键词 · Keywords' : '期刊 · Journals';
+      syncRail();
       setActive(null, false);
       var delay = reduceMotion ? 0 : 210;
       setTimeout(function () { if (onComplete) onComplete(); requestAnimationFrame(spy); }, delay);
@@ -680,12 +874,47 @@
         hideMode = wantHide;
         if (!hideMode) setActive(null);
         applyFilter();
+        syncRail();
       });
     });
 
+    // ── Icon rail: act directly on the same state as the segmented switches ──
+    function selectView(view) {
+      if (view === currentView) return;
+      viewPills.forEach(function (b) {
+        var match = b.getAttribute('data-view') === view;
+        b.classList.toggle('active', match);
+        if (match) movePillThumb(viewPillThumb, b, viewToggle);
+      });
+      switchView(view);
+      syncRail();
+    }
+    function setHideMode(want) {
+      if (want === hideMode) return;
+      hidePills.forEach(function (b) {
+        var match = (b.getAttribute('data-hide') === 'true') === want;
+        b.classList.toggle('active', match);
+        if (match) movePillThumb(hidePillThumb, b, hideToggle);
+      });
+      hideMode = want;
+      if (!hideMode) setActive(null);
+      applyFilter();
+      syncRail();
+    }
+    if (railView) on(railView, 'click', function () {
+      selectView(currentView === 'keywords' ? 'journals' : 'keywords');
+    });
+    if (railHide) on(railHide, 'click', function () { setHideMode(!hideMode); });
+    // permanent 文献详情 entry (footer link + rail icon): jump to the details section
+    function goToDetails() { onNavClick(DETAILS_KEY); }
+    if (detailsLink) on(detailsLink, 'click', goToDetails);
+    if (railDetails) on(railDetails, 'click', goToDetails);
+
     function spy() {
       if (programmatic || hideMode || !nav) return;
-      var line = 90, a = attr(), current = null;
+      // threshold sits just inside the content card's top edge, so the section
+      // whose heading has just scrolled to the top is the one marked active
+      var line = content.getBoundingClientRect().top + 48, a = attr(), current = null;
       activeSections().forEach(function (view) {
         view.querySelectorAll('.category-section[' + a + ']').forEach(function (s) {
           if (s.style.display !== 'none' && s.getBoundingClientRect().top <= line) current = s.getAttribute(a);
@@ -693,10 +922,26 @@
       });
       var details = document.getElementById('文献详情');
       if (details && details.getBoundingClientRect().top <= line) current = DETAILS_KEY;
-      if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2) current = DETAILS_KEY;
+      // bottom of the scroll container ⇒ details
+      if (content.scrollTop + content.clientHeight >= content.scrollHeight - 2) current = DETAILS_KEY;
       if (current !== currentCategory) setActive(current);
     }
-    on(window, 'scroll', spy, { passive: true });
+    on(content, 'scroll', spy, { passive: true });
+
+    // Navigate to a category/journal: switch view if needed, activate it, scroll.
+    // Also syncs the view pill + rail. Reused by index tags and search-result chips.
+    function navigateToTag(tagValue, targetView) {
+      if (!targetView) targetView = currentView;
+      function activateAndScroll() { setActive(tagValue); if (hideMode) applyFilter(); scrollToKey(tagValue); }
+      if (targetView !== currentView) {
+        viewPills.forEach(function (b) {
+          var match = b.getAttribute('data-view') === targetView;
+          b.classList.toggle('active', match);
+          if (match) movePillThumb(viewPillThumb, b, viewToggle);
+        });
+        switchView(targetView, function () { syncRail(); activateAndScroll(); });
+      } else { activateAndScroll(); }
+    }
 
     // Clickable tags in the index
     content.querySelectorAll('.tag[data-tag]').forEach(function (tag) {
@@ -706,14 +951,7 @@
         var isRec = this.classList.contains('tag-rec');
         var isJournal = this.classList.contains('tag-journal');
         var targetView = isRec ? currentView : (isJournal ? 'journals' : 'keywords');
-        function activateAndScroll() { setActive(tagValue); if (hideMode) applyFilter(); scrollToKey(tagValue); }
-        if (targetView !== currentView) {
-          viewPills.forEach(function (x) { x.classList.remove('active'); });
-          viewPills.forEach(function (b) {
-            if (b.getAttribute('data-view') === targetView) { b.classList.add('active'); movePillThumb(viewPillThumb, b, viewToggle); }
-          });
-          switchView(targetView, activateAndScroll);
-        } else { activateAndScroll(); }
+        navigateToTag(tagValue, targetView);
       });
     });
 
@@ -749,13 +987,41 @@
       initPillThumb(hidePillThumb, hideToggle, ah);
     });
 
-    // Mobile toggle
-    function toggleSidebar() { sidebar.classList.toggle('open'); if (overlay) overlay.classList.toggle('open'); }
-    function closeSidebar() { sidebar.classList.remove('open'); if (overlay) overlay.classList.remove('open'); }
+    // ── Sidebar toggle: wide (inline collapse) vs narrow (overlay drawer) ──
+    // Wide (>900px): toggle body.sidebar-collapsed to hide/show the panel (rail stays)
+    // Narrow (≤900px): toggle .open on sidebar + overlay (entire drawer slides in)
+    var isNarrow = window.matchMedia('(max-width: 900px)');
+    
+    function toggleSidebar() {
+      if (isNarrow.matches) {
+        // narrow: overlay drawer
+        sidebar.classList.toggle('open');
+        if (overlay) overlay.classList.toggle('open');
+      } else {
+        // wide: inline collapse
+        document.body.classList.toggle('sidebar-collapsed');
+      }
+    }
+    function closeSidebar() {
+      sidebar.classList.remove('open');
+      if (overlay) overlay.classList.remove('open');
+      document.body.classList.remove('sidebar-collapsed');
+    }
+    
+    // Initialize: wide → expanded (no class), narrow → closed
+    if (isNarrow.matches) {
+      sidebar.classList.remove('open');
+      if (overlay) overlay.classList.remove('open');
+    } else {
+      document.body.classList.remove('sidebar-collapsed');
+    }
+    
     on(tocToggle, 'click', toggleSidebar);
+    if (appbarDrawerBtn) on(appbarDrawerBtn, 'click', toggleSidebar);
     if (overlay) on(overlay, 'click', closeSidebar);
 
     return {
+      navigateToTag: navigateToTag,
       destroy: function () {
         listeners.forEach(function (l) { l[0].removeEventListener(l[1], l[2], l[3]); });
         listeners = [];
@@ -768,35 +1034,35 @@
   // ── theme (dark / light) ──────────────────────────────────────────────────
 
   var html = document.documentElement;
-  var themeBtn = document.getElementById('theme-toggle');
+  var themeBtns = document.querySelectorAll('.theme-toggle');
 
   function getPreferredTheme() {
     var stored = localStorage.getItem('theme');
     if (stored === 'dark' || stored === 'light') return stored;
-    return 'light'; // default to light mode
+    return 'light';
   }
 
   function applyTheme(theme) {
     html.setAttribute('data-theme', theme);
-    if (themeBtn) themeBtn.setAttribute('aria-label', theme === 'dark' ? '切换浅色模式' : '切换深色模式');
+    var label = theme === 'dark' ? '切换浅色模式' : '切换深色模式';
+    themeBtns.forEach(function (b) { b.setAttribute('aria-label', label); });
   }
 
   applyTheme(getPreferredTheme());
 
-  if (themeBtn) {
-    themeBtn.addEventListener('click', function () {
+  themeBtns.forEach(function (btn) {
+    btn.addEventListener('click', function () {
       var next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
       applyTheme(next);
       try { localStorage.setItem('theme', next); } catch (_) {}
-      // trigger M3-style rotation spin
-      themeBtn.classList.remove('spinning');
-      void themeBtn.offsetWidth; // force reflow to restart animation
-      themeBtn.classList.add('spinning');
+      btn.classList.remove('spinning');
+      void btn.offsetWidth;
+      btn.classList.add('spinning');
     });
-    themeBtn.addEventListener('animationend', function () {
-      themeBtn.classList.remove('spinning');
+    btn.addEventListener('animationend', function () {
+      btn.classList.remove('spinning');
     });
-  }
+  });
 
   // ── boot ────────────────────────────────────────────────────────────────────
 

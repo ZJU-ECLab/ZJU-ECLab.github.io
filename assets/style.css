@@ -120,11 +120,6 @@
   --elev-3: 0 4px 8px 3px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0, 0, 0, 0.35);
 }
 
-/* force footer bg in dark mode */
-[data-theme="dark"] #eclab-footer {
-  background: var(--surface-1);
-  border-color: var(--outline-soft);
-}
 /* soften error red for dark backgrounds */
 [data-theme="dark"] .state-msg.error {
   color: #f2b8b5;
@@ -372,73 +367,39 @@ body {
 
 .theme-icon {
   position: absolute;
-  transition: opacity .2s var(--ease-standard),
-              transform .5s var(--ease-spring);
+  display: grid;
+  place-items: center;
+  line-height: 0;
+  transition: opacity .25s var(--ease-standard),
+              transform .45s var(--ease-spring);
   will-change: transform, opacity;
 }
-/* light mode: show moon, hide sun */
-[data-theme="light"] .icon-sun {
-  opacity: 0;
-  transform: rotate(-90deg) scale(0.5);
-  pointer-events: none;
+.theme-icon svg { display: block; }
+/* light mode: moon visible, sun hidden */
+[data-theme="light"] .icon-sun,
+html:not([data-theme]) .icon-sun {
+  opacity: 0; transform: rotate(-120deg) scale(.45); pointer-events: none;
 }
-[data-theme="light"] .icon-moon {
-  opacity: 1;
-  transform: rotate(0deg) scale(1);
+[data-theme="light"] .icon-moon,
+html:not([data-theme]) .icon-moon {
+  opacity: 1; transform: rotate(0deg) scale(1);
 }
-/* dark mode: show sun, hide moon */
+/* dark mode: sun visible, moon hidden */
 [data-theme="dark"] .icon-moon {
-  opacity: 0;
-  transform: rotate(90deg) scale(0.5);
-  pointer-events: none;
+  opacity: 0; transform: rotate(120deg) scale(.45); pointer-events: none;
 }
 [data-theme="dark"] .icon-sun {
-  opacity: 1;
-  transform: rotate(0deg) scale(1);
+  opacity: 1; transform: rotate(0deg) scale(1);
 }
-/* fallback for before JS runs (no data-theme yet) */
-html:not([data-theme]) .icon-sun {
-  opacity: 0;
-  transform: rotate(-90deg) scale(0.5);
-  pointer-events: none;
-}
-html:not([data-theme]) .icon-moon {
-  opacity: 1;
-  transform: rotate(0deg) scale(1);
-}
-/* M3-style rotation spin on click */
-#theme-toggle.spinning {
-  animation: theme-spin .55s var(--ease-spring) both;
+/* M3 spin — covers both toggle buttons */
+.theme-toggle.spinning {
+  animation: theme-spin .5s var(--ease-spring) both;
 }
 @keyframes theme-spin {
-  0%   { transform: scale(1) rotate(0deg); }
-  30%  { transform: scale(0.78) rotate(135deg); }
-  60%  { transform: scale(1.12) rotate(290deg); }
-  100% { transform: scale(1) rotate(360deg); }
-}
-/* light mode: show moon (switch to dark), hide sun */
-[data-theme="light"] .icon-sun {
-  display: none;
-}
-[data-theme="light"] .icon-moon {
-  display: block;
-  transform: rotate(15deg);
-}
-/* dark mode: show sun (switch to light), hide moon */
-[data-theme="dark"] .icon-moon {
-  display: none;
-}
-[data-theme="dark"] .icon-sun {
-  display: block;
-  transform: rotate(15deg);
-}
-
-/* fallback for before JS runs (no data-theme yet) */
-html:not([data-theme]) .icon-sun {
-  display: none;
-}
-html:not([data-theme]) .icon-moon {
-  display: block;
+  0%   { transform: scale(1)    rotate(0deg); }
+  30%  { transform: scale(.78)  rotate(130deg); }
+  62%  { transform: scale(1.1)  rotate(295deg); }
+  100% { transform: scale(1)    rotate(360deg); }
 }
 
 /* ══════════════════════════════════════════════
@@ -495,6 +456,7 @@ html:not([data-theme]) .icon-moon {
 .sidebar-pill-row {
   position: relative;
   display: flex;
+  height: 42px; /* fixed so the rail icons can align to each row's center */
   background: var(--surface-3);
   border-radius: var(--shape-full);
   padding: 4px;
@@ -972,7 +934,8 @@ hr {
   margin: 1.5rem 0;
   overflow: hidden;
   box-shadow: var(--elev-1);
-  scroll-margin-top: 1.5rem;
+  scroll-margin-top: 4.5rem; /* account for fixed appbar */
+  cursor: pointer;
   transition:
     box-shadow 0.3s var(--ease-standard),
     transform 0.35s var(--ease-spring),
@@ -1009,12 +972,18 @@ hr {
 }
 .article-card p strong {
   font-family: var(--brand);
-  font-size: 0.72rem;
+  font-size: 0.9rem;
   font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--primary);
-  margin-right: 0.4rem;
+  letter-spacing: 0.01em;
+  text-transform: none;
+  color: var(--on-secondary-container);
+  margin-right: 0.5rem;
+}
+/* tag row inside a detail card (matches the index tag styling) */
+.article-card-tags {
+  padding: 0.85rem 1.25rem;
+  margin: 0;
+  border-bottom: 1px solid var(--outline-soft);
 }
 .article-card p.abstract {
   background: var(--accent-bg);
@@ -1237,51 +1206,471 @@ p a:hover {
 }
 
 /* ══════════════════════════════════════════════
-   Footer
+   Issue App Bar — Google Workspace style, fixed
    ══════════════════════════════════════════════ */
-#eclab-footer {
-  text-align: center;
-  padding: 2.5rem 1.5rem 3rem;
-  font-family: var(--brand);
-  font-size: 0.82rem;
-  color: var(--muted);
-  border-top: 1px solid var(--outline-soft);
-  margin-top: 2.5rem;
-  background: #ffffff;
-}
-#eclab-footer .footer-inner {
+#issue-appbar {
+  --appbar-h: 64px;
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: var(--appbar-h);
+  background: var(--bg);
+  border-bottom: 1px solid var(--outline-soft);
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  max-width: var(--w);
-  margin: 0 auto;
+  justify-content: space-between;
+  gap: .75rem;
+  padding: 0 .75rem;
+  z-index: 980;
 }
-#eclab-footer .footer-logo {
-  width: 52px;
-  height: 52px;
-  object-fit: contain;
+
+/* three zones */
+.appbar-left  { display: flex; align-items: center; gap: .6rem; flex: 0 0 auto; }
+.appbar-center { flex: 1; display: flex; justify-content: center; align-items: center; padding: 0 .75rem; min-width: 0; }
+.appbar-right { display: flex; align-items: center; gap: .4rem; flex: 0 0 auto; }
+
+/* shared icon button style in appbar */
+.appbar-icon-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--shape-full);
+  border: none;
+  background: var(--surface-2);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  line-height: 0;
+  color: var(--muted);
+  text-decoration: none;
+  flex-shrink: 0;
+  transition: color .2s var(--ease-standard), background-color .2s var(--ease-standard);
+}
+.appbar-icon-btn svg { display: block; }
+.appbar-icon-btn:hover { color: var(--ink); background: var(--surface-3); }
+
+/* appbar small logo */
+.appbar-logo-wrap {
+  width: 36px; height: 36px;
+  border-radius: var(--shape-full);
+  overflow: hidden;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  background: var(--surface);
+  box-shadow: 0 0 0 1.5px var(--outline);
+  transition: box-shadow .2s var(--ease-standard);
+}
+.appbar-logo-wrap:hover { box-shadow: 0 0 0 1.5px var(--primary); }
+.appbar-logo-img {
+  width: 103%; height: 103%;
+  object-fit: cover;
+  transform: translateY(-4%);
+  display: block;
+}
+
+.appbar-title {
+  font-family: var(--brand);
+  font-size: .95rem;
+  font-weight: 600;
+  color: var(--ink);
+  white-space: nowrap;
+  letter-spacing: .01em;
+}
+
+/* search bar — taller, M3 style */
+.appbar-search-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 540px;
+  height: 48px;
+  background: var(--surface-3);
+  border-radius: var(--shape-full);
+  border: 1.5px solid transparent;
+  transition: border-color .2s var(--ease-standard), background-color .2s var(--ease-standard), box-shadow .2s var(--ease-standard);
+}
+.appbar-search-wrap:focus-within {
+  background: var(--surface);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 14%, transparent);
+}
+.search-icon {
+  position: absolute;
+  left: 1rem;
+  color: var(--muted);
+  pointer-events: none;
+  line-height: 0;
+  display: grid;
+  place-items: center;
+}
+.search-icon svg { display: block; }
+.appbar-search {
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: var(--brand);
+  font-size: .92rem;
+  color: var(--ink);
+  padding: 0 3rem 0 3rem;
+  border-radius: var(--shape-full);
+}
+.appbar-search::placeholder { color: var(--muted); }
+.search-clear {
+  position: absolute;
+  right: .6rem;
+  width: 32px; height: 32px;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  border-radius: var(--shape-full);
+  line-height: 0;
+  display: grid;
+  place-items: center;
+  transition: color .15s, background-color .15s;
+}
+.search-clear svg { display: block; }
+.search-clear:hover { color: var(--ink); background: var(--state-hover); }
+
+/* lab link button */
+.appbar-lab-link {
+  width: auto;
+  padding: 0 .9rem;
+  gap: .4rem;
+  font-size: .82rem;
+  font-weight: 600;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+}
+.lab-link-text { font-family: var(--brand); }
+
+/* body offset when issue appbar is shown */
+body.issue-view { padding-top: 64px; }
+body.issue-view #eclab-header { display: none; }
+body.issue-view #toc-toggle { display: none !important; } /* FAB hidden; drawer btn used instead */
+
+/* ── Issue-view layout: Workspace-style inline drawer + rounded content card ── */
+/* App bar blends into the drawer (no border) */
+body.issue-view #issue-appbar { border-bottom: none; }
+
+/* page-wrapper hosts the inline sidebar + content card */
+body.issue-view #page-wrapper {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  padding: 0;
+  max-width: 100%;
+  margin: 0;
+  height: calc(100vh - 64px);
+  min-height: calc(100vh - 64px);
+  overflow: hidden; /* page itself doesn't scroll; the content card does */
+}
+
+/* Sidebar = rail (always) + panel (expanded only) */
+body.issue-view #toc-sidebar {
+  position: sticky;
+  top: 64px;
+  align-self: flex-start;
+  display: flex;
+  flex-direction: row;
+  width: auto;
+  max-height: calc(100vh - 64px);
+  height: calc(100vh - 64px);
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  overflow: visible;
+  transform: none;
+  z-index: 5;
+}
+
+/* the vertical icon rail */
+#sidebar-rail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* gap + top padding match #sidebar-controls so each rail icon lines up
+     vertically with its corresponding pill row */
+  gap: .55rem;
+  width: 72px;
+  flex-shrink: 0;
+  padding: 1rem .5rem;
+}
+.rail-btn {
+  position: relative;
+  width: 48px;
+  /* height matches the pill-row height so centers align with the switches */
+  height: 42px;
+  border-radius: var(--shape-full);
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  line-height: 0;
+  transition: background-color .2s var(--ease-standard), color .2s var(--ease-standard);
+}
+.rail-btn svg {
+  display: block;
+  position: absolute;
+  transition: opacity .2s var(--ease-standard);
+}
+.rail-btn:hover { background: var(--state-hover); color: var(--ink); }
+/* #rail-view: show keywords icon by default, journals when view=journals */
+.rail-icon-journals { opacity: 0; }
+body.view-journals .rail-icon-keywords { opacity: 0; }
+body.view-journals .rail-icon-journals { opacity: 1; }
+/* #rail-hide: show open eye by default, closed when hide-selected */
+.rail-eye-closed { opacity: 0; }
+body.hide-selected .rail-eye-open { opacity: 0; }
+body.hide-selected .rail-eye-closed { opacity: 1; }
+
+/* the expandable panel (switches + tag list) */
+#sidebar-panel {
+  display: flex;
+  flex-direction: column;
+  width: var(--sidebar-w);
+  min-width: 0;
+  overflow: hidden;
+  transition: width .3s var(--ease-emphasized), opacity .2s var(--ease-standard);
+}
+/* sticky switches — do not scroll */
+#sidebar-controls {
+  padding: 1rem .8rem .85rem;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: .55rem;
   flex-shrink: 0;
 }
-#eclab-footer .footer-text {
-  text-align: left;
+/* only the tag nav scrolls */
+body.issue-view #toc-nav {
+  flex: 1;
+  overflow-x: hidden; /* clip the horizontally-sliding nav track */
+  overflow-y: auto;   /* but let the tag list scroll vertically */
+  overscroll-behavior: contain; /* don't chain scroll to the article */
+  padding: 0 .5rem 1rem;
+  min-height: 0; /* critical for flex child scroll */
 }
-#eclab-footer .footer-name {
+
+/* permanent 文献详情 entry pinned to the bottom of the sidebar panel.
+   Bottom padding + link height match the rail's bottom padding + button height
+   so the text is vertically centered with the #rail-details icon. */
+#sidebar-footer {
+  flex-shrink: 0;
+  padding: .5rem .5rem 1rem;
+  border-top: 1px solid var(--outline-soft);
+}
+.details-link {
+  display: flex;
+  align-items: center;
+  height: 42px;
+  width: 100%;
+  padding: 0 .9rem;
+  font-family: var(--brand);
+  font-size: 0.85rem;
   font-weight: 600;
   color: var(--ink-soft);
-  font-size: 0.85rem;
-  margin-bottom: 0.15rem;
+  background: transparent;
+  border: none;
+  border-radius: var(--shape-full);
+  cursor: pointer;
+  text-align: left;
+  transition:
+    color 0.2s var(--ease-standard),
+    background-color 0.2s var(--ease-standard);
 }
-#eclab-footer .footer-links {
-  font-size: 0.78rem;
+.details-link:hover {
+  color: var(--on-secondary-container);
+  background: var(--state-hover);
 }
-#eclab-footer a {
-  color: var(--primary);
-  text-decoration: none;
+.details-link.active {
+  color: color-mix(in srgb, var(--accent) 86%, black);
+  background: color-mix(in srgb, var(--accent) 30%, white);
 }
-#eclab-footer a:hover {
-  text-decoration: underline;
+[data-theme="dark"] .details-link.active {
+  color: color-mix(in srgb, var(--accent) 30%, white);
+  background: color-mix(in srgb, var(--accent) 42%, #1d1b20);
 }
+
+/* rail icon for 文献详情 (visible when the panel is collapsed).
+   Not highlighted in article-detail view — the footer text highlight suffices. */
+#rail-details { margin-top: auto; }
+
+/* collapsed state (wide screens): hide the panel, keep the rail */
+@media (min-width: 901px) {
+  body.issue-view.sidebar-collapsed #sidebar-panel {
+    width: 0;
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+/* ── Higher-contrast UI accents (issue 4) ──────────────────────────────── */
+
+/* Sidebar active-tag highlight: stronger fill + darker on-color text */
+body.issue-view .toc-indicator {
+  background: color-mix(in srgb, var(--accent) 30%, white);
+}
+[data-theme="dark"] body.issue-view .toc-indicator {
+  background: color-mix(in srgb, var(--accent) 42%, #1d1b20);
+}
+body.issue-view .nav-track > ul > li > a.active,
+body.issue-view .nav-track > ul > li > a:hover {
+  color: color-mix(in srgb, var(--accent) 86%, black);
+}
+[data-theme="dark"] body.issue-view .nav-track > ul > li > a.active,
+[data-theme="dark"] body.issue-view .nav-track > ul > li > a:hover {
+  color: color-mix(in srgb, var(--accent) 30%, white);
+}
+
+/* Search bar: gentle resting background + clearer text/placeholder */
+.appbar-search-wrap {
+  background: color-mix(in srgb, var(--accent) 11%, #fdfcff);
+  border-color: var(--outline);
+}
+[data-theme="dark"] .appbar-search-wrap {
+  background: color-mix(in srgb, var(--accent) 10%, #1d1b20);
+  border-color: var(--outline);
+}
+.appbar-search { color: var(--ink); }
+.appbar-search::placeholder { color: var(--ink-soft); }
+.search-icon { color: var(--ink-soft); }
+
+/* Dark-mode switch icon: full-strength on-surface color + gentle bg */
+.theme-toggle.appbar-icon-btn {
+  color: var(--ink);
+  background: color-mix(in srgb, var(--accent) 13%, #fdfcff);
+}
+.theme-toggle.appbar-icon-btn:hover {
+  color: var(--ink);
+  background: color-mix(in srgb, var(--accent) 22%, #fdfcff);
+}
+[data-theme="dark"] .theme-toggle.appbar-icon-btn {
+  background: color-mix(in srgb, var(--accent) 12%, #1d1b20);
+}
+[data-theme="dark"] .theme-toggle.appbar-icon-btn:hover {
+  background: color-mix(in srgb, var(--accent) 20%, #1d1b20);
+}
+
+/* Lab website link: full-strength color + gentle bg */
+.appbar-lab-link {
+  color: var(--ink);
+  background: color-mix(in srgb, var(--accent) 13%, #fdfcff);
+}
+.appbar-lab-link:hover {
+  color: var(--ink);
+  background: color-mix(in srgb, var(--accent) 22%, #fdfcff);
+}
+[data-theme="dark"] .appbar-lab-link {
+  background: color-mix(in srgb, var(--accent) 12%, #1d1b20);
+}
+[data-theme="dark"] .appbar-lab-link:hover {
+  background: color-mix(in srgb, var(--accent) 20%, #1d1b20);
+}
+
+/* Drawer expand icon: no colored background at rest, circle only on hover */
+#appbar-drawer {
+  background: transparent;
+  color: var(--ink);
+}
+#appbar-drawer:hover {
+  background: var(--state-hover);
+  color: var(--ink);
+}
+
+/* content becomes a distinct rounded surface card.
+   The card itself stays fixed in the viewport; only its inner content scrolls. */
+body.issue-view #content {
+  flex: 1;
+  min-width: 0;
+  max-width: var(--w);
+  margin: 1rem auto;
+  height: calc(100vh - 64px - 2rem); /* viewport − appbar − top/bottom margin */
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 2rem 2rem 2.5rem;
+  background: var(--surface);
+  border-radius: var(--shape-xl);
+  box-shadow: var(--elev-1);
+}
+/* targets land just below the card's top edge (appbar is outside the scroll
+   container, so the heading/title is always visible after navigation) */
+body.issue-view .category-section,
+body.issue-view h2.section-h,
+body.issue-view .article-card {
+  scroll-margin-top: 1.25rem;
+}
+
+/* ── Narrow screens: sidebar becomes an overlay drawer (no rounded corners, no rail visible) ── */
+@media (max-width: 900px) {
+  body.issue-view #toc-sidebar {
+    position: fixed;
+    top: 64px; left: 0; bottom: 0;
+    height: calc(100vh - 64px);
+    max-height: calc(100vh - 64px);
+    background: var(--surface-1);
+    border-radius: 0; /* no rounded corners */
+    box-shadow: var(--elev-3);
+    z-index: 950;
+    transform: translateX(-110%);
+    transition: transform .3s var(--ease-emphasized);
+  }
+  body.issue-view #toc-sidebar.open { transform: translateX(0); }
+  /* on narrow, hide the rail, show only the panel */
+  #sidebar-rail { display: none; }
+  body.issue-view #sidebar-panel { width: var(--sidebar-w); opacity: 1; pointer-events: auto; }
+  body.issue-view #content {
+    margin: 1rem;
+    padding: 1.25rem 1.1rem 1.75rem;
+  }
+  body.issue-view #toc-overlay.open {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: color-mix(in srgb, var(--ink) 40%, transparent);
+    z-index: 940;
+  }
+}
+body.issue-view #toc-overlay { display: none; }
+
+/* search highlights */
+mark.search-hl {
+  background: color-mix(in srgb, var(--accent) 28%, #fff176);
+  color: inherit;
+  border-radius: 2px;
+  padding: 0 1px;
+}
+[data-theme="dark"] mark.search-hl {
+  background: color-mix(in srgb, var(--accent) 35%, #5f5100);
+}
+
+/* search matching-tags section */
+.search-tag-section {
+  margin-bottom: 1.25rem;
+  padding: .85rem 1rem;
+  background: var(--surface-2);
+  border-radius: var(--shape-md);
+  border: 1px solid var(--outline-soft);
+  animation: card-enter .35s var(--ease-emphasized) both;
+}
+.search-tag-section-title {
+  font-family: var(--brand);
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: .6rem;
+}
+.search-tag-section .article-index-tags { margin: 0; }
 
 /* ══════════════════════════════════════════════
    Responsive
@@ -1294,41 +1683,17 @@ p a:hover {
 }
 
 @media (max-width: 1200px) {
-  #toc-sidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    width: 280px;
-    background: var(--surface-1);
-    border: none;
-    border-radius: 0 var(--shape-lg) var(--shape-lg) 0;
-    box-shadow: var(--elev-3);
-    z-index: 950;
-    padding: 1.5rem 0.8rem;
-    transform: translateX(-100%);
-    transition: transform 0.3s var(--ease-emphasized);
-    max-height: 100vh;
-  }
-  #toc-sidebar.open {
-    transform: translateX(0);
-  }
   #toc-toggle.visible {
-    display: block;
-  }
-  #toc-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: color-mix(in srgb, var(--ink) 40%, transparent);
-    z-index: 940;
-  }
-  #toc-overlay.open {
     display: block;
   }
   #page-wrapper {
     padding: 1.5rem 1rem 2rem;
   }
+  /* hide appbar title + logo on narrow to save space */
+  .appbar-title { display: none; }
+  .appbar-logo-wrap { display: none; }
+  .appbar-center { padding: 0 .4rem; }
+  .lab-link-text { display: none; }
 }
 
 @media (max-width: 600px) {
@@ -1351,13 +1716,6 @@ p a:hover {
   .featured-issue .featured-title {
     font-size: 1.4rem;
   }
-  #eclab-footer .footer-inner {
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-  #eclab-footer .footer-text {
-    text-align: center;
-  }
 }
 
 /* ══════════════════════════════════════════════
@@ -1368,7 +1726,8 @@ p a:hover {
   #toc-toggle,
   #toc-overlay,
   #progress-bar,
-  #theme-toggle {
+  #issue-appbar,
+  .theme-toggle {
     display: none !important;
   }
   #page-wrapper {
