@@ -6,9 +6,9 @@
   "end": "2026-06-07",
   "year": 2026,
   "month": 6,
-  "accent_color": "hsl(328, 40%, 48%)",
-  "generated_at": "2026-06-09T04:03:29.775844+00:00",
-  "count": 19,
+  "accent_color": "hsl(190, 40%, 48%)",
+  "generated_at": "2026-06-09T06:15:43.070355+00:00",
+  "count": 22,
   "articles": [
     {
       "title": "From Dissonance to Compassion: Does a Loving-Kindness Meditation Amplify Joy Mimicry and Attenuate Reactive Frowns to Disgust?",
@@ -21,7 +21,7 @@
       "keywords": "Disgust; Psychology; Mimicry; Closeness; Imitation; Empathy; Cognitive psychology; Social psychology; Prosocial behavior; Facial expression; Perception",
       "matched_keywords": "emotion, facial expression",
       "category": "Emotion, Facial Expression, Face, Social Cognition",
-      "summary": "本研究通过在线实验考察了慈悲冥想对情绪模仿的影响。结果显示，短暂的慈悲冥想能增强对情境一致快乐的模仿反应，并减少对不一致厌恶的皱眉反应，而不改变对情绪适当性或亲密感的判断。这表明慈悲冥想在情绪不协调情境中具有选择性促进亲社会反应的潜力。",
+      "summary": "本研究探讨了简短的仁爱冥想（LKM）对情感模仿的影响。在线实验通过测量面部肌肉活动和主观评分，发现LKM能增强对情境一致欢乐的模仿，并减少对不一致厌恶的皱眉反应，表明LKM能选择性促进亲和情感模仿并缓和负面情绪的社交反应。",
       "recommended": true
     },
     {
@@ -35,7 +35,7 @@
       "keywords": "Psychology; Meaning; Generalizability theory; Exploratory research; Power; Social psychology; Personality; Fantasy; Content; Life satisfaction",
       "matched_keywords": "personality",
       "category": "Culture, Personality, Interpersonal Relationship",
-      "summary": "本研究探讨了来自喀麦隆、捷克、德国和香港的老年人的权力动机与生活故事中权力主题的匹配程度，及其对人生意义的影响。结果发现，权力动机与生活故事中的权力内容关联较弱，但无论文化背景如何，权力动机较强的个体在回忆更多权力相关生活事件时报告更高的人生意义。",
+      "summary": "本研究在喀麦隆、捷克、德国和香港的老年人中，探讨权力动机在幻想故事和人生故事片段中的内容是否与隐含权力动机强度匹配，以及这种匹配对人生意义的影响。研究发现，无论文化背景如何，权力动机强的个体在回忆中体现权力相关主题时报告更高的人生意义水平，但分析对权力动机与故事内容关联的支持较弱。",
       "recommended": false
     },
     {
@@ -48,8 +48,8 @@
       "abstract": "Although aesthetic appreciation is a subjective experience, classicist architecture is often judged as pleasant by many people, whereas modernist buildings may be more appreciated by experts, being somehow disliked by naive observers. In the present study, we aimed at investigating psychological (pleasantness evaluation) and physiological (electroencephalography) differences between architects (expert group) and nonarchitects (naive group) for classicist versus modernist buildings, shown as entire photos (far perspective) and as details of the same buildings (near perspective). At a psychological level, we confirmed that modernist buildings are more appreciated by experts and classicist buildings by naive. Electroencephalography revealed higher amplitude in the posterior P1 event-related potential component for classicist compared with modernist buildings only in experts. The subsequent P2 component was faster in latency for classicist than modernist buildings in naive, but it was faster for modernist than classicist buildings in experts. Perspective also affected P2, with a faster peak in the left hemisphere for modernist buildings when stimuli were shown from far with respect to near in both subgroups, and the same result was observed for the classicist style but only in the expert group. Finally, at frontal sites, a faster N400 was recorded for modernist compared with classicist architecture, only in expert participants. These results confirm the difference in aesthetic appreciation between experts and nonexperts, suggesting differences in the cortical responses associated with style and perspective.",
       "keywords": "Beauty; Perception; Psychology; Aesthetics; Cognitive psychology; Cognitive science; Creativity; Social psychology; Aesthetic experience",
       "matched_keywords": "",
-      "category": "Art, Emotion Experience",
-      "summary": "本研究考察了专业知识（建筑师与非建筑师）对古典主义和现代主义建筑美学感知的影响。通过愉悦度评价和脑电图测量，发现专家更欣赏现代主义建筑，而非专家更欣赏古典主义建筑，且两组在神经反应（如P1、P2、N400成分）上存在差异，表明风格和视角对美学体验具有调节作用。",
+      "category": "Art",
+      "summary": "本研究通过心理评价和脑电图技术，比较了建筑师与非建筑师对古典主义和现代主义建筑的审美反应差异。心理层面显示专家更偏好现代主义建筑，而非专家更偏好古典主义建筑；神经电生理数据揭示了事件相关电位成分（如P1、P2和N400）在处理不同建筑风格和视角时存在差异，表明专业背景影响审美感知的神经机制。",
       "recommended": false
     },
     {
@@ -62,8 +62,8 @@
       "abstract": "Compared to younger adults, older adults often prioritise processing positive information and deprioritize processing negative information. Known as the positivity effect, its mechanisms remain debated. One explanation of the positivity effect is that older adults are influenced by a sense of limited time left in life to focus more on emotional well-being compared with younger adults. Previous research shows that experimentally manipulating time perspective can mimic the positivity effect in younger adults, however, such findings have relied on designs where participants can reflect on emotional images they are viewing. In the current study, we examined if time perspective manipulations would similarly elicit positivity effect patterns in younger adults using an emotion-attention task with a rapid stimuli display. Across three experiments (N = 236, N = 431, and N = 259), we found that time perspective had little influence on attentional biases toward positive over negative emotional stimuli in younger adults. Additionally, when we incorporated a memory task into the design, effects of time perspective were not consistent with previous findings - in fact, patterns were in the opposite direction. We discuss these results as they relate to theories and the advantages and disadvantages of tasks used to examine the positivity effect.",
       "keywords": "Positivity effect; aging; attention; emotion",
       "matched_keywords": "emotion",
-      "category": "Emotion",
-      "summary": "本研究通过三个实验探讨了时间视角对年轻成人注意力中积极情绪优先于消极情绪的影响。结果显示，时间视角操纵对注意力偏差的影响有限，且在整合记忆任务后，效应方向与先前关于积极效应的研究不一致。这表明时间视角可能不是积极效应的主要机制，或任务设计差异导致了不同发现。",
+      "category": "Emotion, Emotion Perception",
+      "summary": "本研究探讨时间视角是否影响年轻人对积极与消极情绪刺激的注意力偏向。通过三个实验，采用快速刺激显示和记忆任务，发现时间视角对注意力偏向的影响很小，且效果与以往研究不一致，甚至相反。这表明时间视角在积极效应中的作用可能有限。",
       "recommended": false
     },
     {
@@ -76,8 +76,8 @@
       "abstract": "In experience sampling (ESM) studies, participants are measured repeatedly to track momentary affect changes. The data is collected in specific time intervals, leaving gaps between assessments. To capture affective changes between assessments, we developed a measure where participants retrospectively draw their affect in a continuous drawing. This approach, while more complete, may be influenced by retrospective biases, such as the peak-end effect, where intense or recent moments are remembered disproportionately. In an ESM study, 115 participants rated their momentary positive and negative affect six times daily, drew affect changes between assessments, reported events, and completed one daily measurement burst with up to six momentary ratings. We examined the divergence of the retrospective continuous affect drawings from the momentary affect and event ratings, respectively. For positive affect, intensity and recency were associated with lower divergence; the association was nonlinear. Divergence was greatest at low intensity and reduced at moderate to high levels. For negative affect, intensity was associated with higher divergence and recency with lower divergence. The effect of intensity diminished over time, indicating that divergence is mostly determined by recency. Findings were similar for events, except that for negative events, there was no recency effect. Future research should consider the effect of time and intensity, especially the differential effect of positive and negative intensity, on short retrospective ESM measures.",
       "keywords": "Experience sampling; affect dynamics; continuous affect; peak-end rule; retrospective self-report",
       "matched_keywords": "affect",
-      "category": "Affect, Emotion Experience",
-      "summary": "本研究评估了经验取样方法中回顾性连续情感绘图的峰终效应偏差。对于正性情感，强度和近因性降低偏差但呈非线性关系；对于负性情感，强度增加偏差而近因性降低偏差，且强度效应随时间减弱。这些发现提示在情感动态研究中需考虑回顾性测量的偏差。",
+      "category": "Affect",
+      "summary": "本研究开发了一种回顾性连续情感绘制方法，用于经验取样研究中捕捉情感评估之间的变化。通过考察峰值-终点效应对情感记忆的影响，发现强度和近因对正负情感的回忆偏差有不同作用：正向情感中，强度和近因与较低偏差相关；负向情感中，强度增加偏差而近因减少偏差，且时间效应显著。",
       "recommended": false
     },
     {
@@ -91,7 +91,7 @@
       "keywords": "Emotional expressions; joint action; object-handover task; point-light displays; willingness to engage",
       "matched_keywords": "emotion, facial expression, social cognition",
       "category": "Emotion, Facial Expression, Emotion Expression, Social Cognition",
-      "summary": "本研究探讨了他人面部和身体情绪表达如何调节人们参与联合行动的意愿。通过动态点光显示呈现愤怒、悲伤、快乐和中性情绪表达，实验发现面部表达通过情绪-动作一致性影响决策（积极表情促进给予，愤怒抑制参与），而身体表达则基于物理脆弱性和可预测性进行解释。此外，个人目标（如获取物体）会覆盖情绪线索，表明自我导向行动降低了对他人情绪的敏感性。",
+      "summary": "本研究探讨了面部和身体情绪表达如何影响个体在物体交接任务中参与联合行动的意愿。通过动态点光源显示实验，发现面部表达通过情绪-动作一致性效应调节参与意愿，而身体表达则基于物理脆弱性和可预测性被解读；此外，自导向的“取”动作会覆盖他人情绪线索，表明个人目标可能削弱对他人表达的敏感性。",
       "recommended": true
     },
     {
@@ -104,8 +104,8 @@
       "abstract": "The cognitive-behavioural model emphasises that processing biases are central to the development and maintenance of social anxiety. This study examined how contemptuous facial expressions during encoding influence subsequent recognition of neutral face identity in visual working memory. 32 socially anxious individuals and 32 healthy controls completed a delayed face discrimination task while ERPs were recorded. Behaviourally, socially anxious participants showed lower discrimination sensitivity (d', discrimination power of face identity recognition) and reduced hit rates for faces encoded with contemptuous versus happy expressions, whereas healthy controls showed comparable d' and hit rates across expression conditions. Neurally, socially anxious individuals exhibited larger P1 amplitudes during encoding, enhanced N170 amplitudes for contemptuous faces, and reduced N170 and N250 amplitudes to neutral probes previously encoded with contemptuous expressions. In contrast, healthy controls showed no significant ERP differences between expression conditions. Together, these results indicate that socially threatening cues elicit heightened early perceptual processing but impair the formation and retrieval of facial identity representations, providing converging behavioural and electrophysiological evidence of negative processing bias in social anxiety.",
       "keywords": "Contemptuous expressions; Event-related potentials; Facial identity recognition; Social anxiety; Working memory",
       "matched_keywords": "facial expression",
-      "category": "Facial Expression, Face, Emotion, Social Cognition, Emotion Perception",
-      "summary": "本研究考察了轻蔑面部表情在编码阶段对社交焦虑个体视觉工作记忆中面部身份识别的影响。行为实验显示，社交焦虑参与者在编码轻蔑表情时面部辨别敏感度降低，电生理数据则揭示了早期感知加工增强但身份表征受损的神经机制，为社交焦虑中的负性加工偏差提供了证据。",
+      "category": "Facial Expression, Face, Emotion",
+      "summary": "本研究考察了社会焦虑个体在编码过程中轻蔑面部表情对视觉工作记忆中面部身份识别的影响。通过行为学和事件相关电位实验发现，轻蔑表情编码会降低社会焦虑者的面部辨别敏感性和命中率，而健康对照组无差异；神经层面显示社会焦虑个体对轻蔑表情有增强的早期知觉处理，但损害后续中性探测物的面部身份表征。这些结果为社会焦虑中的负性加工偏差提供了行为和神经生理证据。",
       "recommended": false
     },
     {
@@ -118,8 +118,8 @@
       "abstract": "Although parenting research typically focuses on one target child, parents' emotion-related parenting behaviours are predicted by the broader family context. The number of children in the home impacts parents' emotional resources and may be particularly relevant to mothers' beliefs about acceptable emotional displays from their young children. Participants included 226 Portuguese mothers of a 2- to 6-year-old target child (M = 3.89 years) with between 1 and 4 children. Mothers reported on their family makeup, tolerance of their child's dominant and submissive negative emotion displays, parenting stress and mindful parenting. Covarying maternal age, family income and target child age, regressions revealed that mothers with more children were less likely to endorse beliefs that it was acceptable for their young child to display dominant negative emotions. Mothers were also more tolerant of displays of dominant negative emotions for younger children than older children within this early childhood period. These effects remained even after accounting for mothers' parenting stress and mindfulness. Results are interpreted using social information processing, emotion socialisation and transactional stress and coping perspectives.",
       "keywords": "Emotion beliefs; early childhood; family size; mothers; parenting stress",
       "matched_keywords": "emotion",
-      "category": "Emotion, Social Cognition",
-      "summary": "本研究探讨了家庭中孩子数量对母亲接受幼儿负面情绪展示的独特影响。对226名葡萄牙母亲的调查显示，孩子数量更多的母亲对主导负面情绪展示的接受度较低，且对年轻孩子的负面情绪更容忍。这些发现从情绪社会化和社会信息处理视角解释了家庭背景在塑造母亲情绪相关信念中的作用。",
+      "category": "Emotion",
+      "summary": "本研究考察了家中孩子数量对母亲接受年幼儿童负面情绪展示的独特影响。通过对226名葡萄牙母亲的调查，发现孩子更多的母亲更不倾向于认为主导性负面情绪展示是可接受的，且对较年幼儿童的容忍度更高，即使控制了育儿压力和正念后效应依然显著。",
       "recommended": false
     },
     {
@@ -133,7 +133,7 @@
       "keywords": "Anxiety; attention; cognitive processes; perseveration; reactivity",
       "matched_keywords": "",
       "category": "Affect, Personality",
-      "summary": "本研究探讨了对情境信息和隐含信息的注意力偏差如何影响焦虑的反应性和持续性个体差异。通过双探针视频任务评估大学生的注意力偏差和状态焦虑，结果发现对负面隐含信息的注意力偏差显著预测焦虑持续性，但对负面情境信息的注意力偏差不预测焦虑反应性。",
+      "summary": "本研究探讨了特质焦虑的两个维度（焦虑反应性和焦虑持续性）与对情境性和隐含性信息的注意偏向之间的关系。结果显示，对负面隐含信息的注意偏向能显著预测焦虑持续性，而对负面情境信息的注意偏向则不能预测焦虑反应性，这为理解焦虑个体差异的认知机制提供了新见解。",
       "recommended": false
     },
     {
@@ -160,8 +160,8 @@
       "abstract": "Mentalizing-inferring others' mental states-is a core social function supported by both perceptual and contextual processes. Emotion recognition similarly unfolds in two stages: early perceptual decoding of facial features followed by context-sensitive interpretation. Here, we tested whether emotion recognition scaffolds mentalizing across these stages and whether they attenuate or amplify social bias. Participants (N = 34) completed a face categorization task during EEG recording, in which mentalizing was operationalized as differential neural responses to mindful (human) versus mindless (doll-like) faces, while perceptual (neutral vs. smiling) and contextual (ingroup vs. outgroup) cues were systematically manipulated. Early neural responses differentiated human from doll-like faces, indicating rapid mind detection despite perceptual similarity. Smiling expressions enhanced early neural sensitivity across both human and doll-like faces, suggesting that emotional information is extracted at early perceptual stages independently of stimulus humanity. Later EEG components revealed an asymmetry: emotional expressions selectively boosted mental state attribution for ingroup faces, reflecting the integration of contextual social information at later stages. Implicit association tests confirmed this pattern, with mind-related concepts more strongly associated with smiling ingroup faces.",
       "keywords": "emotion recognition; event-related potential; mentalizing; oddball paradigm",
       "matched_keywords": "emotion",
-      "category": "Emotion, Emotion Perception, Facial Expression, Face, Social Cognition",
-      "summary": "本研究利用事件相关电位（ERP）技术，探究情绪识别如何支持心理化过程并影响社会偏见。实验通过操纵面部表情（中性或微笑）和社会分类线索（内群体或外群体），发现微笑表情在早期感知阶段被提取，但在后期神经活动中选择性地增强了对内群体成员的心理状态归因，从而强化了社会偏见。",
+      "category": "Emotion, Emotion Perception, Face, Social Cognition",
+      "summary": "本研究通过EEG实验探讨情绪识别对心理理论的支撑作用及其对社会偏见的强化。发现微笑表情在早期感知阶段增强神经反应，但情绪信息在后期整合时选择性增强了内群体面孔的心理状态归因，从而强化了社会偏见。",
       "recommended": true
     },
     {
@@ -175,7 +175,7 @@
       "keywords": "Research Domain Criteria; affective neuroscience; bed nucleus of the stria terminalis; extended amygdala; fear and anxiety",
       "matched_keywords": "emotion",
       "category": "Emotion, Affect",
-      "summary": "本研究通过fMRI元分析探讨扩展杏仁核在恐惧和焦虑处理中的功能，发现中央杏仁核和终纹床核对不确定威胁和确定威胁的反应无显著差异，缺乏严格功能分离的证据。这挑战了传统双分离模型，提示需要重构威胁处理的神经机制概念框架。",
+      "summary": "本研究通过协调化的大规模fMRI数据分析，检验恐惧和焦虑在扩展杏仁核中的功能分离。结果显示，中央杏仁核和终纹床核对时间不确定和确定威胁的反应在统计上无显著差异，均响应威胁刺激，挑战了传统严格功能分离的模型。这一发现强调需要重新评估恐惧和焦虑的神经机制概念框架。",
       "recommended": false
     },
     {
@@ -189,7 +189,7 @@
       "keywords": "ERP; auditory; emotion; group",
       "matched_keywords": "emotion",
       "category": "Emotion, Vocal Expression, Emotion Perception, Social Cognition",
-      "summary": "本研究通过行为和ERP方法，探讨了群体与个体情绪声音的处理机制。行为结果显示，群体声音对中性和积极情绪引发更快的反应，但对消极情绪反应较慢，且整体情感评价更积极。神经电生理发现，群体声音引发更大的早期ERP成分（如N1和P2），表明其具有更强的声学和社交显著性；P2振幅与个体特质认知共情呈负相关，提示共情可能调节对集体情绪信号的早期感知。",
+      "summary": "本研究探讨了群体与个体情绪声音在行为和神经层面的处理差异。通过行为实验和ERP技术，发现群体声音在反应时间和神经响应（如P2振幅）上与个体声音不同，且P2振幅与认知共情特质呈负相关，表明群体情绪声音的早期感知涉及声学与社会显著性的交互，并受个体共情特质调制。",
       "recommended": false
     },
     {
@@ -202,9 +202,9 @@
       "abstract": "BOLD signal changes in the Theory of Mind (ToM) network often reflect reduced deactivation during target conditions, yet these below-baseline effects remain largely unaddressed. Using fMRI data from an extended version of the Reading the Mind in the Eyes Test, we examined task-modulated functional connectivity (TMFC) of these areas. We revealed that, despite below-baseline BOLD responses during the reading the mind in the eyes (RME) task, TPJ-pSTS subregions in the left middle and superior temporal gyri, and angular gyrus (AG) demonstrated TMFC patterns closely resembling those of ToM network areas in the pSTS and inferior frontal gyrus (IFG) showing above-baseline activations. The RME task-associated network included regions supporting affective mentalizing (bilateral TPJ-pSTS, IFG, middle frontal gyri, precentral gyri, supplementary motor area) and face-processing areas. These areas also elicited reduced TMFC with ToM network subregions in the AG, supramarginal gyrus, precuneus, and medial prefrontal cortex, associated with cognitive mentalizing. These findings demonstrate that regions with greater BOLD responses during the RME task, despite these responses remaining below baseline, are functionally engaged. Together, the results indicate a dynamic interaction between ToM network subcomponents during the RME task, characterized by engagement of the affective subcomponent and its functional segregation from the cognitive subcomponent.",
       "keywords": "BOLD signal; RMET; Reading the Mind in the Eyes Test; Theory of Mind; temporoparietal junction",
       "matched_keywords": "",
-      "category": "Affect, Face",
-      "summary": "本研究通过扩展版的“阅读心灵的眼神测试”结合 fMRI，考察了理论心理网络的功能连接。尽管某些脑区在任务中 BOLD 信号低于基线，但它们仍显示出与情感心智化网络相似的功能连接模式。研究发现，情感心智化子组件与认知心智化子组件在任务中呈现动态交互和功能分离。",
-      "recommended": false
+      "category": "Face, Emotion Perception, Social Cognition",
+      "summary": "本研究利用功能磁共振成像数据，探究从眼睛读心任务中的大脑网络，发现情感心智化子网络与认知心智化子网络在功能连接上呈现分离，揭示了情绪推断过程中神经子网络的动态交互机制。",
+      "recommended": true
     },
     {
       "title": "Age-related neural dynamics of empathy in preschoolers: An EEG study with naturalistic viewing.",
@@ -217,7 +217,21 @@
       "keywords": "EEG microstates; Empathy; Neural oscillations; child development",
       "matched_keywords": "emotion",
       "category": "Emotion, Social Cognition",
-      "summary": "本研究通过EEG微状态和频谱分析，探讨了3-6岁学龄前儿童在观看社会情感动画时的共情相关神经动态。发现儿童特定脑区的θ波、α波和β波活动与情绪理解能力相关，且这些神经活动随年龄增长呈现特定变化模式，支持一个年龄相关的神经级联框架，表明感知效率提升可能释放认知资源用于心理化和情绪调节，从而促进更先进的亲社会行为。",
+      "summary": "本研究结合EEG微状态和频谱分析，考察了71名3-6岁学龄前儿童在观看社会情绪动画时的共情神经动态。发现神经振荡活动与情绪理解、共鸣相关，且随年龄出现神经变化，与亲社会行为改善平行。研究提出年龄相关的神经级联框架，表明EEG指标可作为评估早期共情发展的敏感工具。",
+      "recommended": false
+    },
+    {
+      "title": "Home alone: Remote work, isolation, and mental health",
+      "authors": "Natalia Emanuel, Emma Harrington, Amanda Pallais",
+      "journal": "Science",
+      "publish_info": "Science, Vol. 392, Issue 6802, 2026-06-04",
+      "doi": "10.1126/science.aec7671",
+      "url": "https://doi.org/10.1126/science.aec7671",
+      "abstract": "How does remote work affect isolation and mental health? We drew on five nationally representative surveys of American workers ( N = 588,322) conducted from 2011 to 2024, omitting the peak pandemic years of 2020-2021. Our difference-in-differences approach compared changes in mental health among people in remotable jobs—who experienced a large and persistent rise in remote work since COVID-19—to people in nonremotable jobs, where remote work increased far less. We found that remote work increases time spent alone, worsens mental well-being across multiple measures, and increases the use of mental health services and prescriptions. These effects were concentrated among individuals living alone. We estimate that the rise of remote work explains about a third of the increase in isolation and mental distress between 2011-2019 and 2022-2024.",
+      "keywords": "Mental health; Affect; Isolation; Work; Mental distress; Distress; Psychological distress; Psychology",
+      "matched_keywords": "affect",
+      "category": "Affect",
+      "summary": "本研究利用大规模调查数据，分析了远程工作对美国工人孤立感和心理健康的影响。结果发现，远程工作增加了独处时间并恶化了多个心理健康指标，这种效应在独居个体中更为明显。研究估计，远程工作的兴起可解释近年孤立感和心理困扰增长的约三分之一。",
       "recommended": false
     },
     {
@@ -230,8 +244,8 @@
       "abstract": "This work examines the impact of race and age concordance on behavioral synchrony and self-reported rapport in social interactions, employing a multimethod approach across three studies ( N total = 450) and a mini meta-analysis. Behavioral synchrony was assessed with reliable human coders and OpenPose, and rapport was measured through self-reports. Results indicated that race- and age-concordant dyads exhibited significantly greater behavioral synchrony than discordant dyads, suggesting that shared visible social identities may be associated with smoother, more connected interactions. Synchrony effects were stronger when measured by human coders compared to OpenPose, potentially reflecting human coders' biases related to perceived similarity between interactants or coders' more nuanced ability to detect certain components of synchrony compared to technological approaches. No significant effects of race or age concordance on self-reported rapport were observed. These findings highlight an important factor in predicting the spontaneous emergence of behavioral synchrony and emphasize the value of integrating multimethod approaches.",
       "keywords": "age; behavioral synchrony; nonverbal behavior; race; rapport",
       "matched_keywords": "",
-      "category": "Social Cognition, Interpersonal Relationship, Culture",
-      "summary": "本研究采用多方法评估种族和年龄一致性对社会互动中自发行为同步及自报融洽关系的影响。结果发现，种族和年龄一致的配对行为同步显著更高，但融洽关系评分无显著差异；人类编码员比OpenPose技术检测到更强的同步效应，可能源于感知相似性偏差或技术局限。这些发现揭示了社会身份在行为同步中的作用，并强调了整合多方法研究的价值。",
+      "category": "Social Cognition, Interpersonal Relationship",
+      "summary": "本研究采用多方法评估了种族和年龄一致性对社会互动中自发行为同步性和自我报告融洽关系的影响。结果表明，种族和年龄一致的配对表现出更高的行为同步性，但人类编码员比OpenPose检测到更强的效应，而种族或年龄一致性对融洽关系没有显著影响。研究强调了多方法整合在揭示行为同步性因素中的价值。",
       "recommended": false
     },
     {
@@ -244,22 +258,8 @@
       "abstract": "Large CEO-employee pay gaps often elicit negative reactions, yet they have reached historic highs with limited resistance. How can this be explained? Developing a novel social comparison perspective, we propose that under specific circumstances pay inequality may yield positive reactions. We argue that perceived similarity with a CEO enhances acceptance of CEO pay, a process driven by elevated inspiration. We tested this prediction in four studies: a large international archival survey, a pre-registered survey of U.S. employees, and two pre-registered experiments. In the archival survey, we demonstrate that perceived similarity to CEOs, when measured indirectly, reduced support for income-inequality-reduction policies, and this effect appears-to-emerge across cultures. Converging experimental evidence reveals that employees who perceived greater similarity to their CEOs are more accepting of high CEO pay, due to feeling more inspired. These findings help elucidate why extreme pay disparities are often accepted, even though they may reinforce broader societal inequality.",
       "keywords": "CEO; inspiration; leadership; local pay inequality; social comparison",
       "matched_keywords": "feeling",
-      "category": "Culture, Feeling",
-      "summary": "本研究提出了一个社会比较新视角，探讨感知相似性如何通过激发灵感来提高员工对CEO高薪的接受度。通过国际档案调查、员工调查和实验研究，发现员工感知到与CEO相似性越高，越能接受高薪差距，这一效应在跨文化背景下普遍存在，主要源于灵感的提升。这些发现有助于解释极端薪酬不平等为何常被接受，尽管可能加剧社会不平等。",
-      "recommended": true
-    },
-    {
-      "title": "Fluency as a Cue to Authenticity",
-      "authors": "Lydia Needy, Matthew Baldwin, Rebecca J. Schlegel, Wilhelm Hofmann",
-      "journal": "Personality and Social Psychology Bulletin",
-      "publish_info": "Personality and Social Psychology Bulletin, 2026-06-05",
-      "doi": "10.1177/01461672261451297",
-      "url": "https://doi.org/10.1177/01461672261451297",
-      "abstract": "The quest for authenticity is a potent existential striving. Commonly defined as knowing and living in accordance with one's perceived \"true self,\" we propose that authenticity may also be inferred from ambient feelings of fluency, or the subjective feeling of ease that corresponds to one's immediate experience, mental processing, or physical action. We report four studies ( N = 1,465) supporting this idea. Study 1 shows that fluency during a recent activity predicts subjective authenticity beyond other relevant variables. Study 2 demonstrates that participants' recalled fluent experiences also felt authentic. In Study 3, generating self-defining attributes under cognitive load reduced fluency and, subsequently, subjective authenticity. Finally, preregistered Study 4 manipulated fluency during a non-self-relevant task. Participants in the fluent condition reported greater subjective authenticity than those in the disfluent condition. We discuss how a phenomenological approach to subjective authenticity can integrate and complement recent theorizing about the nature of authenticity.",
-      "keywords": "authenticity; fluency; phenomenology; self-concept; true self",
-      "matched_keywords": "feeling",
-      "category": "Feeling",
-      "summary": "本研究提出流畅感——即个体在即时体验、心理处理或行动时的主观轻松感——可以作为真实性的线索。通过四项实验，研究发现流畅感能显著预测主观真实性，而认知负荷等操作通过影响流畅感间接改变真实性判断。",
+      "category": "Culture, Feeling, Social Cognition",
+      "summary": "本研究提出社会比较视角，考察感知与CEO相似性对薪酬不平等接受度的影响。通过四篇跨文化调查和实验研究，发现感知相似性通过提升灵感（一种情感体验）来增加员工对高薪酬的接受，且这一效应在不同文化中一致存在。这解释了为何极端薪酬差距在社会中常被容忍，尽管可能加剧不平等。",
       "recommended": false
     },
     {
@@ -273,7 +273,49 @@
       "keywords": "Solidarity; Mental health; Latent class model; Psychology; Realm; Moderation; Friendship; Social psychology; Relevance; Pandemic",
       "matched_keywords": "",
       "category": "Interpersonal Relationship",
-      "summary": "本研究通过潜在类别分析，识别出成人友谊中四种团结类型，并考察这些类型与COVID-19大流行期间心理健康的关系。研究发现，紧密型和社交型团结与更好的心理健康相关，而非伴侣个体在分离型团结中报告更差心理健康，表明朋友团结对心理健康有重要影响。",
+      "summary": "本研究旨在识别成年人对朋友团结的不同类型，并考察这些类型与COVID-19大流行期间心理健康（包括抑郁症状、心理幸福感和自尊）的关系，以及伴侣状况的调节作用。通过潜在类别分析，发现四类朋友团结模式：紧密型、社交型、功能型和疏离型，其中紧密型和社交型与更好的心理健康相关，而疏离型则与更差的心理健康相关，尤其是对无伴侣个体而言。研究结果表明，朋友团结在成年期心理健康中起关键作用，特别对缺乏伴侣者有重要影响。",
+      "recommended": false
+    },
+    {
+      "title": "Preferences and Polyamory: Investigating Ideal Mate Preferences for Concurrent Partners in Monogamous and Polyamorous Individuals",
+      "authors": "Ashley J. Coventry, Benjamin Gelbart, Kathryn V. Walter, Tamsin German, Daniel Conroy-Beam",
+      "journal": "Journal of Social and Personal Relationships",
+      "publish_info": "Journal of Social and Personal Relationships, 2026-06-04",
+      "doi": "10.1177/02654075261456357",
+      "url": "https://doi.org/10.1177/02654075261456357",
+      "abstract": "Although a large body of research has been devoted to investigating human mate preferences, much of this research focuses exclusively on monogamous relationships. While monogamy is a prevalent mating system, concurrent, non-monogamous mating has also been common both throughout human history and across the ethnographic record. Here, we seek to address this gap in the literature by exploring ideal preferences for two concurrent romantic partners among both monogamous and polyamorous participants. In Studies 1 and 2, using a budget allocation paradigm, we performed a k -Means cluster analysis to explore the types of ideal concurrent partners preferred by two largely monogamous samples of participants. In Study 3, we applied these same methods among a sample of polyamorous participants. Across all studies, the results revealed that a plurality of participants preferred two well-rounded partners, in which all traits were valued similarly. However, monogamous men were significantly more likely than monogamous women to prefer at least one partner for whom attractiveness and skill in bed were prioritized above all other traits. These findings only partially generalized to polyamorous participants, who also most often preferred two well-rounded partners, but did not exhibit gender differences in cluster assignment. In addition, we found that, across studies, partner preferences are likely influenced by intended investment between partners, suggesting that preferences are sensitive to the specific contexts and structures of these relationships. These findings emphasize the need for more research on the psychological systems involved in non-monogamous mating.",
+      "keywords": "Psychology; Physical attractiveness; Social psychology; Attractiveness; Mating; Mate choice; Ideal; Sample; Promiscuity; Cluster",
+      "matched_keywords": "",
+      "category": "Interpersonal Relationship, Social Cognition",
+      "summary": "本研究采用预算分配范式和聚类分析，探讨了单配偶制与多配偶制个体对同时拥有两个浪漫伴侣的理想偏好。结果显示，多数参与者偏好特质均衡的伴侣，但单配偶制男性更倾向于优先考虑吸引力和性能力，而多配偶制参与者未表现出性别差异。此外，伴侣偏好可能受预期投资的影响，强调了非单配偶制交配心理研究的重要性。",
+      "recommended": false
+    },
+    {
+      "title": "Couples' Coparenting and Parent-Child Relationship Quality: A Dyadic Daily Diary Study",
+      "authors": "Naomi Downes, Giulia Spagnulo, Laura M. Vowels, Joëlle Darwiche",
+      "journal": "Journal of Social and Personal Relationships",
+      "publish_info": "Journal of Social and Personal Relationships, 2026-06-01",
+      "doi": "10.1177/02654075261457467",
+      "url": "https://doi.org/10.1177/02654075261457467",
+      "abstract": "This study examined how daily experiences of coparenting relate to parent-child relationship quality using a dyadic daily diary design. Eighty-five heterosexual cohabiting couples (N = 170 individuals), with at least one child under 16, completed daily assessments over seven consecutive days. Participants reported on coparenting cooperation, conflict, and child involvement in conversations, as well as parent-child relationship quality. Actor-Partner Interdependence Models (APIMs) distinguished between stable between-person differences and within-person daily fluctuations. At the between-person level, coparenting cooperation was positively associated with both parents' own parent-child relationship quality, and child involvement in conversations was positively associated with the partner's. At the within-person level, daily coparenting conflict predicted lower same-day parent-child relationship quality for mothers, while other same-day and next-day effects were non-significant. These findings highlight the dynamic nature of coparenting effects across temporal levels, emphasizing the distinction between stable relational climate and short-term spillover processes. Practically, interventions may benefit from strengthening long-term cooperative coparenting while helping parents prevent daily conflict from spilling over into parent-child interactions.",
+      "keywords": "Coparenting; Psychology; Developmental psychology; Psychological intervention; Quality; Child custody; Spillover effect; Interpersonal relationship",
+      "matched_keywords": "interpersonal relationship",
+      "category": "Interpersonal Relationship",
+      "summary": "本研究采用二元每日日记设计，考察了夫妻共同育儿的日常经验与亲子关系质量的关系。研究发现，在个体间层面，共同育儿合作与亲子关系质量正相关；在个体层面，每日共同育儿冲突预测母亲当天较低的亲子关系质量。结果强调了共同育儿效应在时间水平上的动态性，区分了稳定的关系氛围与短期的溢出过程。",
+      "recommended": false
+    },
+    {
+      "title": "\"With Friends, It's Harder to Have a Serious Conversation\": Expectations of Youth when Disclosing Mental Health Concerns With Peers",
+      "authors": "Rachel E. Riggs, Jaclyn C. Pickens, Thomas G. Kimball, Eric E. Rasmussen, Sarah M. Wakefield",
+      "journal": "Journal of Social and Personal Relationships",
+      "publish_info": "Journal of Social and Personal Relationships, 2026-06-07",
+      "doi": "10.1177/02654075261459143",
+      "url": "https://doi.org/10.1177/02654075261459143",
+      "abstract": "Adolescence and emerging adulthood can be emotionally turbulent periods, in which individuals may experience anxiety, stress, or other mental illness. Individuals who fit into these developmental periods (hereby called \"youth\") are characterized by a greater importance on peer relationships. More research is needed to unpack youths' disclosure decisions when they disclose mental health (MH) information to their peers. Greene's health disclosure decision-making model was used as a framework to understand the perspectives of youth about disclosing to peers, including their perceptions of peer disclosure, their assessments of peers, and their techniques to earn disclosure efficacy. Youth ( n = 33) participated in focus groups that unveiled four themes: youths' assessment of receivers, peer MH literacy, MH as a joke, and youths' disclosure behaviors. These findings have implications for Greene's health disclosure decision-making model and may highlight other mechanisms that could be used in future models about youths' MH disclosure.",
+      "keywords": "Psychology; Mental health; Self-disclosure; Perception; Peer group; Clinical psychology; Peer influence; Developmental psychology; Focus group; Adolescent development",
+      "matched_keywords": "",
+      "category": "Social Cognition, Interpersonal Relationship, Emotion Experience",
+      "summary": "本研究采用焦点小组方法，探讨青少年在向同伴披露心理健康信息时的期望与决策过程，揭示了青少年对接受者的评估、同伴心理健康素养、心理健康常被当作玩笑以及青少年的披露行为四个主题。这些发现扩展了Greene的健康信息披露决策模型，为理解青少年在人际关系中的信息披露行为提供了新视角。",
       "recommended": false
     }
   ]
