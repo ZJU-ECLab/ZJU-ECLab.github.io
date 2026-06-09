@@ -15,8 +15,8 @@
   --serif:        'Songti SC', Georgia, 'Times New Roman', serif;
   --sans:         'PingFang SC', 'Microsoft YaHei', -apple-system, BlinkMacSystemFont, sans-serif;
   --mono:         'SF Mono', 'Consolas', monospace;
-  --w:            760px;
-  --sidebar-w:    220px;
+  --w:            920px;
+  --sidebar-w:    280px;
   --accent-bg:    color-mix(in srgb, var(--accent) 8%, white);
   --accent-h:     color-mix(in srgb, var(--accent) 80%, black);
   --accent-light: color-mix(in srgb, var(--accent) 30%, white);
@@ -32,7 +32,7 @@
 html { scroll-behavior: smooth; }
 body {
   font-family: var(--serif);
-  font-size: 16px;
+  font-size: clamp(17px, 1.1vw + 12px, 19px);
   line-height: 1.8;
   color: var(--ink);
   background: var(--bg);
@@ -95,7 +95,7 @@ body {
 }
 #eclab-header h1 {
   font-family: var(--serif);
-  font-size: 1.5rem;
+  font-size: 1.7rem;
   font-weight: 700;
   letter-spacing: .05em;
   margin: 0 auto .5rem;
@@ -108,7 +108,7 @@ body {
 #eclab-header h1 a { color: #fff; text-decoration: none; }
 #eclab-header .subtitle {
   font-family: var(--sans);
-  font-size: .78rem;
+  font-size: .85rem;
   font-weight: 500;
   color: var(--ink);
   letter-spacing: .08em;
@@ -147,7 +147,7 @@ body {
 }
 #toc-sidebar .toc-title {
   font-family: var(--sans);
-  font-size: .65rem;
+  font-size: .72rem;
   font-weight: 700;
   letter-spacing: .15em;
   text-transform: uppercase;
@@ -194,7 +194,7 @@ body {
   z-index: 1;
   flex: 1;
   font-family: var(--sans);
-  font-size: .68rem;
+  font-size: .76rem;
   font-weight: 600;
   letter-spacing: .03em;
   color: var(--muted);
@@ -256,9 +256,9 @@ body {
   position: relative;
   z-index: 1;
   display: block;
-  padding: .35rem .8rem;
+  padding: .4rem .8rem;
   font-family: var(--sans);
-  font-size: .75rem;
+  font-size: .82rem;
   font-weight: 500;
   color: var(--muted);
   text-decoration: none;
@@ -317,7 +317,7 @@ body {
 
 .state-msg {
   font-family: var(--sans);
-  font-size: .9rem;
+  font-size: 1rem;
   color: var(--muted);
   text-align: center;
   padding: 4rem 1rem;
@@ -329,7 +329,7 @@ body {
    ══════════════════════════════════════════════ */
 h2.section-h {
   font-family: var(--sans);
-  font-size: .9rem;
+  font-size: 1rem;
   font-weight: 700;
   letter-spacing: .15em;
   text-transform: uppercase;
@@ -341,7 +341,7 @@ h2.section-h {
 
 h3.category-h {
   font-family: var(--sans);
-  font-size: .72rem;
+  font-size: .8rem;
   font-weight: 600;
   letter-spacing: .12em;
   text-transform: uppercase;
@@ -356,14 +356,14 @@ h3.category-h {
    ══════════════════════════════════════════════ */
 .issue-title {
   font-family: var(--serif);
-  font-size: 1.3rem;
+  font-size: 1.5rem;
   font-weight: 700;
   color: var(--ink);
   margin: .5rem 0 .3rem;
 }
 .issue-meta {
   font-family: var(--sans);
-  font-size: .78rem;
+  font-size: .85rem;
   color: var(--muted);
   margin-bottom: 1rem;
 }
@@ -373,7 +373,7 @@ h3.category-h {
   padding: .8rem 1rem;
   margin: .3rem 0 1rem;
   color: var(--ink-soft);
-  font-size: .88rem;
+  font-size: .95rem;
   line-height: 1.75;
 }
 
@@ -405,7 +405,7 @@ h3.category-h {
 .article-index-title { margin-bottom: .35rem; }
 .article-index-title a {
   font-family: var(--sans);
-  font-size: .85rem;
+  font-size: .95rem;
   font-weight: 600;
   color: var(--ink);
   text-decoration: none;
@@ -422,7 +422,7 @@ h3.category-h {
   margin-bottom: .35rem;
 }
 .article-index-summary {
-  font-size: .8rem;
+  font-size: .88rem;
   color: var(--muted);
   line-height: 1.65;
 }
@@ -431,10 +431,10 @@ h3.category-h {
 .tag {
   display: inline-block;
   font-family: var(--sans);
-  font-size: .62rem;
+  font-size: .7rem;
   font-weight: 600;
   letter-spacing: .02em;
-  padding: .15rem .5rem;
+  padding: .18rem .55rem;
   border-radius: 10px;
   white-space: nowrap;
   cursor: pointer;
@@ -491,7 +491,7 @@ hr {
 }
 .article-card h3 {
   font-family: var(--serif);
-  font-size: .95rem;
+  font-size: 1.05rem;
   font-weight: 700;
   color: var(--ink);
   line-height: 1.5;
@@ -506,14 +506,14 @@ hr {
 .article-card p {
   padding: .3rem 1rem;
   margin: 0;
-  font-size: .82rem;
+  font-size: .9rem;
   line-height: 1.7;
   border-bottom: 1px solid var(--border);
 }
 .article-card p:last-child { border-bottom: none; }
 .article-card p strong {
   font-family: var(--sans);
-  font-size: .68rem;
+  font-size: .75rem;
   font-weight: 700;
   letter-spacing: .06em;
   text-transform: uppercase;
@@ -523,14 +523,14 @@ hr {
 .article-card p.abstract {
   background: var(--accent-bg);
   padding: .6rem 1rem .7rem;
-  font-size: .85rem;
+  font-size: .92rem;
   line-height: 1.8;
   color: var(--ink-soft);
 }
 .article-card .rec-flag {
   display: inline-block;
   font-family: var(--sans);
-  font-size: .7rem;
+  font-size: .78rem;
   font-weight: 700;
   color: color-mix(in srgb, var(--accent) 55%, hsl(35, 70%, 40%));
 }
@@ -550,7 +550,7 @@ p a:hover { text-decoration: underline; }
   padding: .9rem 1.1rem;
   margin: 1.5rem 0 2rem;
   color: var(--ink-soft);
-  font-size: .9rem;
+  font-size: .98rem;
   line-height: 1.8;
   border-radius: 0 var(--radius) var(--radius) 0;
 }
@@ -571,7 +571,7 @@ p a:hover { text-decoration: underline; }
 .featured-issue:hover { box-shadow: 0 8px 24px rgba(0,0,0,.12); transform: translateY(-2px); }
 .featured-issue .featured-badge {
   font-family: var(--sans);
-  font-size: .62rem;
+  font-size: .7rem;
   font-weight: 700;
   letter-spacing: .12em;
   text-transform: uppercase;
@@ -582,21 +582,21 @@ p a:hover { text-decoration: underline; }
 }
 .featured-issue .featured-title {
   font-family: var(--serif);
-  font-size: 1.3rem;
+  font-size: 1.5rem;
   font-weight: 700;
   color: var(--ink);
   margin: .7rem 0 .3rem;
 }
 .featured-issue .featured-meta {
   font-family: var(--sans);
-  font-size: .8rem;
+  font-size: .88rem;
   color: var(--muted);
 }
 
 .year-group { margin-bottom: 2rem; }
 .year-heading {
   font-family: var(--sans);
-  font-size: .9rem;
+  font-size: 1rem;
   font-weight: 700;
   letter-spacing: .12em;
   color: var(--muted);
@@ -626,21 +626,21 @@ p a:hover { text-decoration: underline; }
 }
 .issue-card .ic-title {
   font-family: var(--sans);
-  font-size: .9rem;
+  font-size: 1rem;
   font-weight: 600;
   color: var(--ink);
   margin-bottom: .35rem;
 }
 .issue-card .ic-meta {
   font-family: var(--sans);
-  font-size: .72rem;
+  font-size: .8rem;
   color: var(--muted);
 }
 
 .back-link {
   display: inline-block;
   font-family: var(--sans);
-  font-size: .78rem;
+  font-size: .85rem;
   font-weight: 600;
   color: var(--accent);
   text-decoration: none;
@@ -655,7 +655,7 @@ p a:hover { text-decoration: underline; }
   text-align: center;
   padding: 2rem 1.5rem 2.5rem;
   font-family: var(--sans);
-  font-size: .75rem;
+  font-size: .82rem;
   color: var(--muted);
   border-top: 1px solid var(--border);
   margin-top: 2rem;
@@ -681,10 +681,10 @@ p a:hover { text-decoration: underline; }
 #eclab-footer .footer-name {
   font-weight: 600;
   color: var(--ink-soft);
-  font-size: .78rem;
+  font-size: .85rem;
   margin-bottom: .15rem;
 }
-#eclab-footer .footer-links { font-size: .7rem; }
+#eclab-footer .footer-links { font-size: .78rem; }
 #eclab-footer a { color: var(--accent); text-decoration: none; }
 #eclab-footer a:hover { text-decoration: underline; }
 
@@ -706,7 +706,14 @@ p a:hover { text-decoration: underline; }
 /* ══════════════════════════════════════════════
    Responsive
    ══════════════════════════════════════════════ */
-@media (max-width: 1000px) {
+@media (min-width: 1400px) {
+  :root {
+    --w: 1000px;
+    --sidebar-w: 300px;
+  }
+}
+
+@media (max-width: 1200px) {
   #toc-sidebar {
     position: fixed;
     top: 0; left: 0; bottom: 0;
@@ -748,7 +755,7 @@ p a:hover { text-decoration: underline; }
   #toc-sidebar, #toc-toggle, #toc-overlay, #logo-watermark, #progress-bar { display: none !important; }
   #page-wrapper { display: block; max-width: 100%; padding: 0; }
   body { background: #fff; }
-  #eclab-header h1 { font-size: 1.5rem; }
+  #eclab-header h1 { font-size: 1.7rem; }
   .article-card { break-inside: avoid; box-shadow: none; border: 1px solid #ccc; }
   .article-card:hover { transform: none; box-shadow: none; }
 }
