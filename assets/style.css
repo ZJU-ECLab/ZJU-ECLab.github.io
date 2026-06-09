@@ -413,8 +413,15 @@ html:not([data-theme]) .icon-moon {
   gap: 1.75rem;
   align-items: flex-start;
 }
-#page-wrapper:has(#toc-sidebar[hidden]) {
+/* front page (no sidebar): narrower wrapper + centered single content column */
+body:not(.issue-view) #page-wrapper {
   max-width: calc(var(--w) + 3rem);
+  justify-content: center;
+}
+body:not(.issue-view) #content {
+  flex: 0 1 var(--w); /* don't grow to fill; let the wrapper center it */
+  width: 100%;
+  margin: 0 auto;
 }
 
 /* ══════════════════════════════════════════════
@@ -433,6 +440,7 @@ html:not([data-theme]) .icon-moon {
   border-radius: var(--shape-lg);
   box-shadow: var(--elev-1);
 }
+
 #toc-sidebar .toc-title {
   font-family: var(--brand);
   font-size: 0.7rem;
@@ -1361,7 +1369,7 @@ body.issue-view #page-wrapper {
   display: flex;
   align-items: stretch;
   gap: 0;
-  padding: 0;
+  padding: 0 1.25rem 0 0; /* keep the content card off the right edge */
   max-width: 100%;
   margin: 0;
   height: calc(100vh - 64px);
@@ -1627,6 +1635,7 @@ body.issue-view .article-card {
   /* on narrow, hide the rail, show only the panel */
   #sidebar-rail { display: none; }
   body.issue-view #sidebar-panel { width: var(--sidebar-w); opacity: 1; pointer-events: auto; }
+  body.issue-view #page-wrapper { padding: 0; } /* content margin handles spacing */
   body.issue-view #content {
     margin: 1rem;
     padding: 1.25rem 1.1rem 1.75rem;
@@ -1639,7 +1648,7 @@ body.issue-view .article-card {
     z-index: 940;
   }
 }
-body.issue-view #toc-overlay { display: none; }
+#toc-overlay { display: none; }
 
 /* search highlights */
 mark.search-hl {

@@ -957,12 +957,24 @@
 
     var ro = null;
     if (window.ResizeObserver) { ro = new ResizeObserver(function () { moveIndicator(currentCategory, false); }); ro.observe(nav); }
-    on(window, 'resize', function () {
-      moveIndicator(currentCategory, false);
+    // Re-measure both pill thumbs against the buttons' *current* width. Used on
+    // resize and whenever the panel becomes visible (expand / drawer open), so a
+    // thumb measured while the panel was collapsed (width 0) gets corrected.
+    function repositionPillThumbs() {
       var av = Array.prototype.find.call(viewPills, function (b) { return b.classList.contains('active'); });
       if (av) { viewPillThumb.classList.add('no-spring'); movePillThumb(viewPillThumb, av, viewToggle); void viewPillThumb.offsetWidth; viewPillThumb.classList.remove('no-spring'); }
       var ah = Array.prototype.find.call(hidePills, function (b) { return b.classList.contains('active'); });
       if (ah) { hidePillThumb.classList.add('no-spring'); movePillThumb(hidePillThumb, ah, hideToggle); void hidePillThumb.offsetWidth; hidePillThumb.classList.remove('no-spring'); }
+    }
+    on(window, 'resize', function () {
+      moveIndicator(currentCategory, false);
+      repositionPillThumbs();
+    });
+    // When the panel finishes expanding (its width transition ends), the pills
+    // have their final width — re-measure so the thumb isn't left narrow.
+    var sidebarPanel = document.getElementById('sidebar-panel');
+    if (sidebarPanel) on(sidebarPanel, 'transitionend', function (e) {
+      if (e.propertyName === 'width') { repositionPillThumbs(); moveIndicator(currentCategory, false); }
     });
 
     // Build nav
@@ -995,8 +1007,15 @@
     function toggleSidebar() {
       if (isNarrow.matches) {
         // narrow: overlay drawer
+        var opening = !sidebar.classList.contains('open');
         sidebar.classList.toggle('open');
         if (overlay) overlay.classList.toggle('open');
+        // the drawer's pills only get a reliable measurement once it's on-screen;
+        // re-measure the thumbs so the active pill highlight isn't missing/narrow
+        if (opening) requestAnimationFrame(function () {
+          repositionPillThumbs();
+          moveIndicator(currentCategory, false);
+        });
       } else {
         // wide: inline collapse
         document.body.classList.toggle('sidebar-collapsed');
