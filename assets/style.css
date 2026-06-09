@@ -1647,6 +1647,11 @@ body.issue-view .article-card {
     background: color-mix(in srgb, var(--ink) 40%, transparent);
     z-index: 940;
   }
+  /* hide appbar title + logo + lab-link text on narrow to save space */
+  .appbar-title { display: none; }
+  .appbar-logo-wrap { display: none; }
+  .appbar-center { padding: 0 .4rem; }
+  .lab-link-text { display: none; }
 }
 #toc-overlay { display: none; }
 
@@ -1698,11 +1703,6 @@ mark.search-hl {
   #page-wrapper {
     padding: 1.5rem 1rem 2rem;
   }
-  /* hide appbar title + logo on narrow to save space */
-  .appbar-title { display: none; }
-  .appbar-logo-wrap { display: none; }
-  .appbar-center { padding: 0 .4rem; }
-  .lab-link-text { display: none; }
 }
 
 @media (max-width: 600px) {
