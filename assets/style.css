@@ -686,21 +686,6 @@ p a:hover { text-decoration: underline; }
 #eclab-footer a:hover { text-decoration: underline; }
 
 /* ══════════════════════════════════════════════
-   Logo Watermark
-   ══════════════════════════════════════════════ */
-#logo-watermark {
-  position: fixed;
-  bottom: 2rem;
-  right: 2rem;
-  width: 320px;
-  height: auto;
-  opacity: 0.14;
-  pointer-events: none;
-  z-index: -1;
-  object-fit: contain;
-}
-
-/* ══════════════════════════════════════════════
    Responsive
    ══════════════════════════════════════════════ */
 @media (min-width: 1400px) {
@@ -749,7 +734,7 @@ p a:hover { text-decoration: underline; }
    Print
    ══════════════════════════════════════════════ */
 @media print {
-  #toc-sidebar, #toc-toggle, #toc-overlay, #logo-watermark, #progress-bar { display: none !important; }
+  #toc-sidebar, #toc-toggle, #toc-overlay, #progress-bar { display: none !important; }
   #page-wrapper { display: block; max-width: 100%; padding: 0; }
   body { background: #fff; }
   #eclab-header h1 { font-size: 1.7rem; }
