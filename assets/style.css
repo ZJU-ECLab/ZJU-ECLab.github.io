@@ -20,9 +20,6 @@
   --accent-bg:    color-mix(in srgb, var(--accent) 8%, white);
   --accent-h:     color-mix(in srgb, var(--accent) 80%, black);
   --accent-light: color-mix(in srgb, var(--accent) 30%, white);
-  --gold:         color-mix(in srgb, var(--accent) 35%, #e8c890);
-  --warm:         color-mix(in srgb, var(--accent) 50%, #d4a040);
-  --warm-bg:      color-mix(in srgb, var(--accent) 6%, #fdf8ef);
 }
 
 /* ══════════════════════════════════════════════
@@ -48,7 +45,7 @@ body {
   left: 0;
   height: 3px;
   width: 0;
-  background: linear-gradient(90deg, var(--accent), var(--gold));
+  background: linear-gradient(90deg, var(--accent), var(--accent-light));
   z-index: 1000;
   transition: width .1s linear;
 }
@@ -369,7 +366,7 @@ h3.category-h {
 }
 .issue-intro {
   background: var(--surface);
-  border-left: 3px solid var(--gold);
+  border-left: 3px solid var(--accent-light);
   padding: .8rem 1rem;
   margin: .3rem 0 1rem;
   color: var(--ink-soft);
@@ -546,7 +543,7 @@ p a:hover { text-decoration: underline; }
    ══════════════════════════════════════════════ */
 .landing-intro {
   background: var(--surface);
-  border-left: 3px solid var(--gold);
+  border-left: 3px solid var(--accent-light);
   padding: .9rem 1.1rem;
   margin: 1.5rem 0 2rem;
   color: var(--ink-soft);
