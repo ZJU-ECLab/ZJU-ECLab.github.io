@@ -7,6 +7,16 @@
   <meta name="description" content="浙江大学情绪和文化实验室文献汇编《东西情报》在线版" />
   <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg" />
   <link rel="stylesheet" href="/assets/style.css" />
+  <script>
+    (function(){
+      try {
+        var t = localStorage.getItem('theme');
+        if (t === 'dark' || t === 'light') { document.documentElement.setAttribute('data-theme', t); return; }
+      } catch(_){}
+      if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)
+        document.documentElement.setAttribute('data-theme', 'dark');
+    })();
+  </script>
 </head>
 <body>
 
