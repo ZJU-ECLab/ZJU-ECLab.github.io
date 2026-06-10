@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-head">
+  <h1 class="page-title">Lab Members</h1>
+</section>
+
+{% for group in data.groups %}
+<section class="people-group">
+  <h2 class="section-h">{{ group.label }}</h2>
+  {% if group.id == 'pi' %}
+  {# Principal Investigator: a single full-width feature card #}
+  {% for m in group.members %}
+  <article class="person-card person-card--featured">
+    <div class="person-photo">
+      {% if m.photo %}
+      <img src="{{ m.photo }}" alt="{{ m.name_en }}" loading="lazy"
+           onerror="this.parentNode.classList.add('no-photo');this.remove();" />
+      {% endif %}
+      <span class="person-initials" aria-hidden="true">{{ m.name_en | initials }}</span>
+    </div>
+    <div class="person-body">
+      <h3 class="person-name">{{ m.name_en }}{% if m.name_zh %} <span class="person-name-zh">{{ m.name_zh }}</span>{% endif %}</h3>
+      <div class="person-role">{{ m.role }}</div>
+      {% if m.bio %}<p class="person-bio">{{ m.bio }}</p>{% endif %}
+      <div class="person-links">
+        {% if m.email %}<a class="person-link" href="mailto:{{ m.email }}">✉ {{ m.email }}</a>{% endif %}
+        {% if m.cv %}<a class="person-link" href="{{ m.cv }}" target="_blank" rel="noopener">✎ CV</a>{% endif %}
+      </div>
+    </div>
+  </article>
+  {% endfor %}
+  {% else %}
+  {# Everyone else: masonry columns so cards pack tightly with no row gaps #}
+  <div class="people-masonry">
+    {% for m in group.members %}
+    <article class="person-card shape-{{ loop.index0 % 4 }}">
+      <div class="person-photo">
+        {% if m.photo %}
+        <img src="{{ m.photo }}" alt="{{ m.name_en }}" loading="lazy"
+             onerror="this.parentNode.classList.add('no-photo');this.remove();" />
+        {% endif %}
+        <span class="person-initials" aria-hidden="true">{{ m.name_en | initials }}</span>
+      </div>
+      <div class="person-body">
+        <h3 class="person-name">{{ m.name_en }}{% if m.name_zh %} <span class="person-name-zh">{{ m.name_zh }}</span>{% endif %}</h3>
+        <div class="person-role">{{ m.role }}</div>
+        {% if m.bio %}<p class="person-bio">{{ m.bio }}</p>{% endif %}
+        <div class="person-links">
+          {% if m.email %}<a class="person-link" href="mailto:{{ m.email }}">✉ {{ m.email }}</a>{% endif %}
+          {% if m.cv %}<a class="person-link" href="{{ m.cv }}" target="_blank" rel="noopener">✎ CV</a>{% endif %}
+        </div>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+  {% endif %}
+</section>
+{% endfor %}
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-head">
+  <h1 class="page-title">Alumni</h1>
+</section>
+
+<section class="alumni-section">
+  <h2 class="section-h">Students</h2>
+  {% for grp in data.advisees %}
+  <div class="advisee-group">
+    <h3 class="advisee-inst">{{ grp.institution }}</h3>
+    {% if grp.note %}<p class="advisee-note">{{ grp.note }}</p>{% endif %}
+    <ul class="advisee-list">
+      {% for s in grp.students %}
+      <li>
+        <span class="advisee-name">{{ s.name }}</span>,
+        <span class="advisee-degree">{{ s.degree }}</span>
+        {% if s.note %}<span class="advisee-tag">{{ s.note }}</span>{% endif %}
+        {% if s.current %}
+          (<span class="advisee-current">{% if s.current_url %}<a href="{{ s.current_url }}" target="_blank" rel="noopener">{{ s.current }}</a>{% else %}{{ s.current }}{% endif %}</span>)
+        {% endif %}
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endfor %}
+</section>
+
+<section class="alumni-section">
+  <h2 class="section-h">Past Lab Members</h2>
+  <div class="past-grid">
+    {% for entry in data.past_members %}
+    <figure class="past-figure">
+      {% if entry.photo %}
+      <img src="{{ entry.photo }}" alt="Lab {{ entry.year }}" loading="lazy"
+           onerror="this.closest('.past-figure').style.display='none'" />
+      {% endif %}
+      {% if entry.photos %}
+        {% for p in entry.photos %}
+        <img src="{{ p }}" alt="Lab {{ entry.year }}" loading="lazy" />
+        {% endfor %}
+      {% endif %}
+      <figcaption>{{ entry.year }}</figcaption>
+    </figure>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

@@ -68,6 +68,37 @@
   --sans: var(--brand);
   --mono: "Roboto Mono", "SF Mono", "Consolas", monospace;
 
+  /* ── M3 Expressive type scale ──
+     Expressive leans on a formal scale with heavier "emphasized" display /
+     headline roles to build hierarchy. Each token pairs size · weight ·
+     line-height · tracking. Large roles use fluid clamp() sizing. */
+  --display-l-size: clamp(2.4rem, 5vw, 3.4rem);
+  --display-l-weight: 800;
+  --display-l-lh: 1.08;
+  --display-l-track: -0.02em;
+
+  --display-m-size: clamp(2rem, 4vw, 2.75rem);
+  --display-m-weight: 800;
+  --display-m-lh: 1.12;
+  --display-m-track: -0.015em;
+
+  --headline-size: clamp(1.6rem, 2.5vw, 2rem);
+  --headline-weight: 750;
+  --headline-lh: 1.2;
+  --headline-track: -0.01em;
+
+  --title-l-size: 1.4rem;
+  --title-l-weight: 700;
+  --title-l-lh: 1.3;
+
+  --title-m-size: 1.1rem;
+  --title-m-weight: 700;
+  --title-m-lh: 1.4;
+
+  --label-size: 0.72rem;
+  --label-weight: 700;
+  --label-track: 0.08em;
+
   /* ── Motion (M3 emphasized / standard easing) ── */
   --ease-emphasized: cubic-bezier(0.2, 0, 0, 1);
   --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
@@ -191,11 +222,7 @@ body {
   left: 0;
   height: 4px;
   width: 0;
-  background: linear-gradient(
-    90deg,
-    var(--primary),
-    color-mix(in srgb, var(--accent) 55%, white)
-  );
+  background: var(--primary);
   border-radius: 0 var(--shape-full) var(--shape-full) 0;
   z-index: 1000;
   transition: width 0.1s linear;
@@ -283,10 +310,10 @@ body {
 
 #eclab-header h1 {
   font-family: var(--brand);
-  font-size: 1.85rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  line-height: 1.2;
+  font-size: var(--display-m-size);
+  font-weight: var(--display-m-weight);
+  letter-spacing: var(--display-m-track);
+  line-height: var(--display-m-lh);
   margin: 0;
 }
 /* clickable title → expressive pill */
@@ -615,6 +642,9 @@ body:not(.issue-view) #content {
   .featured-issue {
     animation: none;
   }
+  .article-card {
+    animation: none;
+  }
   .issue-title::after {
     animation: none;
   }
@@ -642,20 +672,21 @@ body:not(.issue-view) #content {
   box-shadow: var(--elev-3);
   cursor: pointer;
   z-index: 900;
-  font-size: 1.3rem;
-  line-height: 56px;
-  text-align: center;
+  place-items: center;
   transition:
     box-shadow 0.2s var(--ease-standard),
+    border-radius 0.35s var(--ease-spring),
     transform 0.15s var(--ease-standard);
 }
+#toc-toggle svg { display: block; }
 #toc-toggle:hover {
   box-shadow:
     var(--elev-3),
     0 0 0 6px var(--state-hover);
 }
 #toc-toggle:active {
-  transform: scale(0.96);
+  transform: scale(0.92);
+  border-radius: var(--shape-full);
 }
 
 /* ══════════════════════════════════════════════
@@ -678,14 +709,62 @@ body:not(.issue-view) #content {
   color: #ba1a1a;
 }
 
+/* ── M3 Expressive contained loading indicator ──
+   A single shape that rotates while morphing through the M3 shape set
+   (circle → squircle → clover-ish → squircle). Pure CSS, accent-tinted. */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.1rem;
+}
+.m3-loader {
+  width: 52px;
+  height: 52px;
+  background: var(--primary);
+  border-radius: 38% 62% 63% 37% / 41% 44% 56% 59%;
+  animation:
+    m3-loader-spin 2.4s var(--ease-emphasized) infinite,
+    m3-loader-morph 2.4s var(--ease-spring) infinite;
+}
+@keyframes m3-loader-spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes m3-loader-morph {
+  0%   { border-radius: 50% 50% 50% 50% / 50% 50% 50% 50%; }
+  25%  { border-radius: 62% 38% 46% 54% / 60% 56% 44% 40%; }
+  50%  { border-radius: 30% 70% 70% 30% / 30% 52% 48% 70%; background: color-mix(in srgb, var(--accent) 55%, white); }
+  75%  { border-radius: 58% 42% 38% 62% / 45% 62% 38% 55%; }
+  100% { border-radius: 50% 50% 50% 50% / 50% 50% 50% 50%; }
+}
+.loading-label {
+  font-family: var(--brand);
+  font-size: var(--label-size);
+  font-weight: var(--label-weight);
+  letter-spacing: var(--label-track);
+  text-transform: uppercase;
+  color: var(--muted);
+}
+@media (prefers-reduced-motion: reduce) {
+  .m3-loader {
+    animation: m3-loader-pulse 1.4s ease-in-out infinite;
+    border-radius: var(--shape-full);
+  }
+  @keyframes m3-loader-pulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+  }
+}
+
 /* ══════════════════════════════════════════════
    Headings — M3 type scale
    ══════════════════════════════════════════════ */
 h2.section-h {
   position: relative;
   font-family: var(--brand);
-  font-size: 1.4rem;
-  font-weight: 600;
+  font-size: var(--title-l-size);
+  font-weight: var(--title-l-weight);
+  line-height: var(--title-l-lh);
   letter-spacing: 0;
   text-transform: none;
   color: var(--ink);
@@ -729,9 +808,10 @@ h3.category-h {
    ══════════════════════════════════════════════ */
 .issue-title {
   font-family: var(--brand);
-  font-size: 1.9rem;
-  font-weight: 700;
-  letter-spacing: -0.01em;
+  font-size: var(--headline-size);
+  font-weight: var(--headline-weight);
+  letter-spacing: var(--headline-track);
+  line-height: var(--headline-lh);
   color: var(--ink);
   margin: 0.75rem 0 0.55rem;
 }
@@ -946,18 +1026,26 @@ hr {
     box-shadow 0.3s var(--ease-standard),
     transform 0.35s var(--ease-spring),
     border-color 0.25s var(--ease-standard);
+  animation: card-enter 0.45s var(--ease-emphasized) both;
+}
+/* expressive staggered entrance across the detail list (delay set in JS) */
+.article-card {
+  animation-delay: calc(var(--enter-i, 0) * 0.045s);
 }
 .article-card:hover {
   box-shadow: var(--elev-2);
   transform: translateY(-3px);
   border-color: transparent;
 }
+.article-card:active {
+  transform: translateY(-1px) scale(0.997);
+}
 .article-card h3 {
   font-family: var(--brand);
-  font-size: 1.1rem;
-  font-weight: 700;
+  font-size: var(--title-m-size);
+  font-weight: var(--title-m-weight);
   color: var(--ink);
-  line-height: 1.5;
+  line-height: var(--title-m-lh);
   letter-spacing: 0;
   text-transform: none;
   margin: 0;
@@ -1081,6 +1169,9 @@ p a:hover {
 .featured-issue:hover::after {
   transform: scale(1.25);
 }
+.featured-issue:active {
+  transform: translateY(-1px) scale(0.995);
+}
 .featured-issue .featured-badge {
   position: relative;
   z-index: 1;
@@ -1098,9 +1189,10 @@ p a:hover {
   position: relative;
   z-index: 1;
   font-family: var(--brand);
-  font-size: 1.7rem;
-  font-weight: 700;
-  letter-spacing: -0.01em;
+  font-size: var(--headline-size);
+  font-weight: var(--headline-weight);
+  letter-spacing: var(--headline-track);
+  line-height: var(--headline-lh);
   color: var(--on-primary-container);
   margin: 0.9rem 0 0.35rem;
 }
@@ -1185,6 +1277,9 @@ p a:hover {
   background: var(--secondary-container);
   border-color: var(--primary);
 }
+.issue-card:active {
+  transform: translateY(-1px) scale(0.99);
+}
 .issue-card .ic-title {
   font-family: var(--brand);
   font-size: 1.05rem;
@@ -1256,10 +1351,15 @@ p a:hover {
   color: var(--muted);
   text-decoration: none;
   flex-shrink: 0;
-  transition: color .2s var(--ease-standard), background-color .2s var(--ease-standard);
+  transition: color .2s var(--ease-standard), background-color .2s var(--ease-standard), border-radius .3s var(--ease-spring), transform .2s var(--ease-spring);
 }
 .appbar-icon-btn svg { display: block; }
 .appbar-icon-btn:hover { color: var(--ink); background: var(--surface-3); }
+/* M3 Expressive press: the round button morphs toward a squircle + squishes */
+.appbar-icon-btn:active {
+  border-radius: var(--shape-md);
+  transform: scale(0.9);
+}
 
 /* appbar small logo */
 .appbar-logo-wrap {
@@ -1441,7 +1541,11 @@ body.issue-view #toc-sidebar {
   display: grid;
   place-items: center;
   line-height: 0;
-  transition: background-color .2s var(--ease-standard), color .2s var(--ease-standard);
+  transition: background-color .2s var(--ease-standard), color .2s var(--ease-standard), border-radius .3s var(--ease-spring), transform .2s var(--ease-spring);
+}
+.rail-btn:active {
+  border-radius: var(--shape-md);
+  transform: scale(0.9);
 }
 .rail-btn svg {
   display: block;
@@ -1704,6 +1808,32 @@ mark.search-hl {
 .search-tag-section .article-index-tags { margin: 0; }
 
 /* ══════════════════════════════════════════════
+   View Transitions — M3 shared-axis route change
+   The old view slides/fades out to the left while the new one slides in from
+   the right (forward feel). Progressive enhancement: browsers without the API
+   just swap instantly (see navigate() in app.js).
+   ══════════════════════════════════════════════ */
+@media (prefers-reduced-motion: no-preference) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 0.4s;
+    animation-timing-function: var(--ease-emphasized);
+  }
+  ::view-transition-old(root) {
+    animation-name: vt-slide-out;
+  }
+  ::view-transition-new(root) {
+    animation-name: vt-slide-in;
+  }
+  @keyframes vt-slide-out {
+    to { opacity: 0; transform: translateX(-30px); }
+  }
+  @keyframes vt-slide-in {
+    from { opacity: 0; transform: translateX(30px); }
+  }
+}
+
+/* ══════════════════════════════════════════════
    Responsive
    ══════════════════════════════════════════════ */
 @media (min-width: 1400px) {
@@ -1715,7 +1845,7 @@ mark.search-hl {
 
 @media (max-width: 1200px) {
   #toc-toggle.visible {
-    display: block;
+    display: grid;
   }
   #page-wrapper {
     padding: 1.5rem 1rem 2rem;

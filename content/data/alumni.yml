@@ -1,0 +1,109 @@
+# Alumni — edit to update the Alumni page.
+# Two sections: `advisees` (grouped by institution) and `past_members` (group photos by year).
+
+advisees:
+  - institution: Zhejiang University, China
+    note: "The following are thesis advisees, with their current institutions noted in parentheses:"
+    students:
+      - name: Youxun Ge
+        degree: MS 2025
+        current: Central Commission for Discipline Inspection
+      - name: Yu Zeng
+        degree: MS 2024
+        current: "Master's Student, Maryland Institute College of Art"
+        current_url: https://www.mica.edu/
+      - name: Yihan Fu
+        degree: BS 2025
+        note: Final Year Thesis advisee
+        current: "Master's Student, The University of Hong Kong"
+        current_url: https://www.hku.hk/
+      - name: Zhuoyun Wu
+        degree: BS 2025
+        note: Final Year Thesis advisee
+        current: "Master's Student, The University of Edinburgh"
+        current_url: https://www.ed.ac.uk/
+      - name: Ruotong Wang
+        degree: BS 2024
+        note: Final Year Thesis advisee
+        current: "Master's Student, Sun Yat-sen University"
+        current_url: https://www.sysu.edu.cn/
+      - name: Jianan Xia
+        degree: BS 2024
+        current: "Master's Student, East China Normal University"
+        current_url: https://www.ecnu.edu.cn/
+      - name: Xintong Xie
+        degree: BS 2024
+        current: "Master's Student, University of Southern California"
+        current_url: https://www.usc.edu/
+      - name: Siqi Liu
+        degree: BS 2024
+        current: "Master's Student, University College London"
+        current_url: https://www.ucl.ac.uk/
+      - name: Huimin Chen
+        degree: BS 2023
+        note: Final Year Thesis advisee
+        current: "Master's Student, Zhejiang University"
+        current_url: https://www.zju.edu.cn/
+      - name: Jinpeng Fu
+        degree: BS 2023
+        note: Final Year Thesis advisee
+        current: "Master's Student, East China Normal University"
+        current_url: https://www.ecnu.edu.cn/
+      - name: Qing Gu
+        degree: BS 2022
+        note: Final Year Thesis advisee
+        current: "Master's Student, KTH Royal Institute of Technology"
+        current_url: https://www.kth.se/
+      - name: Shiqi Wang
+        degree: BS 2022
+        note: Final Year Thesis advisee
+        current: "Master's Student, New York University"
+
+  - institution: York University, Canada
+    note: "Co-mentored with Dr. Kerry Kawakami during postdoctoral research:"
+    students:
+      - name: Kevin Zhou
+        degree: Ph.D. 2021–
+        current: York University, Canada
+        current_url: https://www.yorku.ca/
+      - name: Ronda Lo
+        degree: Ph.D. 2021–
+        current: Postdoctoral researcher, Stanford University
+        current_url: https://www.stanford.edu/
+      - name: Amanda Penner
+        degree: BS 2020
+        note: Final Year Thesis advisee
+      - name: Jessica Memmo
+        degree: BS 2019
+        note: Final Year Thesis advisee
+      - name: Naureen Ahmed
+        degree: BS 2019
+        note: Final Year Thesis advisee
+
+  - institution: University of Amsterdam, Netherlands
+    note: "Thesis advisees (Master's and internship theses):"
+    students:
+      - name: Wenyu Nie
+        degree: MS 2017
+        note: Internship Thesis advisee
+      - name: Loek Peelen
+        degree: MS 2016
+      - name: Lieke Pijnacker
+        degree: MS 2015
+        note: Internship Thesis advisee
+      - name: Margueriee Nolan
+        degree: MS 2014
+      - name: Lieke Pijnacker
+        degree: MS 2014
+
+past_members:
+  - year: "2025–2026"
+    photo: /assets/img/alumni/lab-2025-2026.jpg
+  - year: "2024–2025"
+    photo: /assets/img/alumni/lab-2024-2025.jpg
+  - year: "2023–2024"
+    photos:
+      - /assets/img/alumni/lab-2023-2024-1.png
+      - /assets/img/alumni/lab-2023-2024-2.png
+  - year: "2022–2023"
+    photo: /assets/img/alumni/lab-2022-2023.png

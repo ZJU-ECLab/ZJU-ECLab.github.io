@@ -1,0 +1,235 @@
+# Publications — edit to update the Publications page.
+# Conventions:
+#   authors : use **bold** for lab authors (e.g. **Fang, X.**) and *italics* if needed.
+#   venue   : journal / book; wrap the part to italicise in *asterisks*.
+#   doi     : full URL.
+#   pdfs    : list of { label, href }. Label defaults to "PDF".
+# Entries are grouped by `year` automatically (newest first).
+
+note: "*Corresponding author; #Co-first authors"
+
+items:
+  - year: 2026
+    authors: "Heerdink, M. W., Wolf, S. A., Lange, J., Wanders, F., **Fang, X.**, Stamkou, E., & Van Kleef, G. A."
+    title: "Emotional cues to group hierarchy: Inferences about dominance- versus prestige-based hierarchies from members' emotional expressions."
+    venue: "*Journal of Experimental Social Psychology, 125*, 104931."
+    doi: https://doi.org/10.1016/j.jesp.2026.104931
+    pdfs:
+      - { href: "/assets/files/publications/2026-heerdink-emotional-cues-hierarchy.pdf" }
+
+  - year: 2026
+    authors: "Pan, Z., Tan, H., Liu, S., & **Fang, X.**\\*"
+    title: "Beyond the basic six, static, and WEIRD: Exploring the range of emotions conveyed by facial expressions."
+    venue: "*Journal of Experimental Social Psychology, 122*, 104836."
+    doi: https://doi.org/10.1016/j.jesp.2025.104836
+    pdfs:
+      - { href: "/assets/files/publications/2026-pan-beyond-basic-six-weird.pdf" }
+
+  - year: 2025
+    authors: "**Fang, X.**\\* & Kawakami, K."
+    title: "Mixed Emotions in Cross-Cultural Communication."
+    venue: "*Social and Personality Psychology Compass, 19*(7), e70073."
+    doi: https://doi.org/10.1111/spc3.70073
+    pdfs:
+      - { href: "/assets/files/publications/2025-fang-mixed-emotions-cross-cultural.pdf" }
+
+  - year: 2025
+    authors: "**方霞\\*** & 潘之禾."
+    title: "动态序列情境对面部表情知觉的影响和作用机制."
+    venue: "*心理科学进展, 33*(1), 1-10."
+    doi: https://doi.org/10.3724/SP.J.1042.2025.0001
+    note: >-
+      English version: Fang X.*, & Pan Z. (2025). The impact of dynamic
+      sequential context on facial expression perception and the underlying
+      mechanisms. Advances in Psychological Science, 33(1), 1-10.
+    pdfs:
+      - { label: "PDF (Chinese)", href: "/assets/files/publications/2025-fang-pan-dynamic-context-facial-cn.pdf" }
+
+  - year: 2024
+    authors: "**Fang, X.**\\* & Kawakami, K."
+    title: "The effect of face masks and sunglasses on emotion perception over two years of the COVID-19 pandemic."
+    venue: "*Journal of Nonverbal Behavior, 48*(4), 589–608."
+    doi: https://doi.org/10.1007/s10919-024-00471-y
+    pdfs:
+      - { href: "/assets/files/publications/2024-fang-face-masks-sunglasses-emotion.pdf" }
+
+  - year: 2024
+    authors: "**Fang, X.**\\*, Van Kleef, G.A, Kawakami, K., & Sauter, D.A."
+    title: "Registered report \"Categorical perception of facial expressions of anger and disgust across cultures\"."
+    venue: "*Cognition and Emotion, 38*(8), 1135–1151."
+    doi: https://doi.org/10.1080/02699931.2024.2370667
+    pdfs:
+      - { href: "/assets/files/publications/2024-fang-registered-report-anger-disgust.pdf" }
+
+  - year: 2024
+    authors: "Cowen, A. S., Brooks, J., Prasad, G., Tanaka, M., Kamitani, Y., Kirilyuk, V., Somandepalli, K., Jou, B., Schroff, F., Adam, H., Sauter, D., **Fang, X.**, Manokara, K., Tzirakis, P., Oh, M., & Keltner, D."
+    title: "How emotion is experienced and expressed in multiple cultures: A large-scale experiment across North America, Europe, and Japan."
+    venue: "*Frontiers in Psychology, 15,* 1350631."
+    doi: https://doi.org/10.3389/fpsyg.2024.1350631
+    pdfs:
+      - { href: "/assets/files/publications/2024-cowen-emotion-experienced-expressed-multiple-cultures.pdf" }
+
+  - year: 2024
+    authors: "**Fang, X.**\\*, & Kawakami, K."
+    title: "Changing perceptions of people wearing masks: Two years of living in a pandemic."
+    venue: "*European Journal of Social Psychology, 54*(6), 1141–1152."
+    doi: https://doi.org/10.1002/ejsp.3069
+    pdfs:
+      - { href: "/assets/files/publications/2024-fang-changing-perceptions-masks.pdf" }
+
+  - year: 2024
+    authors: "**方霞**#\\* & 葛猷勋."
+    title: "跨文化表情识别中的群内优势效应：自发性和呈现方式对气愤和厌恶表情识别的影响."
+    venue: "*心理学报,56*(6),701-717."
+    note: >-
+      English version: Fang, X.#*, & Ge, Y#. (2024). The impact of spontaneity
+      and presentation mode on the ingroup advantage in recognizing angry and
+      disgusted facial expressions. Acta Psychologica Sinica, 56(6), 701-717.
+    doi: https://doi.org/10.3724/SP.J.1041.2024.00701
+    pdfs:
+      - { href: "/assets/files/publications/2024-fang-ge-ingroup-advantage-angry-disgusted.pdf" }
+      - { label: "PDF (Chinese)", href: "/assets/files/publications/2024-fang-ge-ingroup-advantage-angry-disgusted-cn.pdf" }
+
+  - year: 2024
+    authors: "**Fang, X.**\\* & Kawakami, K."
+    title: "Decoding angry and disgusted faces across cultures: Facial prototypes and software matter."
+    venue: "*Journal of Nonverbal Behavior, 48*(3), 439–464."
+    doi: https://doi.org/10.1007/s10919-024-00453-0
+    pdfs:
+      - { href: "/assets/files/publications/2024-fang-decoding-angry-disgusted-faces.pdf" }
+
+  - year: 2024
+    authors: "Brooks, J. A., Kim, L., Opara, M., Keltner, D., **Fang, X.**, Monroy, M., Corona, R., Tzirakis, P., Baird, A., Metrick, J., Taddesse, N., Zegeye, K., & Cowen, A. S."
+    title: "Deep learning reveals what facial expressions mean to people in different cultures."
+    venue: "*iScience, 27*(3), 109175."
+    doi: https://doi.org/10.1016/j.isci.2024.109175
+    pdfs:
+      - { href: "/assets/files/publications/2024-brooks-deep-learning-facial-expressions.pdf" }
+
+  - year: 2024
+    authors: "Kawakami, K.\\*, Meyers C., & **Fang, X.**"
+    title: "Social Cognition, Attention, and Eye Tracking. In D. E. Carlston, K. Hugenberg, & K. L. Johnson (Eds.), The Oxford Handbook of Social Cognition, Second Edition (2nd ed., pp. 143–170)."
+    venue: "*Oxford University Press*."
+    doi: https://doi.org/10.1093/oxfordhb/9780197763414.013.5
+    pdfs:
+      - { href: "/assets/files/publications/2024-kawakami-social-cognition-eye-tracking.pdf" }
+
+  - year: 2023
+    authors: "**Fang, X.**\\*, Liu, W., & Kawakami, K."
+    title: "Evaluating past emotions in changing facial expressions: The role of current emotions and culture."
+    venue: "*Emotion*, *24*(1), 213–224."
+    doi: https://doi.org/10.1037/emo0001263
+    pdfs:
+      - { href: "/assets/files/publications/2023-fang-evaluating-past-emotions-changing-expressions.pdf" }
+
+  - year: 2023
+    authors: "Kawakami, K., Manokara, K., & **Fang, X.**\\*"
+    title: "Impact of face masks on perceptions of black and white targets during the COVID-19 pandemic."
+    venue: "*Social and Personality Psychology Compass, 17*(9), e12810."
+    doi: https://doi.org/10.1111/spc3.12810
+    pdfs:
+      - { href: "/assets/files/publications/2023-kawakami-face-masks-black-white-targets.pdf" }
+
+  - year: 2022
+    authors: "Brooks, J. A., Tzirakis, P., Baird, A., Kim, L., Opara, M., **Fang, X.**, Keltner, D., Monroy, M., Corona, R., Metrick, J. & Cowen, A. S."
+    title: "Deep learning reveals what vocal bursts express in different cultures."
+    venue: "*Nature Human Behaviour, 7*(2), 240–250."
+    doi: https://doi.org/10.1038/s41562-022-01489-2
+    pdfs:
+      - { href: "/assets/files/publications/2022-brooks-deep-learning-vocal-bursts.pdf" }
+
+  - year: 2022
+    authors: "Kawakami, K.\\*, Vingilis-Jaremko, L., Friesen, J. P., Meyers, C., & **Fang, X.**"
+    title: "Impact of similarity on recognition of faces of Black and White targets."
+    venue: "*British Journal of Psychology, 113*(4), 1079–1099."
+    doi: https://doi.org/10.1111/bjop.12589
+    pdfs:
+      - { href: "/assets/files/publications/2022-kawakami-similarity-recognition-faces.pdf" }
+
+  - year: 2022
+    authors: "**Fang, X.**\\*, Sauter, D. A., Heerdink, M. W., & Van Kleef, G. A."
+    title: "Culture Shapes the Distinctiveness of Posed and Spontaneous Facial Expressions of Anger and Disgust."
+    venue: "*Journal of Cross-Cultural Psychology, 53*(5), 471–487."
+    doi: https://doi.org/10.1177/00220221221095208
+    pdfs:
+      - { href: "/assets/files/publications/2022-fang-culture-shapes-distinctiveness.pdf" }
+
+  - year: 2022
+    authors: "**Fang, X.**\\*, Rychlowska, M., & Lange, J."
+    title: "Cross-cultural and inter-group research on emotion perception."
+    venue: "*Journal of Cultural Cognitive Science, 6*(1), 1–7."
+    doi: https://doi.org/10.1007/s41809-022-00102-2
+    pdfs:
+      - { href: "/assets/files/publications/2022-fang-cross-cultural-intergroup-emotion.pdf" }
+
+  - year: 2022
+    authors: "Kawakami, K.\\*, Friesen, J. P., & **Fang, X.**"
+    title: "Perceiving ingroup and outgroup faces within and across nations."
+    venue: "*British Journal of Psychology, 113*(3), 551–574."
+    doi: https://doi.org/10.1111/bjop.12563
+    pdfs:
+      - { href: "/assets/files/publications/2022-kawakami-ingroup-outgroup-faces-nations.pdf" }
+
+  - year: 2021
+    authors: "**Fang, X.**\\*, Van Kleef, G.A., Kawakami K., & Sauter, D.A."
+    title: "Cultural differences in perceiving transitions in emotional facial expressions: Easterners show greater contrast effects than Westerners."
+    venue: "*Journal of Experimental Social Psychology, 95*, 104143."
+    doi: https://doi.org/10.1016/j.jesp.2021.104143
+    pdfs:
+      - { href: "/assets/files/publications/2021-fang-cultural-differences-transitions.pdf" }
+
+  - year: 2021
+    authors: "Eriksson, K.\\*, Strimling, P., Gelfand, M., ..., **Fang, X.**, ..., & Van Lange, P.A.M."
+    title: "Perceptions of the appropriate response to norm violation in 57 societies."
+    venue: "*Nature Communication, 12*(1), 1481."
+    doi: https://doi.org/10.1038/s41467-021-21602-9
+    pdfs:
+      - { href: "/assets/files/publications/2021-eriksson-norm-violation-57-societies.pdf" }
+
+  - year: 2021
+    authors: "Van Kleef, G. A.\\*, Heerdink, M. W., Cheshin, A., Stamkou, E., Wanders, F., Koning, L. F., **Fang, X.**, & Georgeac, O. A. M."
+    title: "No guts, no glory? How risk-taking shapes dominance, prestige, and leadership endorsement."
+    venue: "*Journal of Applied Psychology, 106*(11), 1673–1694."
+    doi: https://doi.org/10.1037/apl0000868
+    pdfs:
+      - { href: "/assets/files/publications/2021-vankleef-risk-taking-dominance.pdf" }
+
+  - year: 2020
+    authors: "Cowen, A.S.#\\*, **Fang, X.**#, Sauter, D.A., & Keltner, D."
+    title: "What music makes us feel: At least 13 dimensions organize subjective experiences associated with music across different cultures."
+    venue: "*Proceedings of the National Academy of Science, 117*(4), 1924–1934."
+    doi: https://doi.org/10.1073/pnas.1910704117
+    pdfs:
+      - { href: "/assets/files/publications/2020-cowen-what-music-makes-us-feel.pdf" }
+
+  - year: 2020
+    authors: "**Fang, X.**\\*, Sauter, D.A., & Van Kleef, G.A."
+    title: "Unmasking smiles: The influence of intensity and culture on smile interpretation."
+    venue: "*Journal of Cultural Cognitive Science, 4*(3), 293–308."
+    doi: https://doi.org/10.1007/s41809-019-00053-1
+    pdfs:
+      - { href: "/assets/files/publications/2020-fang-unmasking-smiles-intensity-culture.pdf" }
+
+  - year: 2019
+    authors: "**Fang, X.**\\*, Van Kleef, G.A, & Sauter, D.A."
+    title: "Revisiting cultural differences in emotion perception between easterners and westerners: Chinese perceivers are accurate, but see additional non-intended emotions in negative facial expressions."
+    venue: "*Journal of Experimental Social Psychology, 82,* 152–159."
+    doi: https://doi.org/10.1016/j.jesp.2019.02.003
+    pdfs:
+      - { href: "/assets/files/publications/2019-fang-revisiting-cultural-differences.pdf" }
+
+  - year: 2018
+    authors: "**Fang, X.**\\*, Sauter, D. A., & Van Kleef, G. A."
+    title: "Seeing mixed emotions: The specificity of emotion perception from static and dynamic facial expressions across cultures."
+    venue: "*Journal of Cross Cultural Psychology, 49*(1), 130–148."
+    doi: https://doi.org/10.1177/0022022117736270
+    pdfs:
+      - { href: "/assets/files/publications/2018-fang-seeing-mixed-emotions.pdf" }
+
+  - year: 2018
+    authors: "**Fang, X.**\\*, Van Kleef, G.A, & Sauter, D.A."
+    title: "Person perception from dynamic expressions of emotional change: Primacy, recency, or averaging effect?"
+    venue: "*Cognition and Emotion, 32*(8), 1597–1610."
+    doi: https://doi.org/10.1080/02699931.2018.1432476
+    pdfs:
+      - { href: "/assets/files/publications/2018-fang-person-perception-changing-expressions.pdf" }

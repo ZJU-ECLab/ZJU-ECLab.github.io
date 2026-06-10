@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}{{ site.name }} · Zhejiang University{% endblock %}
+
+{% block content %}
+<!-- ── Hero ── -->
+<section class="home-hero">
+  <div class="hero-glow" aria-hidden="true"></div>
+  <div class="hero-inner">
+    <span class="hero-badge">Zhejiang University</span>
+    <h1 class="hero-title">{{ page.hero.title }}</h1>
+    <p class="hero-lead">{{ page.hero.lead }}</p>
+    {% if page.hero.actions %}
+    <div class="hero-actions">
+      {% for a in page.hero.actions %}
+      <a class="btn {{ 'btn-filled' if loop.first else 'btn-tonal' }}" href="{{ a.href }}">{{ a.label }}</a>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<!-- ── Welcome / intro prose ── -->
+{% if content %}
+<section class="home-intro prose">
+  {{ content | safe }}
+</section>
+{% endif %}
+
+<!-- ── Dominant Weekly Journal feature (cover + text) ── -->
+{% if page.journal %}
+<section class="journal-banner">
+  <a class="journal-card" href="{{ page.journal.href }}">
+    <div class="journal-cover">
+      <img src="/assets/img/journal-cover.png" alt="《东西情报》cover" loading="lazy" />
+    </div>
+    <div class="journal-text">
+      <span class="journal-eyebrow">{{ page.journal.eyebrow }}</span>
+      <h2 class="journal-title">{{ page.journal.title }}</h2>
+      <p class="journal-desc">{{ page.journal.desc }}</p>
+      <span class="journal-cta">{{ page.journal.cta }}</span>
+    </div>
+    <span class="journal-arrow" aria-hidden="true">
+      <svg viewBox="0 -960 960 960" width="26" height="26" fill="currentColor"><path d="M647-440H160v-80h487L423-744l57-56 320 320-320 320-57-56 224-224Z"/></svg>
+    </span>
+  </a>
+</section>
+{% endif %}
+
+<!-- ── Research interests & fields (single consolidated card) ── -->
+{% if page.research %}
+<section class="research">
+  <h2 class="section-h">{{ page.research.heading }}</h2>
+  <article class="research-card">
+    {% if page.research.intro %}
+    <p class="research-intro">{{ page.research.intro }}</p>
+    {% endif %}
+    <div class="research-areas">
+      {% for area in page.research.areas %}
+      <div class="research-area">
+        <h3 class="research-area-title">{{ area.name }}</h3>
+        <ul class="research-list">
+          {% for topic in area.topics %}
+          <li>{{ topic }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endfor %}
+    </div>
+  </article>
+</section>
+{% endif %}
+{% endblock %}

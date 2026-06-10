@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}{{ page.title }} · {{ site.name }}{% endblock %}
+{% block content %}
+<article class="news-post">
+  <div class="news-post-head">
+    <a class="back-link" href="/news/">
+      <svg viewBox="0 -960 960 960" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M400-80 0-480l400-400 56 57-343 343 343 343-56 57Z"/></svg>
+      All news
+    </a>
+    <div class="news-meta">
+      {% if page.category %}<span class="news-cat">{{ page.category }}</span>{% endif %}
+      <span class="news-date">{{ page.date_display }}</span>
+    </div>
+    <h1 class="news-post-title">{{ page.title }}</h1>
+  </div>
+
+  {% if page.images %}
+  <div class="news-gallery">
+    {% for img in page.images %}
+    <img src="{{ img }}" alt="" loading="lazy" onerror="this.style.display='none'" />
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <div class="prose news-post-body">
+    {{ content | safe }}
+  </div>
+</article>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-head">
+  <h1 class="page-title">Publications</h1>
+  {% if data.note %}<p class="pub-legend">{{ data.note | inline_md }}</p>{% endif %}
+</section>
+
+<section class="pubs">
+  {% for year, items in data.by_year %}
+  <div class="pub-year-group">
+    <h2 class="pub-year">{{ year }}</h2>
+    {% for p in items %}
+    <article class="pub-card">
+      {# the citation body links directly to the paper (DOI) #}
+      <a class="pub-link" href="{{ p.doi | default('#') }}" target="_blank" rel="noopener">
+        <div class="pub-authors">{{ p.authors | inline_md }}</div>
+        <div class="pub-title">{{ p.title | inline_md }}</div>
+        <div class="pub-venue">{{ p.venue | inline_md }}{% if p.doi %} <span class="pub-doi">{{ p.doi }}</span>{% endif %}</div>
+        {% if p.note %}<div class="pub-note">{{ p.note | inline_md }}</div>{% endif %}
+      </a>
+      {% if p.pdfs %}
+      <div class="pub-pdfs">
+        {% for pdf in p.pdfs %}
+        <a class="pub-pdf-btn" href="{{ pdf.href }}" target="_blank" rel="noopener">
+          <svg viewBox="0 -960 960 960" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M320-240h320v-80H320v80Zm0-160h320v-80H320v80ZM240-80q-33 0-56.5-23.5T160-160v-640q0-33 23.5-56.5T240-880h320l240 240v480q0 33-23.5 56.5T720-80H240Zm280-520v-200H240v640h480v-440H520ZM240-800v200-200 640-640Z"/></svg>
+          {{ pdf.label | default('PDF') }}
+        </a>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </article>
+    {% endfor %}
+  </div>
+  {% endfor %}
+</section>
+{% endblock %}

@@ -8,7 +8,10 @@
 (function () {
   'use strict';
 
-  var DATA_BASE = 'data/';
+  // Journal data lives at the site root (/data/), pushed there by the external
+  // ECLab-News pipeline. Absolute path so it resolves correctly whether the
+  // journal shell is served from /journal/ or previewed from the repo root.
+  var DATA_BASE = '/data/';
   var REC_KEY = '⭐ 推荐阅读';
   var DETAILS_KEY = '文献详情';
   // Homepage accent: extracted from the ECLab logo's dominant warm hue (~22°),
@@ -210,7 +213,15 @@
 
   function showState(msg, isError) {
     content.innerHTML = '';
-    content.appendChild(el('div', { class: 'state-msg' + (isError ? ' error' : ''), text: msg }));
+    if (isError) {
+      content.appendChild(el('div', { class: 'state-msg error', text: msg }));
+      return;
+    }
+    // M3 Expressive contained loading indicator: a morphing shape + label
+    var wrap = el('div', { class: 'state-msg loading-state' });
+    wrap.appendChild(el('div', { class: 'm3-loader', 'aria-hidden': 'true' }));
+    wrap.appendChild(el('div', { class: 'loading-label', text: msg }));
+    content.appendChild(wrap);
   }
 
   // ── router ──────────────────────────────────────────────────────────────────
@@ -229,6 +240,21 @@
     var r = parseHash();
     if (r.route === 'issue') renderIssue(r.label);
     else renderHome();
+  }
+
+  // Wrap a route change in the View Transitions API for an M3 shared-axis feel
+  // (CSS in style.css drives the slide+fade). Falls back to a plain swap where
+  // the API is unavailable or motion is reduced.
+  function navigate() {
+    if (reduceMotion || !document.startViewTransition) { route(); return; }
+    var next = parseHash().route;
+    document.documentElement.dataset.vtTo = next;
+    var vt = document.startViewTransition(route);
+    vt.finished.then(function () {
+      delete document.documentElement.dataset.vtTo;
+    }).catch(function () {
+      delete document.documentElement.dataset.vtTo;
+    });
   }
 
   // ── landing page ──────────────────────────────────────────────────────────
@@ -417,7 +443,10 @@
     var details = el('h2', { class: 'section-h', id: '文献详情', text: '文献详情' });
     content.appendChild(details);
     list.forEach(function (article, i) {
-      content.appendChild(detailCard(article, i + 1, recSet));
+      var card = detailCard(article, i + 1, recSet);
+      // cap stagger index so long issues don't pile up long delays
+      card.style.setProperty('--enter-i', Math.min(i, 8));
+      content.appendChild(card);
     });
   }
 
@@ -1117,6 +1146,6 @@
 
   // ── boot ────────────────────────────────────────────────────────────────────
 
-  window.addEventListener('hashchange', route);
+  window.addEventListener('hashchange', navigate);
   route();
 })();

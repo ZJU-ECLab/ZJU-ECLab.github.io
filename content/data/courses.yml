@@ -1,0 +1,25 @@
+# Courses taught — edit to update the Courses page.
+# Each entry: years, title, institution. Listed newest-first as on the live site.
+
+instructor:
+  - years: "2022 – pres."
+    title: Emotion Psychology
+    institution: Zhejiang University, China
+  - years: "2022 – pres."
+    title: Emotion and Motivation
+    institution: Zhejiang University, China
+  - years: "2021 – pres."
+    title: Social Psychology
+    institution: Zhejiang University, China
+  - years: "2021 – 2022"
+    title: Social Cognition
+    institution: Zhejiang University, China
+  - years: "2020 – 2021"
+    title: Social Psychology
+    institution: York University, Canada
+  - years: "2019 – 2020"
+    title: "Seminar in Social Psychology: Culture and Emotion"
+    institution: York University, Canada
+  - years: "2018 – 2019"
+    title: "Seminar in Social Psychology: Emotion"
+    institution: York University, Canada

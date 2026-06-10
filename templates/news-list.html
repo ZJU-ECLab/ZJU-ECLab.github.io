@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-head">
+  <h1 class="page-title">News</h1>
+</section>
+
+<section class="news-list">
+  {% for post in posts %}
+  <a class="news-item" href="{{ post.url }}">
+    {% if post.meta.thumbnail %}
+    <div class="news-thumb">
+      <img src="{{ post.meta.thumbnail }}" alt="" loading="lazy"
+           onerror="this.closest('.news-thumb').style.display='none'" />
+    </div>
+    {% endif %}
+    <div class="news-body">
+      <div class="news-meta">
+        {% if post.meta.category %}<span class="news-cat">{{ post.meta.category }}</span>{% endif %}
+        <span class="news-date">{{ post.date_display }}</span>
+      </div>
+      <h2 class="news-headline">{{ post.meta.title }}</h2>
+      {% if post.meta.excerpt %}<p class="news-excerpt">{{ post.meta.excerpt }}</p>{% endif %}
+    </div>
+  </a>
+  {% endfor %}
+</section>
+{% endblock %}

@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-head">
+  <h1 class="page-title">{{ page.title }}</h1>
+  {% if page.subtitle %}<p class="page-subtitle">{{ page.subtitle }}</p>{% endif %}
+</section>
+
+<section class="prose page-prose">
+  {{ content | safe }}
+</section>
+{% endblock %}

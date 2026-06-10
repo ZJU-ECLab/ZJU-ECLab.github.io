@@ -117,7 +117,7 @@ jobs:
           count = d.get("count", len(d.get("articles", []) or []))
           arts = d.get("articles", []) or []
           rec = sum(1 for a in arts if a.get("recommended"))
-          url = f"https://zju-eclab.github.io/#/issue/{label}"
+          url = f"https://zju-eclab.github.io/journal/#/issue/{label}"
           lines = []
           lines.append(f"**{title}** 已发布到在线版《东西情报》。")
           lines.append("")

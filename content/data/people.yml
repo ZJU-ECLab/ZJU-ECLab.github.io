@@ -1,0 +1,267 @@
+# Lab members — edit this file to update the People page.
+# `photo` currently points at the live WordPress image; Phase 5 migrates these
+# into /assets/img/people/ and rewrites the paths. Groups render in the order
+# listed under `groups`.
+
+groups:
+  - id: pi
+    label: Principal Investigator
+    members:
+      - name_en: Xia Fang
+        name_zh: 方霞
+        role: Principal Investigator
+        email: x.fang@zju.edu.cn
+        cv: /assets/files/cv/fang-cv-2025.pdf
+        photo: /assets/img/people/xia-fang.jpg
+        bio: >-
+          I'm an Assistant Professor of Psychology and Behavioral Sciences at
+          Zhejiang University, with a passion for understanding how we express
+          and perceive emotions, and how culture shapes these processes. I
+          earned my Ph.D. in Social Psychology from the University of Amsterdam.
+          Outside the lab, you'll find me enjoying coffee, nurturing plants,
+          exploring art, and embracing the outdoors—always inspired by the
+          connections that bring people together.
+
+  - id: phd
+    label: PhD Candidates
+    members:
+      - name_en: Zhihe Pan
+        name_zh: 潘之禾
+        role: Ph.D candidate, 2022
+        email: zhpan@zju.edu.cn
+        photo: /assets/img/people/zhihe-pan.png
+        bio: >-
+          I'm a PhD student in Psychology at Zhejiang University. My research
+          interest lies in vocal and facial communication of emotions, as well
+          as the cultural and linguistic differences involved in these
+          processes. I'm passionate about music—in my free time, I enjoy playing
+          the double bass and piano, and singing.
+      - name_en: Shutong Liu
+        name_zh: 刘书彤
+        role: Ph.D candidate, 2022
+        email: lsto@zju.edu.cn
+        photo: /assets/img/people/shutong-liu.png
+        bio: >-
+          I'm a PhD student in the Department of Psychology at Zhejiang
+          University. I obtained a bachelor's degree in Industrial Design at
+          Tongji University. During the user-oriented design process, I gradually
+          realized the importance of understanding human, so I turned to studying
+          psychology. My current interest is the mechanism and ability of human
+          emotion perception. Hope our research can help people live a better
+          life～
+      - name_en: Ziyu Zhang
+        name_zh: 张子玉
+        role: Ph.D candidate, 2024
+        email: ziyuzhang.psy@outlook.com
+        photo: /assets/img/people/ziyu-zhang.jpg
+        bio: >-
+          I am currently pursuing a PhD in the laboratory setting. I obtained
+          both my undergraduate and master's degrees from Soochow University. The
+          present research interest is emotion transitions. In life, I am also a
+          Zen practitioner and have a deep appreciation for Confucian and
+          Buddhist philosophical theories.
+      - name_en: Qi Peng
+        name_zh: 彭琦
+        role: Ph.D candidate, 2025
+        email: 17861131672@163.com
+        photo: /assets/img/people/qi-peng.png
+        bio: >-
+          I'm a Ph.D. student researching cultural differences in emotional
+          expression. I have a Master's in Applied Psychology from Tianjin
+          University of Traditional Chinese Medicine. Outside of academics, I
+          enjoy reading, movies, and badminton.
+      - name_en: Yong Zhuang
+        name_zh: 庄湧
+        role: Ph.D candidate, 2025
+        email: yfdice@gmail.com
+        photo: /assets/img/people/yong-zhuang.png
+        bio: >-
+          I'm Zhuang Yong, a part-time Ph.D. student. I graduated from Zhejiang
+          University in 2003 with a degree in Computer Science. Having spent more
+          than 20 years at Kingsoft Office, I'm now combining my software
+          background with psychology to build a more versatile system for
+          recognizing human emotions and behaviors.
+
+  - id: postgraduate
+    label: Postgraduate Students
+    members:
+      - name_en: Jiawen Zhu
+        name_zh: 朱嘉雯
+        role: Postgraduate student, 2023
+        email: zhugamen@zju.edu.cn
+        photo: /assets/img/people/jiawen-zhu.png
+        bio: >-
+          Master of Psychology at ECLAB. My research interest is art and emotion.
+          Like watching movies and swimming.
+      - name_en: Hongxu Zhou
+        name_zh: 周洪旭
+        role: Postgraduate student, 2023
+        email: 22339040@zju.edu.cn
+        photo: /assets/img/people/hongxu-zhou.jpg
+        bio: >-
+          Hello! My name is Hongxu Zhou, but you can also call me Hoshi. As a
+          recent graduate, I'm deeply curious about how emotions can be conveyed
+          through art. Art is an essential part of my life, and I cannot imagine
+          what life would be like without it.
+      - name_en: Hweemin Tan
+        name_zh: 陈惠敏
+        role: Postgraduate student, 2023
+        email: hmtan@zju.edu.cn
+        photo: /assets/img/people/hweemin-tan.png
+        bio: >-
+          I'm Hweemin Tan from Malaysia, a master's student at Zhejiang
+          University. I'm interested in emotion and cross-cultural studies. In my
+          daily life, I love watching Youtube, drawing, and trying out new
+          recipes in the kitchen. I'm always on the lookout for fascinating
+          exhibitions and museums to visit. Spicy food makes me happy, hot
+          weather frustrates me, and rushing to meet deadlines leaves me feeling
+          regretful. Yet, life's emotional ups and downs keep inspiring me.
+      - name_en: Weitie Song
+        name_zh: 宋炜铁
+        role: Postgraduate student, 2024
+        email: sweetiiron@zju.edu.cn
+        photo: /assets/img/people/weitie-song.png
+        bio: >-
+          Hi, I'm Sweetiiron. I hold a Bachelor's degree in Information Security.
+          In my free time, I enjoy engaging my mind with something that requires
+          a bit of lateral thinking and I have a fondness for the golden era of
+          early 21st-century Chinese music, which often evokes a sense of
+          nostalgia and cultural richness. I hope to discover my lifelong passion
+          in ECLAB and look forward to the journey ahead!
+      - name_en: Shiyan Zhan
+        name_zh: 詹诗妍
+        role: Postgraduate student, 2024
+        email: zsyan@qq.com
+        photo: /assets/img/people/shiyan-zhan.png
+        bio: >-
+          My name is Zhan Shiyan, a master's student in EClab. My research
+          interests lie in the domains of emotion and emotion recognition within
+          speech and imagery.
+      - name_en: Xin Peng
+        name_zh: 彭欣
+        role: Postgraduate student, 2025
+        email: saoirsep@163.com
+        photo: /assets/img/people/xin-peng.jpg
+        bio: >-
+          I'm Peng Xin, a master's student at ECLAB. I'm interested in emotion
+          and social interaction studies. I hope to learn more and develop my
+          abilities through my time in the lab. What's more, I enjoy listening to
+          music, visiting parks, and interacting with people in daily life. It's
+          often the little things in life that touch the heart most！
+
+  - id: undergraduate
+    label: Undergraduate Students
+    members:
+      - name_en: Shuoan Li
+        name_zh: 李烁安
+        role: Undergraduate, 2022
+        email: 3220101015@zju.edu.cn
+        photo: /assets/img/people/shuoan-li.png
+        bio: >-
+          I'm Shuoan Li, an undergraduate student aspiring to pursue a PhD in Dr.
+          Fang's lab. I enjoy playing table tennis, singing, coding, and
+          observing people. My interests are all over the place, but I only
+          dabble in most of them. I'm trying to learn how to coexist with humans
+          through studying emotions. Currently, my research interests lie in
+          emotions combined with cross-cultural studies and art.
+      - name_en: Feiyu Zhang
+        name_zh: 张斐煜
+        role: Undergraduate, 2022
+        email: 1443921259@qq.com
+        photo: /assets/img/people/feiyu-zhang.jpg
+        bio: >-
+          My name is Feiyu Zhang, an undergraduate student in psychology. I'm
+          pretty introverted but love talking about interesting stuff. In my free
+          time, I play badminton and video games. I'm passionate about exploring
+          different cuisines and dream of traveling to taste flavors.
+      - name_en: Ruotian Zheng
+        name_zh: 郑若天
+        role: Undergraduate, 2022
+        email: 2059019453@qq.com
+        photo: /assets/img/people/ruotian-zheng.jpg
+        bio: >-
+          My name is Ruotian Zheng, an undergraduate student majoring in
+          Psychology. I am deeply fascinated by research on the emotional
+          expressions of faces. As a naturally introverted person, I spend my
+          free time immersed in novels and video games, often listening to music
+          while reading. For physical activity, I find joy in playing badminton.
+      - name_en: Xinyan Pan
+        name_zh: 潘心焱
+        role: Undergraduate, 2023
+        email: 3230105612@zju.edu.cn
+        photo: /assets/img/people/xinyan-pan.png
+        bio: >-
+          My name is Xinyan Pan, an undergraduate student majoring in psychology.
+          My research interest is emotion and culture.
+      - name_en: Kexin Chen
+        name_zh: 陈可欣
+        role: Undergraduate, 2023
+        email: 189687566@qq.com
+        photo: /assets/img/people/kexin-chen.png
+        bio: >-
+          My name is Kexin Chen, an undergraduate student in psychology. I am a
+          realistic idealist and my hobbies are watching movies and traveling. I
+          am making efforts to improve myself now.
+      - name_en: Ting Chen
+        name_zh: 陈婷
+        role: Undergraduate, 2023
+        email: 3230100064@zju.edu.cn
+        photo: /assets/img/people/ting-chen.jpg
+        bio: >-
+          My name is Ting Chen, an undergraduate student in psychology. My
+          research interests are emotions and culture. In my spare time, I enjoy
+          listening to music.
+      - name_en: Chuying Wu
+        name_zh: 吴楚颖
+        role: Undergraduate, 2023
+        email: 3230100037@zju.edu.cn
+        photo: /assets/img/people/chuying-wu.jpg
+        bio: >-
+          My name is Chuying Wu, an undergraduate student majoring in Psychology.
+          I'm interested in emotion and culture. I am a relatively introverted
+          person and enjoy watching anime or traveling in my free time. I really
+          love cute animals like kittens and puppies.
+      - name_en: Zichao Lin
+        name_zh: 林子超
+        role: Undergraduate, 2023
+        email: 3230100577@zju.edu.cn
+        photo: /assets/img/people/zichao-lin.jpg
+        bio: >-
+          My name is Zichao Lin, an undergraduate student majoring in Psychology.
+          My research interests lie at the intersection of emotions and art. I am
+          fascinated by how emotions are formed and how individuals perceive and
+          interpret emotions conveyed through the works of others. In my spare
+          time, I enjoy volunteer activities and watching anime.
+      - name_en: Yunzhao Yang
+        name_zh: 杨昀昭
+        role: Undergraduate, 2023
+        email: 3230103500@zju.edu.cn
+        photo: /assets/img/people/yunzhao-yang.jpg
+        bio: >-
+          My name is Yang Yunzhao, an undergraduate student majoring in
+          Psychology. I hope to learn meaningful knowledge in the lab, so if
+          anyone needs help I could volunteer.
+      - name_en: Yilin Long
+        name_zh: 龙奕霖
+        role: Undergraduate, 2024
+        email: 3240104965@zju.edu.cn
+        photo: /assets/img/people/yilin-long.jpg
+        bio: >-
+          I am Long Yilin, a 2024 undergraduate student at ECLAB. I am very
+          interested in research on cross-culture and emotions, and I hope to
+          learn from everyone at ECLAB. I like ball games, including table tennis
+          and badminton, and I usually go jogging in my daily life. Besides, I
+          love pets very much, especially dogs.
+
+  - id: mascot
+    label: Lab Mascot
+    members:
+      - name_en: Doudou
+        name_zh: 逗逗
+        role: Lab Mascot
+        photo: /assets/img/people/doudou.jpg
+        bio: >-
+          I used to be an independent pup, but ever since Mom came back, I've
+          become a total cuddle bug. I love socializing at cafés, sticking close
+          to my humans, getting all the pets, and, of course, napping with the
+          occasional snore!

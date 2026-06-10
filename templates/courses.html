@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-head">
+  <h1 class="page-title">Courses</h1>
+</section>
+
+<section class="courses">
+  <h2 class="section-h">Course Instructor</h2>
+  <ul class="course-list">
+    {% for c in data.instructor %}
+    <li class="course-item">
+      <span class="course-years">{{ c.years }}</span>
+      <span class="course-body">
+        <span class="course-title">{{ c.title }}</span>
+        <span class="course-inst">{{ c.institution }}</span>
+      </span>
+    </li>
+    {% endfor %}
+  </ul>
+</section>
+{% endblock %}
