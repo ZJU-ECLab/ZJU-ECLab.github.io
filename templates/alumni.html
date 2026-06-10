@@ -4,6 +4,8 @@
   <h1 class="page-title">Alumni</h1>
 </section>
 
+<div class="section-wave-gradient" aria-hidden="true"></div>
+
 <section class="alumni-section">
   <h2 class="section-h reveal">Students</h2>
   {% for grp in data.advisees %}
@@ -32,7 +34,7 @@
     <div class="carousel-track" data-carousel-track tabindex="0" aria-label="Past lab member photos, scrollable">
       {% for entry in data.past_members %}
         {% if entry.photo %}
-        <figure class="carousel-item">
+        <figure class="carousel-item tilt-card">
           <div class="carousel-media">
             <img src="{{ entry.photo }}" alt="Lab {{ entry.year }}" loading="lazy"
                  class="zoomable" data-zoomable="{{ entry.photo }}" data-caption="Lab {{ entry.year }}"
@@ -43,7 +45,7 @@
         {% endif %}
         {% if entry.photos %}
           {% for p in entry.photos %}
-          <figure class="carousel-item">
+          <figure class="carousel-item tilt-card">
             <div class="carousel-media">
               <img src="{{ p }}" alt="Lab {{ entry.year }}" loading="lazy"
                    class="zoomable" data-zoomable="{{ p }}" data-caption="Lab {{ entry.year }}" />

@@ -4,11 +4,13 @@
   <h1 class="page-title">Courses</h1>
 </section>
 
+<div class="section-wave-gradient" aria-hidden="true"></div>
+
 <section class="courses">
   <h2 class="section-h reveal">Course Instructor</h2>
   <ul class="course-list reveal-stagger">
     {% for c in data.instructor %}
-    <li class="course-item">
+    <li class="course-item tilt-card">
       <span class="course-years">{{ c.years }}</span>
       <span class="course-body">
         <span class="course-title">{{ c.title }}</span>

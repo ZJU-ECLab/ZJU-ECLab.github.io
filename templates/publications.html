@@ -5,14 +5,22 @@
   {% if data.note %}<p class="pub-legend">{{ data.note | inline_md }}</p>{% endif %}
 </section>
 
+<div class="section-wave-gradient" aria-hidden="true"></div>
+
 <section class="pubs">
+  <div class="chip-group reveal" data-chips>
+    <button class="chip chip--selected" data-year="all">All <span class="chip-count">{{ data.total }}</span></button>
+    {% for year, items in data.by_year %}
+    <button class="chip" data-year="{{ year }}">{{ year }} <span class="chip-count">{{ items | length }}</span></button>
+    {% endfor %}
+  </div>
+
   {% for year, items in data.by_year %}
-  <div class="pub-year-group">
+  <div class="pub-year-group" data-year="{{ year }}">
     <h2 class="pub-year reveal">{{ year }}</h2>
     <div class="reveal-stagger">
     {% for p in items %}
-    <article class="pub-card">
-      {# the citation body links directly to the paper (DOI) #}
+    <article class="pub-card tilt-card">
       <a class="pub-link" href="{{ p.doi | default('#') }}" target="_blank" rel="noopener">
         <div class="pub-authors">{{ p.authors | inline_md }}</div>
         <div class="pub-title">{{ p.title | inline_md }}</div>
@@ -35,4 +43,28 @@
   </div>
   {% endfor %}
 </section>
+
+<script>
+  (function() {
+    var group = document.querySelector('.chip-group[data-chips]');
+    if (!group) return;
+    var chips = group.querySelectorAll('.chip');
+    var yearGroups = document.querySelectorAll('.pub-year-group');
+
+    chips.forEach(function(chip) {
+      chip.addEventListener('click', function() {
+        chips.forEach(function(c) { c.classList.remove('chip--selected'); });
+        chip.classList.add('chip--selected');
+        var year = chip.getAttribute('data-year');
+        yearGroups.forEach(function(g) {
+          if (year === 'all' || g.getAttribute('data-year') === year) {
+            g.style.display = '';
+          } else {
+            g.style.display = 'none';
+          }
+        });
+      });
+    });
+  })();
+</script>
 {% endblock %}

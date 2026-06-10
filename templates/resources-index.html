@@ -5,10 +5,12 @@
   {% if page.subtitle %}<p class="page-subtitle">{{ page.subtitle }}</p>{% endif %}
 </section>
 
+<div class="section-wave-gradient" aria-hidden="true"></div>
+
 <section class="resource-index">
   <div class="resource-grid reveal-stagger">
     {% for db in page.databases %}
-    <a class="resource-card" href="{{ db.href }}">
+    <a class="resource-card tilt-card" href="{{ db.href }}">
       <span class="resource-abbr">{{ db.abbr }}</span>
       <h2 class="resource-name">{{ db.name }}</h2>
       <p class="resource-blurb">{{ db.blurb }}</p>

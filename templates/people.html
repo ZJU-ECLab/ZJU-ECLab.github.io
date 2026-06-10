@@ -1,16 +1,26 @@
 {% extends "base.html" %}
 {% block content %}
+<!-- SVG blob clip-path for expressive photo masks -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <clipPath id="blob-clip" clipPathUnits="objectBoundingBox">
+      <path d="M0.5,0.02 C0.75,0.02 0.95,0.15 0.97,0.4 C0.99,0.65 0.85,0.92 0.6,0.98 C0.35,1.04 0.1,0.88 0.04,0.62 C-0.02,0.36 0.25,0.02 0.5,0.02"/>
+    </clipPath>
+  </defs>
+</svg>
+
 <section class="page-head reveal">
   <h1 class="page-title">Lab Members</h1>
 </section>
+
+<div class="section-wave-gradient" aria-hidden="true"></div>
 
 {% for group in data.groups %}
 <section class="people-group">
   <h2 class="section-h reveal">{{ group.label }}</h2>
   {% if group.id == 'pi' %}
-  {# Principal Investigator: a single full-width feature card #}
   {% for m in group.members %}
-  <article class="person-card person-card--featured reveal">
+  <article class="person-card person-card--featured tilt-card reveal">
     <div class="person-photo">
       {% if m.photo %}
       <img src="{{ m.photo }}" alt="{{ m.name_en }}" loading="lazy"
@@ -30,11 +40,9 @@
   </article>
   {% endfor %}
   {% else %}
-  {# Everyone else: an aligned responsive grid — cards read left-to-right and
-     share equal row heights so wide screens stay tidy #}
   <div class="people-grid reveal-stagger">
     {% for m in group.members %}
-    <article class="person-card">
+    <article class="person-card tilt-card">
       <div class="person-photo">
         {% if m.photo %}
         <img src="{{ m.photo }}" alt="{{ m.name_en }}" loading="lazy"

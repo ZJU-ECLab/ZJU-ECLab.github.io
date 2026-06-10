@@ -151,6 +151,105 @@
     });
   });
 
+  // ── M3 Expressive — 3D tilt cards ──
+  (function initTiltCards() {
+    if (!window.matchMedia('(pointer: fine)').matches) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    document.querySelectorAll('.tilt-card').forEach(function(card) {
+      card.addEventListener('pointermove', function(e) {
+        var rect = card.getBoundingClientRect();
+        var x = (e.clientX - rect.left) / rect.width - 0.5;
+        var y = (e.clientY - rect.top) / rect.height - 0.5;
+        card.style.setProperty('--tilt-x', (-y * 8).toFixed(2) + 'deg');
+        card.style.setProperty('--tilt-y', (x * 8).toFixed(2) + 'deg');
+      });
+      card.addEventListener('pointerleave', function() {
+        card.style.setProperty('--tilt-x', '0deg');
+        card.style.setProperty('--tilt-y', '0deg');
+      });
+    });
+  })();
+
+  // ── M3 Expressive — Word-by-word hero text reveal ──
+  (function initWordReveal() {
+    var title = document.querySelector('.hero-title');
+    if (!title) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    var text = title.textContent.trim();
+    var words = text.split(/\s+/);
+    title.innerHTML = words.map(function(w, i) {
+      return '<span class="word" style="animation-delay:' + (0.3 + i * 0.08).toFixed(2) + 's">' + w + '</span>';
+    }).join(' ');
+  })();
+
+  // ── M3 Expressive — Hero scroll exit (JS fallback) ──
+  (function initHeroScrollExit() {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var canvas = document.querySelector('.hero-canvas');
+    var inner = document.querySelector('.hero-inner');
+    if (!canvas || !inner) return;
+
+    // Check if CSS scroll-timeline is supported
+    if (CSS && CSS.supports && CSS.supports('animation-timeline', 'scroll()')) return;
+
+    var ticking = false;
+    window.addEventListener('scroll', function() {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(function() {
+        var scrollY = window.scrollY;
+        var maxScroll = 400; // px of scroll to complete the effect
+        var t = Math.min(scrollY / maxScroll, 1);
+        // Ease out
+        t = 1 - Math.pow(1 - t, 3);
+        canvas.style.opacity = (1 - t).toFixed(3);
+        canvas.style.transform = 'scale(' + (1 - t * 0.25).toFixed(3) + ') translateY(' + (-t * 80).toFixed(1) + 'px)';
+        canvas.style.filter = 'blur(' + (t * 20).toFixed(1) + 'px)';
+        inner.style.opacity = (1 - t).toFixed(3);
+        inner.style.transform = 'translateY(' + (-t * 40).toFixed(1) + 'px) scale(' + (1 - t * 0.04).toFixed(3) + ')';
+        ticking = false;
+      });
+    }, { passive: true });
+  })();
+
+  // ── M3 Expressive — Emoticon hover interaction ──
+  (function initEmoticonHover() {
+    if (!window.matchMedia('(pointer: fine)').matches) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    var field = document.getElementById('emoticon-field');
+    if (!field) return;
+
+    var ticking = false;
+    field.addEventListener('pointermove', function(e) {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(function() {
+        var emoticons = field.querySelectorAll('.floating-emoticon');
+        var mx = e.clientX, my = e.clientY;
+        emoticons.forEach(function(em) {
+          var rect = em.getBoundingClientRect();
+          var cx = rect.left + rect.width / 2;
+          var cy = rect.top + rect.height / 2;
+          var dist = Math.hypot(mx - cx, my - cy);
+          if (dist < 120) {
+            em.classList.add('hovered');
+          } else {
+            em.classList.remove('hovered');
+          }
+        });
+        ticking = false;
+      });
+    });
+    field.addEventListener('pointerleave', function() {
+      field.querySelectorAll('.floating-emoticon.hovered').forEach(function(em) {
+        em.classList.remove('hovered');
+      });
+    });
+  })();
+
   // ── shared image lightbox (QR code, alumni photos, news images) ──
   (function initImageLightbox() {
     var box = document.getElementById('img-lightbox');

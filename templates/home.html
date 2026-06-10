@@ -44,7 +44,7 @@
   <h2 class="quick-nav-title">Explore the Lab</h2>
   <div class="quick-nav-grid reveal-stagger">
     {% for nav in site.quick_nav %}
-    <a class="quick-nav-card" href="{{ nav.href }}">
+    <a class="quick-nav-card tilt-card" href="{{ nav.href }}">
       <span class="quick-nav-icon">
         {% if nav.icon == 'news' %}
         <svg viewBox="0 -960 960 960" fill="currentColor"><path d="M160-120q-33 0-56.5-23.5T80-200v-560q0-33 23.5-56.5T160-840h640q33 0 56.5 23.5T880-760v560q0 33-23.5 56.5T800-120H160Zm0-80h640v-560H160v560Zm120-80h400q17 0 28.5-11.5T720-320q0-17-11.5-28.5T680-360H280q-17 0-28.5 11.5T240-320q0 17 11.5 28.5T280-280Zm0-160h80q17 0 28.5-11.5T400-480v-160q0-17-11.5-28.5T360-680h-80q-17 0-28.5 11.5T240-640v160q0 17 11.5 28.5T280-440Zm240 0h160q17 0 28.5-11.5T720-480q0-17-11.5-28.5T680-520H520q-17 0-28.5 11.5T480-480q0 17 11.5 28.5T520-440Zm0-160h160q17 0 28.5-11.5T720-640q0-17-11.5-28.5T680-680H520q-17 0-28.5 11.5T480-640q0 17 11.5 28.5T520-600ZM160-200v-560 560Z"/></svg>
@@ -74,17 +74,13 @@
 </div>
 {% endif %}
 
-<!-- ── Section divider ── -->
-<div class="section-divider" aria-hidden="true">
-  <svg viewBox="0 0 1100 48" preserveAspectRatio="none">
-    <path d="M0,24 C150,8 250,40 400,24 C550,8 650,40 800,24 C950,8 1050,40 1100,24" />
-  </svg>
-</div>
+<!-- ── Section divider — expressive wave gradient ── -->
+<div class="section-wave-gradient" aria-hidden="true"></div>
 
 <!-- ── Dominant Weekly Journal feature ── -->
 {% if page.journal %}
 <section class="journal-banner reveal">
-  <a class="journal-card" href="{{ page.journal.href }}">
+  <a class="journal-card tilt-card" href="{{ page.journal.href }}">
     <div class="journal-cover">
       <img src="/assets/img/journal-cover.png" alt="《东西情报》cover" loading="lazy" />
     </div>
@@ -105,7 +101,7 @@
 {% if page.research %}
 <section class="research">
   <h2 class="section-h reveal">{{ page.research.heading }}</h2>
-  <article class="research-card reveal">
+  <article class="research-card surface-dual reveal">
     {% if page.research.intro %}
     <p class="research-intro">{{ page.research.intro }}</p>
     {% endif %}

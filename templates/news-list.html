@@ -4,9 +4,11 @@
   <h1 class="page-title">News</h1>
 </section>
 
+<div class="section-wave-gradient" aria-hidden="true"></div>
+
 <section class="news-list reveal-stagger">
   {% for post in posts %}
-  <a class="news-item" href="{{ post.url }}">
+  <a class="news-item tilt-card" href="{{ post.url }}">
     {% if post.meta.thumbnail %}
     <div class="news-thumb">
       <img src="{{ post.meta.thumbnail }}" alt="" loading="lazy"

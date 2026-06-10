@@ -7,7 +7,7 @@
   <meta name="description" content="{{ page.description | default('Emotion & Culture Lab, Zhejiang University') }}" />
   <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg" />
   <link rel="stylesheet" href="/assets/site.css" />
-  <style>:root { --accent: {{ accent }}; }</style>
+  <style>:root { --accent: {{ accent }}; --complement: {{ complement | default(accent) }}; }</style>
 </head>
 <body data-page="{{ page.slug | default('') }}">
 

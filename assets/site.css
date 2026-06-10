@@ -403,12 +403,14 @@ section { max-width: var(--w); margin: 0 auto; padding: 0 1.5rem; }
    ══════════════════════════════════════════════ */
 .home-hero {
   position: relative; text-align: center;
-  padding: 5rem 1.5rem 4rem; margin: 0 auto;
+  padding: 5rem 1.5rem 5rem; margin: 0 auto;
   max-width: var(--w);
   min-height: 420px;
   display: flex; align-items: center; justify-content: center;
   z-index: 1;
+  overflow: visible;
 }
+.hero-inner { position: relative; z-index: 2; }
 
 /* Canvas for blobs that fade into background — no hard edges */
 .hero-canvas {
@@ -490,8 +492,7 @@ section { max-width: var(--w); margin: 0 auto; padding: 0 1.5rem; }
   background: linear-gradient(135deg, var(--ink) 20%, color-mix(in srgb, var(--accent) 70%, var(--ink)) 50%, var(--primary) 80%);
   background-size: 200% 200%;
   -webkit-background-clip: text; background-clip: text; color: transparent;
-  animation: hero-title-enter 1s var(--ease-emphasized-decel) 0.3s both,
-             hero-gradient-shift 8s ease-in-out infinite;
+  animation: hero-gradient-shift 8s ease-in-out infinite;
 }
 @keyframes hero-title-enter {
   from { opacity: 0; transform: translateY(28px); }
@@ -849,10 +850,193 @@ section { max-width: var(--w); margin: 0 auto; padding: 0 1.5rem; }
   .quick-nav-grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
 }
 
+/* ══════════════════════════════════════════════
+   M3 Expressive — 3D Tilt Cards
+   ══════════════════════════════════════════════ */
+.tilt-card {
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+.tilt-card:hover {
+  transform: perspective(800px) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg)) scale(1.02);
+}
+
+/* ══════════════════════════════════════════════
+   M3 Expressive — Self-drawing Section Underlines
+   ══════════════════════════════════════════════ */
+.section-h::before {
+  transform-origin: top;
+  animation: underline-draw 0.8s var(--ease-spring) both;
+}
+.section-h.revealed::before {
+  animation: underline-draw 0.8s var(--ease-spring) both;
+}
+@keyframes underline-draw {
+  0% { transform: scaleY(0); }
+  60% { transform: scaleY(1.4); }
+  80% { transform: scaleY(0.9); }
+  100% { transform: scaleY(1); }
+}
+
+/* ══════════════════════════════════════════════
+   M3 Expressive — Dual-tone Gradient Surfaces
+   ══════════════════════════════════════════════ */
+.surface-dual {
+  background:
+    linear-gradient(135deg,
+      color-mix(in srgb, var(--accent) 8%, var(--surface-1)) 0%,
+      color-mix(in srgb, var(--complement, var(--accent)) 5%, var(--surface-1)) 100%
+    );
+}
+
+/* ══════════════════════════════════════════════
+   M3 Expressive — Word-by-word Hero Reveal
+   ══════════════════════════════════════════════ */
+.hero-title .word {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(10px) scale(0.97);
+  animation: word-land 0.55s var(--ease-spring) both;
+}
+@keyframes word-land {
+  0% { opacity: 0; transform: translateY(10px) scale(0.97); }
+  50% { opacity: 1; }
+  70% { transform: translateY(-3px) scale(1.02); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ══════════════════════════════════════════════
+   M3 Expressive — Publication Year Chips
+   ══════════════════════════════════════════════ */
+.chip-group {
+  display: flex; flex-wrap: wrap; gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+.chip {
+  display: inline-flex; align-items: center; gap: 0.3rem;
+  padding: 0.45rem 1rem; font-family: var(--brand);
+  font-size: 0.82rem; font-weight: 650;
+  color: var(--ink-soft); background: var(--surface-2);
+  border: 1px solid var(--outline-soft); border-radius: var(--shape-full);
+  cursor: pointer; position: relative; overflow: hidden;
+  transition: background-color 0.25s var(--ease-standard),
+              color 0.25s var(--ease-standard),
+              border-color 0.25s var(--ease-standard),
+              transform 0.3s var(--ease-spring),
+              box-shadow 0.25s var(--ease-standard);
+}
+.chip:hover {
+  background: var(--state-hover); border-color: color-mix(in srgb, var(--accent) 30%, transparent);
+  transform: translateY(-2px); box-shadow: var(--elev-1);
+}
+.chip:active { transform: scale(0.95); }
+.chip--selected {
+  background: var(--gradient-primary); color: var(--on-primary);
+  border-color: transparent; box-shadow: var(--elev-1);
+}
+.chip--selected:hover {
+  background: var(--gradient-primary); color: var(--on-primary);
+  box-shadow: var(--elev-2); transform: translateY(-2px);
+}
+.chip .chip-count {
+  font-size: 0.68rem; font-weight: 700; opacity: 0.7;
+  background: color-mix(in srgb, currentColor 15%, transparent);
+  padding: 0.1rem 0.4rem; border-radius: var(--shape-full);
+}
+
+/* ══════════════════════════════════════════════
+   M3 Expressive — Photo Blob Masks
+   ══════════════════════════════════════════════ */
+.person-photo--blob {
+  clip-path: url(#blob-clip);
+  transition: clip-path 0.6s var(--ease-spring);
+}
+.person-card:hover .person-photo--blob {
+  clip-path: circle(50% at 50% 50%);
+}
+
+/* ══════════════════════════════════════════════
+   M3 Expressive — View Transition Names
+   ══════════════════════════════════════════════ */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.35s;
+  animation-timing-function: var(--ease-emphasized);
+}
+::view-transition-old(root) {
+  animation-name: vt-fade-out;
+}
+::view-transition-new(root) {
+  animation-name: vt-fade-in;
+}
+@keyframes vt-fade-out {
+  to { opacity: 0; transform: scale(0.96) translateY(10px); }
+}
+@keyframes vt-fade-in {
+  from { opacity: 0; transform: scale(1.02) translateY(-10px); }
+}
+
+/* ══════════════════════════════════════════════
+   M3 Expressive — Emoticon Hover Interaction
+   ══════════════════════════════════════════════ */
+.floating-emoticon {
+  transition: transform 0.5s var(--ease-spring), opacity 0.3s;
+}
+.floating-emoticon.hovered {
+  transform: scale(1.2) rotate(0deg) !important;
+  opacity: var(--em-opacity, 0.5) !important;
+  z-index: 10;
+}
+
+/* ══════════════════════════════════════════════
+   M3 Expressive — Expressive Section Transitions
+   ══════════════════════════════════════════════ */
+.section-wave {
+  width: 100%; height: 80px; display: block;
+  max-width: var(--w); margin: 0 auto;
+  position: relative; overflow: hidden;
+}
+.section-wave svg {
+  width: 100%; height: 100%; display: block;
+}
+.section-wave path {
+  fill: none; stroke: var(--outline-soft); stroke-width: 1.5;
+  stroke-dasharray: 8 6; stroke-linecap: round;
+  animation: dash-flow 20s linear infinite;
+}
+.section-wave-gradient {
+  width: 100%; height: 120px; display: block;
+  background: linear-gradient(180deg,
+    var(--bg) 0%,
+    color-mix(in srgb, var(--accent) 8%, var(--bg)) 30%,
+    color-mix(in srgb, var(--accent) 14%, var(--bg)) 50%,
+    color-mix(in srgb, var(--accent) 8%, var(--bg)) 70%,
+    var(--bg) 100%
+  );
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120'%3E%3Cpath d='M0,60 C200,20 400,100 600,60 C800,20 1000,100 1200,60' fill='none' stroke='black' stroke-width='50'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120'%3E%3Cpath d='M0,60 C200,20 400,100 600,60 C800,20 1000,100 1200,60' fill='none' stroke='black' stroke-width='50'/%3E%3C/svg%3E");
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+}
+
+/* ══════════════════════════════════════════════
+   M3 Expressive — Publication Venue Glow
+   ══════════════════════════════════════════════ */
+.pub-card:hover .pub-venue em {
+  text-shadow: 0 0 16px color-mix(in srgb, var(--accent) 25%, transparent);
+  transition: text-shadow 0.4s var(--ease-spring);
+}
+
+/* ══════════════════════════════════════════════
+   Reduced Motion — disable all expressive additions
+   ══════════════════════════════════════════════ */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
   .reveal, .reveal-left, .reveal-right, .reveal-scale { opacity: 1; transform: none; }
   .reveal-stagger > * { opacity: 1; transform: none; }
+  .tilt-card { transform: none !important; }
+  .hero-title .word { opacity: 1; transform: none; }
+  .floating-emoticon.hovered { transform: none !important; }
 }
 
 /* ── 404 ── */

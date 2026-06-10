@@ -64,6 +64,20 @@ ACCENTS = {
     "news": "hsl(16, 64%, 46%)",
 }
 
+# Complementary accents for dual-tone expressive surfaces (M3 Expressive).
+# Each complement is roughly opposite on the color wheel from its accent.
+COMPLEMENTS = {
+    "home": "hsl(196, 64%, 46%)",
+    "people": "hsl(2, 42%, 42%)",
+    "alumni": "hsl(32, 48%, 50%)",
+    "publications": "hsl(75, 40%, 56%)",
+    "courses": "hsl(330, 38%, 42%)",
+    "resources": "hsl(208, 60%, 48%)",
+    "join-us": "hsl(158, 48%, 52%)",
+    "contact": "hsl(20, 46%, 46%)",
+    "news": "hsl(196, 64%, 46%)",
+}
+
 # Site-wide navigation. `children` render as a dropdown / submenu.
 # Per the migration decisions: RESEARCH points straight to Publications, and the
 # Weekly Journal is promoted to a dominant Home feature (still linkable in nav).
@@ -304,6 +318,7 @@ def build_pages(env: Environment) -> None:
             page=doc.meta,
             content=doc.html,
             accent=doc.meta.get("accent", ACCENTS.get(slug, DEFAULT_ACCENT)),
+            complement=COMPLEMENTS.get(slug, ACCENTS.get(slug, DEFAULT_ACCENT)),
         )
         write_page(url, html)
         print(f"  built  {url}  ({slug})")
@@ -321,6 +336,7 @@ def build_data_page(env: Environment, *, template: str, data_file: str,
         page={"title": title, "slug": slug},
         data=data,
         accent=ACCENTS.get(slug, DEFAULT_ACCENT),
+        complement=COMPLEMENTS.get(slug, ACCENTS.get(slug, DEFAULT_ACCENT)),
     )
     write_page(url, html)
     print(f"  built  {url}  ({slug})")
@@ -335,6 +351,7 @@ def _group_publications(data: dict) -> dict:
         for year, group in itertools.groupby(ordered, key=lambda p: p.get("year"))
     ]
     data["by_year"] = by_year
+    data["total"] = len(items)
     return data
 
 
@@ -378,6 +395,7 @@ def build_news(env: Environment) -> None:
         page={"title": "News", "slug": "news"},
         posts=posts,
         accent=ACCENTS["news"],
+        complement=COMPLEMENTS["news"],
     ))
     print("  built  /news/  (news index)")
 
@@ -389,6 +407,7 @@ def build_news(env: Environment) -> None:
             page=p["meta"],
             content=p["html"],
             accent=ACCENTS["news"],
+            complement=COMPLEMENTS["news"],
         ))
         print(f"  built  {p['url']}  (news post)")
 
