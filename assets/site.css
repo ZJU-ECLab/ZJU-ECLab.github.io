@@ -645,11 +645,22 @@ section { max-width: var(--w); margin: 0 auto; padding: 0 1.5rem; }
 }
 .journal-desc { font-size: 0.98rem; line-height: 1.65; opacity: 0.9; }
 .journal-cta {
-  display: inline-flex; align-items: center; gap: 0.35rem; margin-top: 1rem;
-  font-weight: 700; color: var(--primary);
-  transition: gap 0.3s var(--ease-spring);
+  display: inline-flex; flex-direction: column; align-items: flex-start;
+  gap: 0.25rem; margin-top: 1rem;
+  font-weight: 700; color: var(--primary); cursor: pointer;
+  transition: color 0.2s var(--ease-standard);
 }
-.journal-card:hover .journal-cta { gap: 0.6rem; }
+.journal-cta:hover { color: color-mix(in srgb, var(--primary) 80%, var(--ink)); }
+.journal-cta-pill {
+  display: block; width: 40px; height: 4px;
+  border-radius: var(--shape-full);
+  background: var(--primary);
+  transition: width 0.3s var(--ease-spring), background-color 0.2s var(--ease-standard);
+}
+.journal-cta:hover .journal-cta-pill {
+  width: 100%;
+  background: color-mix(in srgb, var(--primary) 80%, var(--ink));
+}
 .journal-arrow {
   flex-shrink: 0; align-self: center; width: 56px; height: 56px; border-radius: var(--shape-full);
   display: grid; place-items: center; color: var(--on-primary);

@@ -286,6 +286,15 @@ def build_home(env: Environment) -> None:
     doc = parse_markdown(src)
     template = env.get_template(doc.meta.get("template", "home.html"))
     ctx = page_context(doc)
+    # Inject latest journal issue URL from manifest
+    manifest_path = ROOT / "data" / "manifest.json"
+    if manifest_path.exists():
+        import json as _json
+        manifest = _json.loads(manifest_path.read_text(encoding="utf-8"))
+        issues = manifest.get("issues", [])
+        if issues:
+            latest_label = issues[0]["label"]
+            ctx["latest_journal_href"] = f"/journal/#/issue/{latest_label}"
     write_page("/", template.render(**ctx))
     print("  built  /  (home)")
 
@@ -307,19 +316,47 @@ def page_url(rel: Path) -> str:
 def build_pages(env: Environment) -> None:
     """Render every Markdown page under content/pages (recursively)."""
     pages_dir = CONTENT / "pages"
+    # Pre-read latest journal issue for the home page
+    latest_journal_href = None
+    latest_journal_title = None
+    manifest_path = ROOT / "data" / "manifest.json"
+    if manifest_path.exists():
+        import json as _json
+        manifest = _json.loads(manifest_path.read_text(encoding="utf-8"))
+        issues = manifest.get("issues", [])
+        if issues:
+            latest = issues[0]
+            latest_journal_href = f"/journal/#/issue/{latest['label']}"
+            # Format a short date label from the issue label (e.g. "2026-06-01_2026-06-07" → "Jun 1–7, 2026")
+            try:
+                import datetime as _dt
+                start_str, end_str = latest["label"].split("_")
+                start = _dt.date.fromisoformat(start_str)
+                end = _dt.date.fromisoformat(end_str)
+                if start.month == end.month:
+                    latest_journal_title = f"{start.strftime('%b')} {start.day}–{end.day}, {start.year}"
+                else:
+                    latest_journal_title = f"{start.strftime('%b %d')} – {end.strftime('%b %d')}, {start.year}"
+            except Exception:
+                latest_journal_title = latest.get("title", "")
+
     for src in sorted(pages_dir.rglob("*.md")):
         rel = src.relative_to(pages_dir)
         doc = parse_markdown(src)
         slug = doc.meta.get("slug", rel.with_suffix("").as_posix())
         template = env.get_template(doc.meta.get("template", "page.html"))
         url = page_url(rel)
-        html = template.render(
+        ctx = dict(
             site=SITE,
             page=doc.meta,
             content=doc.html,
             accent=doc.meta.get("accent", ACCENTS.get(slug, DEFAULT_ACCENT)),
             complement=COMPLEMENTS.get(slug, ACCENTS.get(slug, DEFAULT_ACCENT)),
         )
+        if slug == "home" and latest_journal_href:
+            ctx["latest_journal_href"] = latest_journal_href
+            ctx["latest_journal_title"] = latest_journal_title
+        html = template.render(**ctx)
         write_page(url, html)
         print(f"  built  {url}  ({slug})")
 
