@@ -333,13 +333,15 @@ body {
 }
 
 /* ── Theme toggle — M3 icon button in top-right of header ── */
-/* header action buttons (theme toggle + lab link), positioned top-right */
+/* header action buttons (theme toggle + lab link), positioned top-right.
+   Matched to the issue appbar's button layout so icons sit at the same
+   viewport position on both pages. */
 .header-actions {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
+  position: fixed;
+  top: 8px;
+  right: .75rem;
   display: flex;
-  gap: .5rem;
+  gap: .4rem;
   z-index: 2;
 }
 #theme-toggle {
