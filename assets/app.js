@@ -992,13 +992,21 @@
     }
     on(window, 'resize', function () {
       moveIndicator(currentCategory, false);
-      repositionPillThumbs();
+      if (!document.body.classList.contains('sidebar-collapsed')) repositionPillThumbs();
     });
     // When the panel finishes expanding (its width transition ends), the pills
     // have their final width — re-measure so the thumb isn't left narrow.
     var sidebarPanel = document.getElementById('sidebar-panel');
     if (sidebarPanel) on(sidebarPanel, 'transitionend', function (e) {
-      if (e.propertyName === 'width') { repositionPillThumbs(); moveIndicator(currentCategory, false); }
+      if (e.propertyName !== 'width') return;
+      if (document.body.classList.contains('sidebar-collapsed')) return; // collapse: skip
+      // expand complete: reposition thumbs with CSS transition so they animate
+      // from their old (collapsed) size to the correct target width
+      var av = Array.prototype.find.call(viewPills, function (b) { return b.classList.contains('active'); });
+      if (av) movePillThumb(viewPillThumb, av, viewToggle);
+      var ah = Array.prototype.find.call(hidePills, function (b) { return b.classList.contains('active'); });
+      if (ah) movePillThumb(hidePillThumb, ah, hideToggle);
+      moveIndicator(currentCategory, false);
     });
 
     // Build nav
