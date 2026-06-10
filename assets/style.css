@@ -1359,8 +1359,16 @@ p a:hover {
 }
 .lab-link-text { font-family: var(--brand); }
 
-/* body offset when issue appbar is shown */
-body.issue-view { padding-top: 64px; }
+/* body offset when issue appbar is shown.
+   On mobile Chrome 100vh includes the area behind the URL bar, which makes the
+   body taller than the visible viewport and introduces unwanted scroll. Pin the
+   body to exactly the visible viewport so nothing shifts behind the appbar. */
+body.issue-view {
+  padding-top: 64px;
+  overflow: hidden;
+  height: 100vh;          /* fallback for browsers without dvh */
+  height: 100dvh;
+}
 body.issue-view #eclab-header { display: none; }
 body.issue-view #toc-toggle { display: none !important; } /* FAB hidden; drawer btn used instead */
 
@@ -1376,8 +1384,10 @@ body.issue-view #page-wrapper {
   padding: 0 1.25rem 0 0; /* keep the content card off the right edge */
   max-width: 100%;
   margin: 0;
-  height: calc(100vh - 64px);
+  height: calc(100vh - 64px);   /* fallback */
+  height: calc(100dvh - 64px);
   min-height: calc(100vh - 64px);
+  min-height: calc(100dvh - 64px);
   overflow: hidden; /* page itself doesn't scroll; the content card does */
 }
 
@@ -1389,8 +1399,10 @@ body.issue-view #toc-sidebar {
   display: flex;
   flex-direction: row;
   width: auto;
-  max-height: calc(100vh - 64px);
+  max-height: calc(100vh - 64px);   /* fallback */
+  max-height: calc(100dvh - 64px);
   height: calc(100vh - 64px);
+  height: calc(100dvh - 64px);
   padding: 0;
   margin: 0;
   background: transparent;
@@ -1599,13 +1611,14 @@ body.issue-view .nav-track > ul > li > a:hover {
 }
 
 /* content becomes a distinct rounded surface card.
-   The card itself stays fixed in the viewport; only its inner content scrolls. */
+   The card itself stays fixed in the viewport; only its inner content scrolls.
+   flex: 1 lets it fill the wrapper height; min-height: 0 lets it shrink. */
 body.issue-view #content {
   flex: 1;
   min-width: 0;
+  min-height: 0;
   max-width: var(--w);
   margin: 1rem auto;
-  height: calc(100vh - 64px - 2rem); /* viewport − appbar − top/bottom margin */
   overflow-y: auto;
   overscroll-behavior: contain;
   padding: 2rem 2rem 2.5rem;
@@ -1626,8 +1639,6 @@ body.issue-view .article-card {
   body.issue-view #toc-sidebar {
     position: fixed;
     top: 64px; left: 0; bottom: 0;
-    height: calc(100vh - 64px);
-    max-height: calc(100vh - 64px);
     background: var(--surface-1);
     border-radius: 0; /* no rounded corners */
     box-shadow: var(--elev-3);
