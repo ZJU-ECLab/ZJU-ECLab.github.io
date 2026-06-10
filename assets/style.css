@@ -333,32 +333,24 @@ body {
 }
 
 /* ── Theme toggle — M3 icon button in top-right of header ── */
-#theme-toggle {
+/* header action buttons (theme toggle + lab link), positioned top-right */
+.header-actions {
   position: absolute;
   top: 1rem;
   right: 1rem;
-  width: 44px;
-  height: 44px;
-  border-radius: var(--shape-full);
-  background: var(--surface-2);
-  border: 1px solid var(--outline-soft);
-  cursor: pointer;
-  display: grid;
-  place-items: center;
-  font-size: 1.25rem;
-  line-height: 1;
-  color: var(--muted);
-  transition:
-    color 0.2s var(--ease-standard),
-    background-color 0.2s var(--ease-standard),
-    border-color 0.2s var(--ease-standard),
-    transform 0.25s var(--ease-spring);
+  display: flex;
+  gap: .5rem;
   z-index: 2;
 }
+#theme-toggle {
+  position: relative;
+  top: auto;
+  right: auto;
+  width: 48px;
+  height: 48px;
+  border: none;
+}
 #theme-toggle:hover {
-  color: var(--ink);
-  background: var(--surface-3);
-  border-color: var(--outline);
   transform: scale(1.08);
 }
 #theme-toggle:active {
