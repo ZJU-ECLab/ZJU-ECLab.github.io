@@ -929,15 +929,34 @@
       if (details && details.getBoundingClientRect().top <= line) current = DETAILS_KEY;
       // bottom of the scroll container ⇒ details
       if (content.scrollTop + content.clientHeight >= content.scrollHeight - 2) current = DETAILS_KEY;
-      if (current !== currentCategory) setActive(current);
+      if (current !== currentCategory) {
+        setActive(current);
+        scrollNavToTag(current);
+      }
     }
     on(content, 'scroll', spy, { passive: true });
+
+    // Scroll the sidebar nav so the given tag is visible.
+    // Uses getBoundingClientRect + nav.scrollTo to avoid reflows that break the
+    // nav-track transform (scrollIntoView caused that issue).
+    function scrollNavToTag(key) {
+      if (!key || key === DETAILS_KEY || !linkByKey[key]) return;
+      var linkRect = linkByKey[key].getBoundingClientRect();
+      var navRect = nav.getBoundingClientRect();
+      var linkRelTop = linkRect.top - navRect.top + nav.scrollTop;
+      var linkRelBottom = linkRelTop + linkRect.height;
+      if (linkRelTop < nav.scrollTop) {
+        nav.scrollTo({ top: linkRelTop, behavior: reduceMotion ? 'auto' : 'smooth' });
+      } else if (linkRelBottom > nav.scrollTop + nav.clientHeight) {
+        nav.scrollTo({ top: linkRelBottom - nav.clientHeight, behavior: reduceMotion ? 'auto' : 'smooth' });
+      }
+    }
 
     // Navigate to a category/journal: switch view if needed, activate it, scroll.
     // Also syncs the view pill + rail. Reused by index tags and search-result chips.
     function navigateToTag(tagValue, targetView) {
       if (!targetView) targetView = currentView;
-      function activateAndScroll() { setActive(tagValue); if (hideMode) applyFilter(); scrollToKey(tagValue); }
+      function activateAndScroll() { setActive(tagValue); if (hideMode) applyFilter(); scrollToKey(tagValue); scrollNavToTag(tagValue); }
       if (targetView !== currentView) {
         viewPills.forEach(function (b) {
           var match = b.getAttribute('data-view') === targetView;
