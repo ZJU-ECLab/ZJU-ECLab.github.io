@@ -243,7 +243,7 @@
       content.innerHTML = '';
 
       content.appendChild(el('div', { class: 'landing-intro', html:
-        '《东西情报》是<strong>浙江大学情绪和文化实验室</strong>创办的文献汇编，' +
+        '《东西情报》是<a class="intro-link" href="https://emotionculturelab.com" target="_blank" rel="noopener">浙江大学情绪和文化实验室</a>创办的文献汇编，' +
         '收集情绪心理学领域每周的最新文章与科研进展，按关键词与期刊分类并配以中文概要。' }));
 
       if (!issues.length) {

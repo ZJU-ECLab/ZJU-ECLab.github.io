@@ -1031,6 +1031,14 @@ p a:hover {
   line-height: 1.8;
   border-radius: var(--shape-md);
 }
+.landing-intro .intro-link {
+  color: var(--primary);
+  font-weight: 600;
+  text-decoration: none;
+}
+.landing-intro .intro-link:hover {
+  text-decoration: underline;
+}
 .landing-intro strong {
   color: var(--primary);
 }
