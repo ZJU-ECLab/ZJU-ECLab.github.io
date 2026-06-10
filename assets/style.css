@@ -1639,7 +1639,7 @@ body.issue-view .article-card {
   body.issue-view #toc-sidebar {
     position: fixed;
     top: 64px; left: 0; bottom: 0;
-    background: var(--surface-1);
+    background: var(--bg);
     border-radius: 0; /* no rounded corners */
     box-shadow: var(--elev-3);
     z-index: 950;
