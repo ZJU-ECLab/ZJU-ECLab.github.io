@@ -911,6 +911,16 @@ section { max-width: var(--w); margin: 0 auto; padding: 0 1.5rem; }
   transform: translateY(10px) scale(0.97);
   animation: word-land 0.55s var(--ease-spring) both;
 }
+/* Gradient clip lives on the inner span (no transform) to avoid the iOS Safari
+   bug where transform + background-clip:text renders invisible text. */
+.hero-title .word-inner {
+  display: inline-block;
+  background: linear-gradient(135deg, var(--ink) 20%, color-mix(in srgb, var(--accent) 70%, var(--ink)) 50%, var(--primary) 80%);
+  background-size: 200% 200%;
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: var(--ink);
+}
 @keyframes word-land {
   0% { opacity: 0; transform: translateY(10px) scale(0.97); }
   50% { opacity: 1; }

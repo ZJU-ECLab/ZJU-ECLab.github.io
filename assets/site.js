@@ -180,7 +180,7 @@
     var text = title.textContent.trim();
     var words = text.split(/\s+/);
     title.innerHTML = words.map(function(w, i) {
-      return '<span class="word" style="animation-delay:' + (0.3 + i * 0.08).toFixed(2) + 's">' + w + '</span>';
+      return '<span class="word" style="animation-delay:' + (0.3 + i * 0.08).toFixed(2) + 's"><span class="word-inner">' + w + '</span></span>';
     }).join(' ');
   })();
 
