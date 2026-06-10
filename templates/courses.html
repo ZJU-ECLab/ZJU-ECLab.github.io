@@ -1,12 +1,12 @@
 {% extends "base.html" %}
 {% block content %}
-<section class="page-head">
+<section class="page-head reveal">
   <h1 class="page-title">Courses</h1>
 </section>
 
 <section class="courses">
-  <h2 class="section-h">Course Instructor</h2>
-  <ul class="course-list">
+  <h2 class="section-h reveal">Course Instructor</h2>
+  <ul class="course-list reveal-stagger">
     {% for c in data.instructor %}
     <li class="course-item">
       <span class="course-years">{{ c.years }}</span>

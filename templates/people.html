@@ -1,16 +1,16 @@
 {% extends "base.html" %}
 {% block content %}
-<section class="page-head">
+<section class="page-head reveal">
   <h1 class="page-title">Lab Members</h1>
 </section>
 
 {% for group in data.groups %}
 <section class="people-group">
-  <h2 class="section-h">{{ group.label }}</h2>
+  <h2 class="section-h reveal">{{ group.label }}</h2>
   {% if group.id == 'pi' %}
   {# Principal Investigator: a single full-width feature card #}
   {% for m in group.members %}
-  <article class="person-card person-card--featured">
+  <article class="person-card person-card--featured reveal">
     <div class="person-photo">
       {% if m.photo %}
       <img src="{{ m.photo }}" alt="{{ m.name_en }}" loading="lazy"
@@ -23,17 +23,18 @@
       <div class="person-role">{{ m.role }}</div>
       {% if m.bio %}<p class="person-bio">{{ m.bio }}</p>{% endif %}
       <div class="person-links">
-        {% if m.email %}<a class="person-link" href="mailto:{{ m.email }}">✉ {{ m.email }}</a>{% endif %}
-        {% if m.cv %}<a class="person-link" href="{{ m.cv }}" target="_blank" rel="noopener">✎ CV</a>{% endif %}
+        {% if m.email %}<a class="person-link" href="mailto:{{ m.email }}"><svg class="icon-inline" viewBox="0 -960 960 960" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M160-160q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h640q33 0 56.5 23.5T880-720v480q0 33-23.5 56.5T800-160H160Zm640-480L501-453q-5 3-10.5 4.5T480-447q-5 0-10.5-1.5T459-453L160-640v400h640v-400ZM480-520l320-200H160l320 200ZM160-640v10-59 1-32 32-.5 58.5-10 400-400Z"/></svg> {{ m.email }}</a>{% endif %}
+        {% if m.cv %}<a class="person-link" href="{{ m.cv }}" target="_blank" rel="noopener"><svg class="icon-inline" viewBox="0 -960 960 960" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M240-280v-400q0-17 11.5-28.5T280-720q17 0 28.5 11.5T320-680v400q0 17-11.5 28.5T280-240q-17 0-28.5-11.5T240-280Zm221 4 282-170q10-6 14.5-15t4.5-19q0-10-4.5-19T743-514L461-684q-5-3-10.5-4t-10.5-1q-16 0-28 11.5T400-649v338q0 17 12 28.5t28 11.5q5 0 10.5-1t10.5-4Zm19-105v-198l165 99-165 99Zm0-99Z"/></svg> CV</a>{% endif %}
       </div>
     </div>
   </article>
   {% endfor %}
   {% else %}
-  {# Everyone else: masonry columns so cards pack tightly with no row gaps #}
-  <div class="people-masonry">
+  {# Everyone else: an aligned responsive grid — cards read left-to-right and
+     share equal row heights so wide screens stay tidy #}
+  <div class="people-grid reveal-stagger">
     {% for m in group.members %}
-    <article class="person-card shape-{{ loop.index0 % 4 }}">
+    <article class="person-card">
       <div class="person-photo">
         {% if m.photo %}
         <img src="{{ m.photo }}" alt="{{ m.name_en }}" loading="lazy"
@@ -46,8 +47,8 @@
         <div class="person-role">{{ m.role }}</div>
         {% if m.bio %}<p class="person-bio">{{ m.bio }}</p>{% endif %}
         <div class="person-links">
-          {% if m.email %}<a class="person-link" href="mailto:{{ m.email }}">✉ {{ m.email }}</a>{% endif %}
-          {% if m.cv %}<a class="person-link" href="{{ m.cv }}" target="_blank" rel="noopener">✎ CV</a>{% endif %}
+          {% if m.email %}<a class="person-link" href="mailto:{{ m.email }}"><svg class="icon-inline" viewBox="0 -960 960 960" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M160-160q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h640q33 0 56.5 23.5T880-720v480q0 33-23.5 56.5T800-160H160Zm640-480L501-453q-5 3-10.5 4.5T480-447q-5 0-10.5-1.5T459-453L160-640v400h640v-400ZM480-520l320-200H160l320 200ZM160-640v10-59 1-32 32-.5 58.5-10 400-400Z"/></svg> {{ m.email }}</a>{% endif %}
+          {% if m.cv %}<a class="person-link" href="{{ m.cv }}" target="_blank" rel="noopener"><svg class="icon-inline" viewBox="0 -960 960 960" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M240-280v-400q0-17 11.5-28.5T280-720q17 0 28.5 11.5T320-680v400q0 17-11.5 28.5T280-240q-17 0-28.5-11.5T240-280Zm221 4 282-170q10-6 14.5-15t4.5-19q0-10-4.5-19T743-514L461-684q-5-3-10.5-4t-10.5-1q-16 0-28 11.5T400-649v338q0 17 12 28.5t28 11.5q5 0 10.5-1t10.5-4Zm19-105v-198l165 99-165 99Zm0-99Z"/></svg> CV</a>{% endif %}
         </div>
       </div>
     </article>

@@ -95,12 +95,33 @@ NAV = [
     {"label": "Contact", "href": "/contact/"},
 ]
 
+# Quick-nav cards for the homepage: every top-level section accessible at a glance.
+QUICK_NAV = [
+    {"label": "News", "href": "/news/", "icon": "news",
+     "desc": "Latest updates from the lab"},
+    {"label": "People", "href": "/people/", "icon": "people",
+     "desc": "Meet our team"},
+    {"label": "Research", "href": "/publications/", "icon": "research",
+     "desc": "Our publications"},
+    {"label": "Resources", "href": "/resources/", "icon": "resources",
+     "desc": "Open datasets & tools"},
+    {"label": "Courses", "href": "/courses/", "icon": "courses",
+     "desc": "Teaching & workshops"},
+    {"label": "Journal", "href": "/journal/", "icon": "journal",
+     "desc": "Weekly literature digest"},
+    {"label": "Join Us", "href": "/join-us/", "icon": "join",
+     "desc": "Open positions"},
+    {"label": "Contact", "href": "/contact/", "icon": "contact",
+     "desc": "Get in touch"},
+]
+
 SITE = {
     "name": "Emotion & Culture Lab",
     "subtitle": "Emotion & Culture Lab · Zhejiang University",
     "wechat": "emotionculturelab",
     "email": "x.fang@zju.edu.cn",
     "nav": NAV,
+    "quick_nav": QUICK_NAV,
     "default_accent": DEFAULT_ACCENT,
 }
 

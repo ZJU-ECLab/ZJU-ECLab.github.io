@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <title>Emotion &amp; Culture Lab</title>
+  <circle cx="50" cy="50" r="50" fill="white"/>
+  <g transform="translate(10, 33) scale(0.1)">
+    <path
+      fill="#e4040f"
+      fill-rule="evenodd"
+      d="M314 100
+         A123.25 123.25 0 1 0 495 98
+         L468 110
+         A95.7 95.7 0 1 1 344 109
+         Z"
+    />
+    <path
+      fill="#ff6e01"
+      d="M794 183 L776 164 L498 316 L315 316 L89 203 L53 220 L310 343 L500 344 Z"
+    />
+    <path
+      fill="#508bff"
+      d="M1 213 L15 236 L311 92 L407 136 L505 92 L713 194 L745 178 L506 62 L410 105 L310 62 Z"
+    />
+    <path
+      fill="#7f8d96"
+      d="M473 38 L407 1 L340 39 L367 54 L408 33 L449 55 Z"
+    />
+  </g>
+</svg>

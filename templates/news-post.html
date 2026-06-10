@@ -2,7 +2,7 @@
 {% block title %}{{ page.title }} · {{ site.name }}{% endblock %}
 {% block content %}
 <article class="news-post">
-  <div class="news-post-head">
+  <div class="news-post-head reveal">
     <a class="back-link" href="/news/">
       <svg viewBox="0 -960 960 960" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M400-80 0-480l400-400 56 57-343 343 343 343-56 57Z"/></svg>
       All news
@@ -15,14 +15,14 @@
   </div>
 
   {% if page.images %}
-  <div class="news-gallery">
+  <div class="news-gallery reveal-stagger">
     {% for img in page.images %}
-    <img src="{{ img }}" alt="" loading="lazy" onerror="this.style.display='none'" />
+    <img src="{{ img }}" alt="" loading="lazy" class="zoomable" data-zoomable="{{ img }}" onerror="this.style.display='none'" />
     {% endfor %}
   </div>
   {% endif %}
 
-  <div class="prose news-post-body">
+  <div class="prose news-post-body reveal">
     {{ content | safe }}
   </div>
 </article>

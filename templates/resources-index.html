@@ -1,19 +1,19 @@
 {% extends "base.html" %}
 {% block content %}
-<section class="page-head">
+<section class="page-head reveal">
   <h1 class="page-title">{{ page.title }}</h1>
   {% if page.subtitle %}<p class="page-subtitle">{{ page.subtitle }}</p>{% endif %}
 </section>
 
 <section class="resource-index">
-  <div class="resource-grid">
+  <div class="resource-grid reveal-stagger">
     {% for db in page.databases %}
     <a class="resource-card" href="{{ db.href }}">
       <span class="resource-abbr">{{ db.abbr }}</span>
       <h2 class="resource-name">{{ db.name }}</h2>
       <p class="resource-blurb">{{ db.blurb }}</p>
       <span class="resource-cta">Learn more
-        <svg viewBox="0 -960 960 960" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M647-440H160v-80h487L423-744l57-56 320 320-320 320-57-56 224-224Z"/></svg>
+        <svg viewBox="0 -960 960 960" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M647-440H200q-17 0-28.5-11.5T160-480q0-17 11.5-28.5T200-520h447L451-716q-12-12-11.5-28t12.5-28q12-11 28-11.5t28 11.5l264 264q6 6 8.5 13t2.5 15q0 8-2.5 15t-8.5 13L508-188q-11 11-27.5 11T452-188q-12-12-12-28.5t12-28.5l195-195Z"/></svg>
       </span>
     </a>
     {% endfor %}

@@ -13,8 +13,8 @@ hero:
     psychology — how people express and perceive emotion across faces, voices,
     bodies, and the arts.
   actions:
-    - { label: "Meet the lab", href: "/people/" }
     - { label: "Read our research", href: "/publications/" }
+    - { label: "Meet the lab", href: "/people/" }
 
 journal:
   eyebrow: Weekly Journal

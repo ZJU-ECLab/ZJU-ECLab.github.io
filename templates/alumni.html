@@ -1,16 +1,16 @@
 {% extends "base.html" %}
 {% block content %}
-<section class="page-head">
+<section class="page-head reveal">
   <h1 class="page-title">Alumni</h1>
 </section>
 
 <section class="alumni-section">
-  <h2 class="section-h">Students</h2>
+  <h2 class="section-h reveal">Students</h2>
   {% for grp in data.advisees %}
-  <div class="advisee-group">
+  <div class="advisee-group reveal">
     <h3 class="advisee-inst">{{ grp.institution }}</h3>
     {% if grp.note %}<p class="advisee-note">{{ grp.note }}</p>{% endif %}
-    <ul class="advisee-list">
+    <ul class="advisee-list reveal-stagger">
       {% for s in grp.students %}
       <li>
         <span class="advisee-name">{{ s.name }}</span>,
@@ -27,22 +27,39 @@
 </section>
 
 <section class="alumni-section">
-  <h2 class="section-h">Past Lab Members</h2>
-  <div class="past-grid">
-    {% for entry in data.past_members %}
-    <figure class="past-figure">
-      {% if entry.photo %}
-      <img src="{{ entry.photo }}" alt="Lab {{ entry.year }}" loading="lazy"
-           onerror="this.closest('.past-figure').style.display='none'" />
-      {% endif %}
-      {% if entry.photos %}
-        {% for p in entry.photos %}
-        <img src="{{ p }}" alt="Lab {{ entry.year }}" loading="lazy" />
-        {% endfor %}
-      {% endif %}
-      <figcaption>{{ entry.year }}</figcaption>
-    </figure>
-    {% endfor %}
+  <h2 class="section-h reveal">Past Lab Members</h2>
+  <div class="carousel reveal" data-carousel>
+    <div class="carousel-track" data-carousel-track tabindex="0" aria-label="Past lab member photos, scrollable">
+      {% for entry in data.past_members %}
+        {% if entry.photo %}
+        <figure class="carousel-item">
+          <div class="carousel-media">
+            <img src="{{ entry.photo }}" alt="Lab {{ entry.year }}" loading="lazy"
+                 class="zoomable" data-zoomable="{{ entry.photo }}" data-caption="Lab {{ entry.year }}"
+                 onerror="this.closest('.carousel-item').style.display='none'" />
+          </div>
+          <figcaption>{{ entry.year }}</figcaption>
+        </figure>
+        {% endif %}
+        {% if entry.photos %}
+          {% for p in entry.photos %}
+          <figure class="carousel-item">
+            <div class="carousel-media">
+              <img src="{{ p }}" alt="Lab {{ entry.year }}" loading="lazy"
+                   class="zoomable" data-zoomable="{{ p }}" data-caption="Lab {{ entry.year }}" />
+            </div>
+            <figcaption>{{ entry.year }}</figcaption>
+          </figure>
+          {% endfor %}
+        {% endif %}
+      {% endfor %}
+    </div>
+    <button class="carousel-btn carousel-prev" type="button" aria-label="Previous photos" data-carousel-prev>
+      <svg viewBox="0 -960 960 960" width="24" height="24" fill="currentColor" aria-hidden="true" style="transform:scaleX(-1)"><path d="M647-440H200q-17 0-28.5-11.5T160-480q0-17 11.5-28.5T200-520h447L451-716q-12-12-11.5-28t12.5-28q12-11 28-11.5t28 11.5l264 264q6 6 8.5 13t2.5 15q0 8-2.5 15t-8.5 13L508-188q-11 11-27.5 11T452-188q-12-12-12-28.5t12-28.5l195-195Z"/></svg>
+    </button>
+    <button class="carousel-btn carousel-next" type="button" aria-label="Next photos" data-carousel-next>
+      <svg viewBox="0 -960 960 960" width="24" height="24" fill="currentColor" aria-hidden="true"><path d="M647-440H200q-17 0-28.5-11.5T160-480q0-17 11.5-28.5T200-520h447L451-716q-12-12-11.5-28t12.5-28q12-11 28-11.5t28 11.5l264 264q6 6 8.5 13t2.5 15q0 8-2.5 15t-8.5 13L508-188q-11 11-27.5 11T452-188q-12-12-12-28.5t12-28.5l195-195Z"/></svg>
+    </button>
   </div>
 </section>
 {% endblock %}

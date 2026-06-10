@@ -1,10 +1,10 @@
 {% extends "base.html" %}
 {% block content %}
-<section class="page-head">
+<section class="page-head reveal">
   <h1 class="page-title">News</h1>
 </section>
 
-<section class="news-list">
+<section class="news-list reveal-stagger">
   {% for post in posts %}
   <a class="news-item" href="{{ post.url }}">
     {% if post.meta.thumbnail %}

@@ -3,33 +3,87 @@
 {% block title %}{{ site.name }} · Zhejiang University{% endblock %}
 
 {% block content %}
-<!-- ── Hero ── -->
-<section class="home-hero">
-  <div class="hero-glow" aria-hidden="true"></div>
-  <div class="hero-inner">
-    <span class="hero-badge">Zhejiang University</span>
-    <h1 class="hero-title">{{ page.hero.title }}</h1>
-    <p class="hero-lead">{{ page.hero.lead }}</p>
-    {% if page.hero.actions %}
-    <div class="hero-actions">
-      {% for a in page.hero.actions %}
-      <a class="btn {{ 'btn-filled' if loop.first else 'btn-tonal' }}" href="{{ a.href }}">{{ a.label }}</a>
-      {% endfor %}
-    </div>
-    {% endif %}
-  </div>
-</section>
+<!-- ── Hero + Welcome zone (emoticons scatter only within here) ── -->
+<div class="hero-zone">
+  <!-- Scattered watercolor emoticons drift across banner + welcome only -->
+  <div class="emoticon-field" aria-hidden="true" id="emoticon-field"></div>
 
-<!-- ── Welcome / intro prose ── -->
-{% if content %}
-<section class="home-intro prose">
-  {{ content | safe }}
-</section>
+  <!-- ── M3 Expressive Hero — contained banner with blobs fading into bg ── -->
+  <section class="home-hero">
+    <div class="hero-canvas" aria-hidden="true">
+      <div class="hero-blob hero-blob--red"></div>
+      <div class="hero-blob hero-blob--orange"></div>
+      <div class="hero-blob hero-blob--blue"></div>
+      <div class="hero-blob hero-blob--gray"></div>
+    </div>
+    <div class="hero-inner">
+      <span class="hero-badge">Zhejiang University</span>
+      <h1 class="hero-title">{{ page.hero.title }}</h1>
+      <p class="hero-lead">{{ page.hero.lead }}</p>
+      {% if page.hero.actions %}
+      <div class="hero-actions">
+        {% for a in page.hero.actions %}
+        <a class="btn {{ 'btn-filled' if loop.first else 'btn-tonal' }}" href="{{ a.href }}">{{ a.label }}</a>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+  </section>
+
+  <!-- ── Welcome / intro prose ── -->
+  {% if content %}
+  <section class="home-intro prose reveal">
+    {{ content | safe }}
+  </section>
+  {% endif %}
+</div>
+
+<!-- ── Quick-nav: every section at a glance ── -->
+{% if site.quick_nav %}
+<div class="quick-nav reveal">
+  <h2 class="quick-nav-title">Explore the Lab</h2>
+  <div class="quick-nav-grid reveal-stagger">
+    {% for nav in site.quick_nav %}
+    <a class="quick-nav-card" href="{{ nav.href }}">
+      <span class="quick-nav-icon">
+        {% if nav.icon == 'news' %}
+        <svg viewBox="0 -960 960 960" fill="currentColor"><path d="M160-120q-33 0-56.5-23.5T80-200v-560q0-33 23.5-56.5T160-840h640q33 0 56.5 23.5T880-760v560q0 33-23.5 56.5T800-120H160Zm0-80h640v-560H160v560Zm120-80h400q17 0 28.5-11.5T720-320q0-17-11.5-28.5T680-360H280q-17 0-28.5 11.5T240-320q0 17 11.5 28.5T280-280Zm0-160h80q17 0 28.5-11.5T400-480v-160q0-17-11.5-28.5T360-680h-80q-17 0-28.5 11.5T240-640v160q0 17 11.5 28.5T280-440Zm240 0h160q17 0 28.5-11.5T720-480q0-17-11.5-28.5T680-520H520q-17 0-28.5 11.5T480-480q0 17 11.5 28.5T520-440Zm0-160h160q17 0 28.5-11.5T720-640q0-17-11.5-28.5T680-680H520q-17 0-28.5 11.5T480-640q0 17 11.5 28.5T520-600ZM160-200v-560 560Z"/></svg>
+        {% elif nav.icon == 'people' %}
+        <svg viewBox="0 -960 960 960" fill="currentColor"><path d="M40-272q0-34 17.5-62.5T104-378q62-31 126-46.5T360-440q66 0 130 15.5T616-378q29 15 46.5 43.5T680-272v32q0 33-23.5 56.5T600-160H120q-33 0-56.5-23.5T40-240v-32Zm800 112H738q11-18 16.5-38.5T760-240v-40q0-44-24.5-84.5T666-434q51 6 96 20.5t84 35.5q36 20 55 44.5t19 53.5v40q0 33-23.5 56.5T840-160ZM247-527q-47-47-47-113t47-113q47-47 113-47t113 47q47 47 47 113t-47 113q-47 47-113 47t-113-47Zm466 0q-47 47-113 47-11 0-28-2.5t-28-5.5q27-32 41.5-71t14.5-81q0-42-14.5-81T544-792q14-5 28-6.5t28-1.5q66 0 113 47t47 113q0 66-47 113ZM120-240h480v-32q0-11-5.5-20T580-306q-54-27-109-40.5T360-360q-56 0-111 13.5T140-306q-9 5-14.5 14t-5.5 20v32Zm296.5-343.5Q440-607 440-640t-23.5-56.5Q393-720 360-720t-56.5 23.5Q280-673 280-640t23.5 56.5Q327-560 360-560t56.5-23.5ZM360-240Zm0-400Z"/></svg>
+        {% elif nav.icon == 'research' %}
+        <svg viewBox="0 -960 960 960" fill="currentColor"><path d="M200-800v241-1 400-640 200-200Zm0 720q-33 0-56.5-23.5T120-160v-640q0-33 23.5-56.5T200-880h287q16 0 30.5 6t25.5 17l194 194q11 11 17 25.5t6 30.5v28q0 17-11.5 28T720-540q-17 0-28.5-11.5T680-580v-20H520q-17 0-28.5-11.5T480-640v-160H200v640h220q17 0 28.5 11.5T460-120q0 17-11.5 28.5T420-80H200Zm531-149q29-29 29-71t-29-71q-29-29-71-29t-71 29q-29 29-29 71t29 71q29 29 71 29t71-29ZM864-57q-17 0-28-11l-80-80q-21 14-45.5 21t-50.5 7q-75 0-127.5-52.5T480-300q0-75 52.5-127.5T660-480q75 0 127.5 52.5T840-300q0 26-7 50.5T812-204l80 80q11 11 11 28t-11 28q-11 11-28 11Z"/></svg>
+        {% elif nav.icon == 'resources' %}
+        <svg viewBox="0 -960 960 960" fill="currentColor"><path d="M480-120q-151 0-255.5-46.5T120-280v-400q0-66 105.5-113T480-840q149 0 254.5 47T840-680v400q0 67-104.5 113.5T480-120Zm0-479q89 0 179-25.5T760-679q-11-29-100.5-55T480-760q-91 0-178.5 25.5T200-679q14 30 101.5 55T480-599Zm0 199q42 0 81-4t74.5-11.5q35.5-7.5 67-18.5t57.5-25v-120q-26 14-57.5 25t-67 18.5Q600-528 561-524t-81 4q-42 0-82-4t-75.5-11.5Q287-543 256-554t-56-25v120q25 14 56 25t66.5 18.5Q358-408 398-404t82 4Zm0 200q46 0 93.5-7t87.5-18.5q40-11.5 67-26t32-29.5v-98q-26 14-57.5 25t-67 18.5Q600-328 561-324t-81 4q-42 0-82-4t-75.5-11.5Q287-343 256-354t-56-25v99q5 15 31.5 29t66.5 25.5q40 11.5 88 18.5t94 7Z"/></svg>
+        {% elif nav.icon == 'courses' %}
+        <svg viewBox="0 -960 960 960" fill="currentColor"><path d="M242-249q-20-11-31-29.5T200-320v-192l-96-53q-11-6-16-15t-5-20q0-11 5-20t16-15l338-184q9-5 18.5-7.5T480-829q10 0 19.5 2.5T518-819l381 208q10 5 15.5 14.5T920-576v256q0 17-11.5 28.5T880-280q-17 0-28.5-11.5T840-320v-236l-80 44v192q0 23-11 41.5T718-249L518-141q-9 5-18.5 7.5T480-131q-10 0-19.5-2.5T442-141L242-249Zm238-203 274-148-274-148-274 148 274 148Zm0 241 200-108v-151l-161 89q-9 5-19 7.5t-20 2.5q-10 0-20-2.5t-19-7.5l-161-89v151l200 108Zm0-241Zm0 121Zm0 0Z"/></svg>
+        {% elif nav.icon == 'journal' %}
+        <svg viewBox="0 -960 960 960" fill="currentColor"><path d="M320-320h480v-480h-80v245q0 12-10 18t-20-1l-49-29q-10-6-21.5-6t-20.5 6l-49 29q-11 7-20.5 1t-9.5-18v-245H320v480Zm0 80q-33 0-56.5-23.5T240-320v-480q0-33 23.5-56.5T320-880h480q33 0 56.5 23.5T880-800v480q0 33-23.5 56.5T800-240H320ZM160-80q-33 0-56.5-23.5T80-160v-520q0-17 11.5-28.5T120-720q17 0 28.5 11.5T160-680v520h520q17 0 28.5 11.5T720-120q0 17-11.5 28.5T680-80H160Zm160-720v480-480Zm200 245q0 12 9.5 18t20.5-1l49-29q9-6 20.5-6t21.5 6l49 29q10 7 20 1t10-18q0 12-10 18t-20-1l-49-29q-10-6-21.5-6t-20.5 6l-49 29q-11 7-20.5 1t-9.5-18Z"/></svg>
+        {% elif nav.icon == 'join' %}
+        <svg viewBox="0 -960 960 960" fill="currentColor"><path d="M500-482q29-32 44.5-73t15.5-85q0-44-15.5-85T500-798q60 8 100 53t40 105q0 60-40 105t-100 53Zm198 322q11-18 16.5-38.5T720-240v-40q0-36-16-68.5T662-406q51 18 94.5 46.5T800-280v40q0 33-23.5 56.5T720-160h-22Zm102-360h-40q-17 0-28.5-11.5T720-560q0-17 11.5-28.5T760-600h40v-40q0-17 11.5-28.5T840-680q17 0 28.5 11.5T880-640v40h40q17 0 28.5 11.5T960-560q0 17-11.5 28.5T920-520h-40v40q0 17-11.5 28.5T840-440q-17 0-28.5-11.5T800-480v-40Zm-593-7q-47-47-47-113t47-113q47-47 113-47t113 47q47 47 47 113t-47 113q-47 47-113 47t-113-47ZM0-240v-32q0-34 17.5-62.5T64-378q62-31 126-46.5T320-440q66 0 130 15.5T576-378q29 15 46.5 43.5T640-272v32q0 33-23.5 56.5T560-160H80q-33 0-56.5-23.5T0-240Zm320-320q33 0 56.5-23.5T400-640q0-33-23.5-56.5T320-720q-33 0-56.5 23.5T240-640q0 33 23.5 56.5T320-560ZM80-240h480v-32q0-11-5.5-20T540-306q-54-27-109-40.5T320-360q-56 0-111 13.5T100-306q-9 5-14.5 14T80-272v32Zm240-400Zm0 400Z"/></svg>
+        {% elif nav.icon == 'contact' %}
+        <svg viewBox="0 -960 960 960" fill="currentColor"><path d="M160-160q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h640q33 0 56.5 23.5T880-720v480q0 33-23.5 56.5T800-160H160Zm640-480L501-453q-5 3-10.5 4.5T480-447q-5 0-10.5-1.5T459-453L160-640v400h640v-400ZM480-520l320-200H160l320 200ZM160-640v10-59 1-32 32-.5 58.5-10 400-400Z"/></svg>
+        {% endif %}
+      </span>
+      <span class="quick-nav-text">
+        <span class="quick-nav-label">{{ nav.label }}</span>
+        <span class="quick-nav-desc">{{ nav.desc }}</span>
+      </span>
+    </a>
+    {% endfor %}
+  </div>
+</div>
 {% endif %}
 
-<!-- ── Dominant Weekly Journal feature (cover + text) ── -->
+<!-- ── Section divider ── -->
+<div class="section-divider" aria-hidden="true">
+  <svg viewBox="0 0 1100 48" preserveAspectRatio="none">
+    <path d="M0,24 C150,8 250,40 400,24 C550,8 650,40 800,24 C950,8 1050,40 1100,24" />
+  </svg>
+</div>
+
+<!-- ── Dominant Weekly Journal feature ── -->
 {% if page.journal %}
-<section class="journal-banner">
+<section class="journal-banner reveal">
   <a class="journal-card" href="{{ page.journal.href }}">
     <div class="journal-cover">
       <img src="/assets/img/journal-cover.png" alt="《东西情报》cover" loading="lazy" />
@@ -41,17 +95,17 @@
       <span class="journal-cta">{{ page.journal.cta }}</span>
     </div>
     <span class="journal-arrow" aria-hidden="true">
-      <svg viewBox="0 -960 960 960" width="26" height="26" fill="currentColor"><path d="M647-440H160v-80h487L423-744l57-56 320 320-320 320-57-56 224-224Z"/></svg>
+      <svg viewBox="0 -960 960 960" width="26" height="26" fill="currentColor"><path d="M647-440H200q-17 0-28.5-11.5T160-480q0-17 11.5-28.5T200-520h447L451-716q-12-12-11.5-28t12.5-28q12-11 28-11.5t28 11.5l264 264q6 6 8.5 13t2.5 15q0 8-2.5 15t-8.5 13L508-188q-11 11-27.5 11T452-188q-12-12-12-28.5t12-28.5l195-195Z"/></svg>
     </span>
   </a>
 </section>
 {% endif %}
 
-<!-- ── Research interests & fields (single consolidated card) ── -->
+<!-- ── Research interests & fields ── -->
 {% if page.research %}
 <section class="research">
-  <h2 class="section-h">{{ page.research.heading }}</h2>
-  <article class="research-card">
+  <h2 class="section-h reveal">{{ page.research.heading }}</h2>
+  <article class="research-card reveal">
     {% if page.research.intro %}
     <p class="research-intro">{{ page.research.intro }}</p>
     {% endif %}
@@ -59,7 +113,7 @@
       {% for area in page.research.areas %}
       <div class="research-area">
         <h3 class="research-area-title">{{ area.name }}</h3>
-        <ul class="research-list">
+        <ul class="research-list reveal-stagger">
           {% for topic in area.topics %}
           <li>{{ topic }}</li>
           {% endfor %}

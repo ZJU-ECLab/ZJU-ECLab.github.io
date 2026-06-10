@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-<section class="page-head">
+<section class="page-head reveal">
   <h1 class="page-title">Publications</h1>
   {% if data.note %}<p class="pub-legend">{{ data.note | inline_md }}</p>{% endif %}
 </section>
@@ -8,7 +8,8 @@
 <section class="pubs">
   {% for year, items in data.by_year %}
   <div class="pub-year-group">
-    <h2 class="pub-year">{{ year }}</h2>
+    <h2 class="pub-year reveal">{{ year }}</h2>
+    <div class="reveal-stagger">
     {% for p in items %}
     <article class="pub-card">
       {# the citation body links directly to the paper (DOI) #}
@@ -30,6 +31,7 @@
       {% endif %}
     </article>
     {% endfor %}
+    </div>
   </div>
   {% endfor %}
 </section>

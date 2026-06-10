@@ -268,7 +268,7 @@
       var issues = (m.issues || []).slice();
       content.innerHTML = '';
 
-      content.appendChild(el('div', { class: 'landing-intro', html:
+      content.appendChild(el('div', { class: 'landing-intro reveal', html:
         '《东西情报》是<a class="intro-link" href="https://emotionculturelab.com" target="_blank" rel="noopener">浙江大学情绪和文化实验室</a>创办的文献汇编，' +
         '收集情绪心理学领域每周的最新文章与科研进展，按关键词与期刊分类并配以中文概要。' }));
 
@@ -288,13 +288,16 @@
         (byYear[y] = byYear[y] || []).push(it);
       });
       Object.keys(byYear).sort(function (a, b) { return String(b).localeCompare(String(a)); }).forEach(function (y) {
-        var group = el('div', { class: 'year-group' });
+        var group = el('div', { class: 'year-group reveal' });
         group.appendChild(el('div', { class: 'year-heading', text: y + ' 年' }));
         var grid = el('div', { class: 'issue-grid' });
         byYear[y].forEach(function (it) { grid.appendChild(issueCard(it)); });
         group.appendChild(grid);
         content.appendChild(group);
       });
+      // Content was appended asynchronously after the manifest resolved, so the
+      // reveal observer set up at boot never saw these nodes. Re-run it now.
+      initReveal();
     }).catch(function (err) {
       showState('无法加载期刊列表：' + err.message, true);
     });
@@ -1143,6 +1146,39 @@
       btn.classList.remove('spinning');
     });
   });
+
+  // ── M3 Expressive scroll-reveal (IntersectionObserver) ──
+  function initReveal() {
+    if (reduceMotion) {
+      document.querySelectorAll('.reveal, .reveal-stagger').forEach(function (el) {
+        el.classList.add('revealed');
+      });
+      return;
+    }
+    var revealEls = document.querySelectorAll('.reveal, .reveal-stagger');
+    if (!revealEls.length) return;
+    if (!('IntersectionObserver' in window)) {
+      revealEls.forEach(function (el) { el.classList.add('revealed'); });
+      return;
+    }
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('revealed');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
+    revealEls.forEach(function (el) { observer.observe(el); });
+  }
+
+  // Run reveal on initial load and after each route change
+  initReveal();
+  var origRoute = route;
+  route = function () {
+    origRoute();
+    requestAnimationFrame(initReveal);
+  };
 
   // ── boot ────────────────────────────────────────────────────────────────────
 
