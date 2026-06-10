@@ -489,9 +489,11 @@ section { max-width: var(--w); margin: 0 auto; padding: 0 1.5rem; }
 .hero-title {
   font-size: var(--display-size); font-weight: var(--display-weight);
   letter-spacing: -0.02em; line-height: 1.08; margin-bottom: 1rem;
+  color: var(--ink);
   background: linear-gradient(135deg, var(--ink) 20%, color-mix(in srgb, var(--accent) 70%, var(--ink)) 50%, var(--primary) 80%);
   background-size: 200% 200%;
-  -webkit-background-clip: text; background-clip: text; color: transparent;
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent;
   animation: hero-gradient-shift 8s ease-in-out infinite;
 }
 @keyframes hero-title-enter {
@@ -1057,7 +1059,8 @@ section { max-width: var(--w); margin: 0 auto; padding: 0 1.5rem; }
   letter-spacing: -0.04em;
   background: var(--gradient-primary);
   background-size: 200% 200%;
-  -webkit-background-clip: text; background-clip: text; color: transparent;
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent;
   animation: hero-gradient-shift 6s ease-in-out infinite;
 }
 .error-title { font-size: 1.5rem; font-weight: 750; color: var(--ink); margin: 0.5rem 0 0.75rem; }
