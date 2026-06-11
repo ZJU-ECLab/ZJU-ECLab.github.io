@@ -123,7 +123,7 @@
 
 /* ── reset & base ── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; overflow-x: hidden; }
 body {
   font-family: var(--brand);
   font-size: clamp(16px, 1vw + 11px, 18px);
@@ -854,7 +854,7 @@ section { max-width: var(--w); margin: 0 auto; padding: 0 1.5rem; }
 /* hover: see @media (hover: hover) block at end of file */
 
 .fab--back-to-top {
-  bottom: 24px; right: 24px;
+  bottom: 32px; right: clamp(16px, 4vw, 48px);
 }
 /* Entrance animation — springs up from below */
 .fab--back-to-top.fab-enter {
@@ -876,7 +876,7 @@ section { max-width: var(--w); margin: 0 auto; padding: 0 1.5rem; }
 .fab[hidden] { display: none; }
 
 @media (max-width: 600px) {
-  .fab--back-to-top { bottom: 16px; right: 16px; }
+  .fab--back-to-top { bottom: 24px; right: 16px; }
 }
 
 /* ══════════════════════════════════════════════
