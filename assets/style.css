@@ -203,6 +203,7 @@ body {
   background: var(--bg);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  overflow-x: hidden;
 }
 [hidden] {
   display: none !important;
@@ -1902,7 +1903,7 @@ mark.search-hl {
 /* hover: see @media (hover: hover) block at end of file */
 
 .fab--back-to-top {
-  bottom: 32px; right: clamp(16px, 4vw, 48px);
+  bottom: 32px; right: 32px;
 }
 .fab--back-to-top.fab-enter {
   animation: fab-spring-in 0.5s var(--ease-spring) both;
@@ -1921,7 +1922,7 @@ mark.search-hl {
 .fab[hidden] { display: none; }
 
 @media (max-width: 600px) {
-  .fab--back-to-top { bottom: 24px; right: 16px; }
+  .fab--back-to-top { bottom: 24px; right: 24px; }
 }
 
 /* ══════════════════════════════════════════════

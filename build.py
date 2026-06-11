@@ -514,7 +514,7 @@ def serve() -> None:
     handler = lambda *a, **k: http.server.SimpleHTTPRequestHandler(
         *a, directory=str(DIST), **k
     )
-    port = 8000
+    port = 8001
     with socketserver.TCPServer(("", port), handler) as httpd:
         print(f"Serving dist/ at http://localhost:{port}  (Ctrl-C to stop)")
         try:
