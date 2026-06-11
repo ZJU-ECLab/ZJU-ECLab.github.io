@@ -13,9 +13,9 @@ Content model (hybrid):
 Output:
   dist/                   the static site (HTML + copied assets)
 
-The existing weekly-journal SPA (index.html + assets/app.js + data/) is copied
-through unchanged in a later phase; this Phase-1 scaffold builds the Home page
-as the reference pattern.
+The weekly-journal SPA (journal/index.html + assets/app.js + data/) is copied
+through unchanged by copy_journal(); its issue data is produced by the external
+ECLab-News pipeline.
 
 Usage:
   python3 build.py            # build into dist/
@@ -28,6 +28,7 @@ import argparse
 import datetime as dt
 import html as html_lib
 import itertools
+import json
 import re
 import shutil
 import sys
@@ -52,7 +53,7 @@ DEFAULT_ACCENT = "hsl(16, 64%, 46%)"
 
 # Per-section accents — rainbow color scheme (ROYGBIV) for expressive design
 ACCENTS = {
-    "home": "hsl(0, 75%, 60%)",          # Red
+    "home": "#e4040f",                   # Logo red (matches --logo-red)
     "news": "hsl(25, 85%, 58%)",         # Orange
     "people": "hsl(42, 75%, 48%)",       # Yellow/Gold (deeper for contrast)
     "alumni": "hsl(42, 75%, 48%)",       # Yellow/Gold (same as members)
@@ -61,13 +62,12 @@ ACCENTS = {
     "courses": "hsl(220, 70%, 56%)",     # Blue
     "join-us": "hsl(250, 55%, 60%)",     # Indigo
     "contact": "hsl(280, 50%, 56%)",     # Purple
-    "news": "hsl(25, 85%, 58%)",         # Orange (keeping consistent)
 }
 
 # Complementary accents for dual-tone expressive surfaces (M3 Expressive).
 # Each complement is roughly opposite on the color wheel from its accent.
 COMPLEMENTS = {
-    "home": "hsl(180, 75%, 60%)",        # Cyan (opposite of red)
+    "home": "#ff6e01",                   # Logo orange (matches --logo-orange)
     "news": "hsl(205, 85%, 58%)",        # Blue (opposite of orange)
     "people": "hsl(222, 75%, 48%)",      # Blue (opposite of yellow/gold)
     "alumni": "hsl(222, 75%, 48%)",      # Blue (opposite of yellow/gold)
@@ -245,22 +245,23 @@ def copy_static() -> None:
 
 
 def copy_journal() -> None:
-    """Copy the weekly-journal SPA shell to /journal/ and its data to /data/.
+    """Copy the self-contained weekly-journal SPA to /journal/.
 
-    The journal is a self-contained SPA (its own index.html + assets/app.js +
-    assets/style.css). Its data is pushed to /data/ by the external ECLab-News
-    pipeline, which we leave untouched. app.js fetches from the absolute /data/.
+    The journal is a standalone SPA: its shell (journal/index.html), its data
+    (journal/data/), and its scripts/styles (assets/app.js + assets/style.css,
+    copied with the rest of assets/). Its issue data under journal/data/ is
+    pushed there by the external ECLab-News pipeline, which we leave untouched.
+    app.js fetches from the absolute /journal/data/.
     """
-    journal_src = ROOT / "journal" / "index.html"
-    if journal_src.exists():
-        (DIST / "journal").mkdir(parents=True, exist_ok=True)
-        shutil.copy2(journal_src, DIST / "journal" / "index.html")
-        print("  built  /journal/  (weekly journal SPA)")
-
-    data_src = ROOT / "data"
-    if data_src.exists():
-        shutil.copytree(data_src, DIST / "data")
-        print(f"  copied /data/  ({sum(1 for _ in data_src.rglob('*.json'))} json files)")
+    journal_src = ROOT / "journal"
+    if not journal_src.exists():
+        return
+    shutil.copytree(journal_src, DIST / "journal")
+    print("  built  /journal/  (weekly journal SPA)")
+    data_dir = DIST / "journal" / "data"
+    if data_dir.exists():
+        n = sum(1 for _ in data_dir.rglob("*.json"))
+        print(f"  copied /journal/data/  ({n} json files)")
 
 
 def write_page(rel_url: str, html: str) -> None:
@@ -269,34 +270,6 @@ def write_page(rel_url: str, html: str) -> None:
     out = DIST / "index.html" if rel == "" else DIST / rel / "index.html"
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(html, encoding="utf-8")
-
-
-def page_context(doc: Document) -> dict:
-    """Common template context for a single page."""
-    return {
-        "site": SITE,
-        "page": doc.meta,
-        "content": doc.html,
-        "accent": doc.meta.get("accent", DEFAULT_ACCENT),
-    }
-
-
-def build_home(env: Environment) -> None:
-    src = CONTENT / "pages" / "home.md"
-    doc = parse_markdown(src)
-    template = env.get_template(doc.meta.get("template", "home.html"))
-    ctx = page_context(doc)
-    # Inject latest journal issue URL from manifest
-    manifest_path = ROOT / "data" / "manifest.json"
-    if manifest_path.exists():
-        import json as _json
-        manifest = _json.loads(manifest_path.read_text(encoding="utf-8"))
-        issues = manifest.get("issues", [])
-        if issues:
-            latest_label = issues[0]["label"]
-            ctx["latest_journal_href"] = f"/journal/#/issue/{latest_label}"
-    write_page("/", template.render(**ctx))
-    print("  built  /  (home)")
 
 
 def page_url(rel: Path) -> str:
@@ -319,20 +292,18 @@ def build_pages(env: Environment) -> None:
     # Pre-read latest journal issue for the home page
     latest_journal_href = None
     latest_journal_title = None
-    manifest_path = ROOT / "data" / "manifest.json"
+    manifest_path = ROOT / "journal" / "data" / "manifest.json"
     if manifest_path.exists():
-        import json as _json
-        manifest = _json.loads(manifest_path.read_text(encoding="utf-8"))
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
         issues = manifest.get("issues", [])
         if issues:
             latest = issues[0]
             latest_journal_href = f"/journal/#/issue/{latest['label']}"
             # Format a short date label from the issue label (e.g. "2026-06-01_2026-06-07" → "Jun 1–7, 2026")
             try:
-                import datetime as _dt
                 start_str, end_str = latest["label"].split("_")
-                start = _dt.date.fromisoformat(start_str)
-                end = _dt.date.fromisoformat(end_str)
+                start = dt.date.fromisoformat(start_str)
+                end = dt.date.fromisoformat(end_str)
                 if start.month == end.month:
                     latest_journal_title = f"{start.strftime('%b')} {start.day}–{end.day}, {start.year}"
                 else:
@@ -514,7 +485,7 @@ def serve() -> None:
     handler = lambda *a, **k: http.server.SimpleHTTPRequestHandler(
         *a, directory=str(DIST), **k
     )
-    port = 8000
+    port = 8001
     with socketserver.TCPServer(("", port), handler) as httpd:
         print(f"Serving dist/ at http://localhost:{port}  (Ctrl-C to stop)")
         try:

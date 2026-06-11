@@ -8,10 +8,10 @@
 (function () {
   'use strict';
 
-  // Journal data lives at the site root (/data/), pushed there by the external
+  // Journal data lives under /journal/data/, pushed there by the external
   // ECLab-News pipeline. Absolute path so it resolves correctly whether the
   // journal shell is served from /journal/ or previewed from the repo root.
-  var DATA_BASE = '/data/';
+  var DATA_BASE = '/journal/data/';
   var REC_KEY = '⭐ 推荐阅读';
   var DETAILS_KEY = '文献详情';
   // Homepage accent: extracted from the ECLab logo's dominant warm hue (~22°),

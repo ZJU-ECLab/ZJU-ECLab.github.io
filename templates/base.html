@@ -6,6 +6,7 @@
   <title>{% block title %}{{ page.title }} · {{ site.name }}{% endblock %}</title>
   <meta name="description" content="{{ page.description | default('Emotion & Culture Lab, Zhejiang University') }}" />
   <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg" />
+  <link rel="stylesheet" href="/assets/tokens.css" />
   <link rel="stylesheet" href="/assets/site.css" />
   <style>:root { --accent: {{ accent }}; --complement: {{ complement | default(accent) }}; }</style>
   <script>
