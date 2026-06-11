@@ -1805,7 +1805,7 @@ section { max-width: var(--w); margin: 0 auto; padding: 0 1.5rem; }
     border-color: color-mix(in srgb, var(--card-accent, var(--accent)) 45%, transparent);
   }
   .quick-nav-card:hover .quick-nav-icon {
-    transform: scale(1.12) rotate(-6deg);
+    transform: scale(1.12);
     background: color-mix(in srgb, var(--card-accent, var(--accent)) 28%, var(--surface-2));
   }
 
