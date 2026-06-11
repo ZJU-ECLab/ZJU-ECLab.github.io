@@ -53,7 +53,7 @@ DEFAULT_ACCENT = "hsl(16, 64%, 46%)"
 
 # Per-section accents — rainbow color scheme (ROYGBIV) for expressive design
 ACCENTS = {
-    "home": "#e4040f",                   # Logo red (matches --logo-red)
+    "home": "hsl(357, 60%, 52%)",        # Red (toned to match the ROYGBIV set)
     "news": "hsl(25, 85%, 58%)",         # Orange
     "people": "hsl(42, 75%, 48%)",       # Yellow/Gold (deeper for contrast)
     "alumni": "hsl(42, 75%, 48%)",       # Yellow/Gold (same as members)
@@ -67,7 +67,7 @@ ACCENTS = {
 # Complementary accents for dual-tone expressive surfaces (M3 Expressive).
 # Each complement is roughly opposite on the color wheel from its accent.
 COMPLEMENTS = {
-    "home": "#ff6e01",                   # Logo orange (matches --logo-orange)
+    "home": "hsl(30, 68%, 56%)",         # Orange (toned to match the ROYGBIV set)
     "news": "hsl(205, 85%, 58%)",        # Blue (opposite of orange)
     "people": "hsl(222, 75%, 48%)",      # Blue (opposite of yellow/gold)
     "alumni": "hsl(222, 75%, 48%)",      # Blue (opposite of yellow/gold)
