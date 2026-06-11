@@ -5,14 +5,14 @@ template: resources-index.html
 subtitle: >-
   Open emotion-stimulus databases developed by the Emotion & Culture Lab.
 databases:
-  - abbr: CDFED
-    name: Chinese Dynamic Facial Expressions Database
-    href: /resources/cdfed/
-    blurb: 28 emotions across 64 models — 1,778 static images and 1,778 dynamic video clips, with recognition rates, dimension ratings, and Action Units.
   - abbr: CEWD
     name: Chinese Emotion Word Database
     href: /resources/cewd/
     blurb: 99 emotion words selected from 598, with valence/arousal ratings and the channels through which each emotion is typically expressed.
+  - abbr: CDFED
+    name: Chinese Dynamic Facial Expressions Database
+    href: /resources/cdfed/
+    blurb: 28 emotions across 64 models — 1,778 static images and 1,778 dynamic video clips, with recognition rates, dimension ratings, and Action Units.
   - abbr: CEPD
     name: Chinese Emotional Prosody Database
     href: /resources/cepd/

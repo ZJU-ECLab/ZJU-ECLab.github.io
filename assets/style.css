@@ -14,7 +14,7 @@
   --accent: #4c566a; /* overridden per-issue by app.js */
 
   /* ── Neutrals tinted by the source (M3 neutral palette) ── */
-  --bg: color-mix(in srgb, var(--accent) 6%, #fbf8fd);
+  --bg: color-mix(in srgb, var(--accent) 4%, #ffffff);
   --surface: color-mix(in srgb, var(--accent) 4%, #fdfcff);
   --surface-1: color-mix(in srgb, var(--accent) 6%, #fdfcff);
   --surface-2: color-mix(in srgb, var(--accent) 9%, #fdfcff);

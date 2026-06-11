@@ -50,32 +50,32 @@ DIST = ROOT / "dist"
 # override via front-matter `accent:`.
 DEFAULT_ACCENT = "hsl(16, 64%, 46%)"
 
-# Per-section accents — gives each area its own Material You tone while staying
-# within one coherent palette.
+# Per-section accents — rainbow color scheme (ROYGBIV) for expressive design
 ACCENTS = {
-    "home": DEFAULT_ACCENT,
-    "people": "hsl(182, 42%, 42%)",
-    "alumni": "hsl(212, 48%, 50%)",
-    "publications": "hsl(255, 40%, 56%)",
-    "courses": "hsl(150, 38%, 42%)",
-    "resources": "hsl(28, 60%, 48%)",
-    "join-us": "hsl(338, 48%, 52%)",
-    "contact": "hsl(200, 46%, 46%)",
-    "news": "hsl(16, 64%, 46%)",
+    "home": "hsl(0, 75%, 60%)",          # Red
+    "news": "hsl(25, 85%, 58%)",         # Orange
+    "people": "hsl(42, 75%, 48%)",       # Yellow/Gold (deeper for contrast)
+    "alumni": "hsl(42, 75%, 48%)",       # Yellow/Gold (same as members)
+    "publications": "hsl(150, 55%, 42%)", # Green
+    "resources": "hsl(185, 60%, 44%)",   # Cyan
+    "courses": "hsl(220, 70%, 56%)",     # Blue
+    "join-us": "hsl(250, 55%, 60%)",     # Indigo
+    "contact": "hsl(280, 50%, 56%)",     # Purple
+    "news": "hsl(25, 85%, 58%)",         # Orange (keeping consistent)
 }
 
 # Complementary accents for dual-tone expressive surfaces (M3 Expressive).
 # Each complement is roughly opposite on the color wheel from its accent.
 COMPLEMENTS = {
-    "home": "hsl(196, 64%, 46%)",
-    "people": "hsl(2, 42%, 42%)",
-    "alumni": "hsl(32, 48%, 50%)",
-    "publications": "hsl(75, 40%, 56%)",
-    "courses": "hsl(330, 38%, 42%)",
-    "resources": "hsl(208, 60%, 48%)",
-    "join-us": "hsl(158, 48%, 52%)",
-    "contact": "hsl(20, 46%, 46%)",
-    "news": "hsl(196, 64%, 46%)",
+    "home": "hsl(180, 75%, 60%)",        # Cyan (opposite of red)
+    "news": "hsl(205, 85%, 58%)",        # Blue (opposite of orange)
+    "people": "hsl(222, 75%, 48%)",      # Blue (opposite of yellow/gold)
+    "alumni": "hsl(222, 75%, 48%)",      # Blue (opposite of yellow/gold)
+    "publications": "hsl(330, 55%, 42%)", # Magenta (opposite of green)
+    "resources": "hsl(5, 60%, 44%)",     # Red (opposite of cyan)
+    "courses": "hsl(40, 70%, 56%)",      # Yellow (opposite of blue)
+    "join-us": "hsl(70, 55%, 60%)",      # Yellow-green (opposite of indigo)
+    "contact": "hsl(100, 50%, 56%)",     # Green (opposite of purple)
 }
 
 # Site-wide navigation. `children` render as a dropdown / submenu.
@@ -97,16 +97,16 @@ NAV = [
         "label": "Resources",
         "href": "/resources/",
         "children": [
-            {"label": "CDFED (Face)", "href": "/resources/cdfed/"},
             {"label": "CEWD (Word)", "href": "/resources/cewd/"},
+            {"label": "CDFED (Face)", "href": "/resources/cdfed/"},
             {"label": "CEPD (Prosody)", "href": "/resources/cepd/"},
             {"label": "CNVD (Vocalization)", "href": "/resources/cnvd/"},
         ],
     },
     {"label": "Courses", "href": "/courses/"},
-    {"label": "Journal", "href": "/journal/"},
     {"label": "Join Us", "href": "/join-us/"},
     {"label": "Contact", "href": "/contact/"},
+    {"label": "Journal", "href": "/journal/"},
 ]
 
 # Quick-nav cards for the homepage: every top-level section accessible at a glance.
@@ -121,12 +121,12 @@ QUICK_NAV = [
      "desc": "Open datasets & tools"},
     {"label": "Courses", "href": "/courses/", "icon": "courses",
      "desc": "Teaching & workshops"},
-    {"label": "Journal", "href": "/journal/", "icon": "journal",
-     "desc": "Weekly literature digest"},
     {"label": "Join Us", "href": "/join-us/", "icon": "join",
      "desc": "Open positions"},
     {"label": "Contact", "href": "/contact/", "icon": "contact",
      "desc": "Get in touch"},
+    {"label": "Journal", "href": "/journal/", "icon": "journal",
+     "desc": "Weekly literature digest"},
 ]
 
 SITE = {
@@ -514,7 +514,7 @@ def serve() -> None:
     handler = lambda *a, **k: http.server.SimpleHTTPRequestHandler(
         *a, directory=str(DIST), **k
     )
-    port = 8001
+    port = 8000
     with socketserver.TCPServer(("", port), handler) as httpd:
         print(f"Serving dist/ at http://localhost:{port}  (Ctrl-C to stop)")
         try:

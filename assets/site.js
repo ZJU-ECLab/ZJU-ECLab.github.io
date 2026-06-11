@@ -171,17 +171,40 @@
     });
   })();
 
-  // ── M3 Expressive — Word-by-word hero text reveal ──
-  (function initWordReveal() {
-    var title = document.querySelector('.hero-title');
-    if (!title) return;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  // ── Moodboard connector lines ──
+  (function initConnectors() {
+    var svg = document.querySelector('.moodboard-connectors');
+    if (!svg) return;
+    var moodboard = svg.closest('.hero-moodboard');
+    if (!moodboard) return;
 
-    var text = title.textContent.trim();
-    var words = text.split(/\s+/);
-    title.innerHTML = words.map(function(w, i) {
-      return '<span class="word" style="animation-delay:' + (0.3 + i * 0.08).toFixed(2) + 's"><span class="word-inner">' + w + '</span></span>';
-    }).join(' ');
+    function updateLines() {
+      var rect = moodboard.getBoundingClientRect();
+      var lines = svg.querySelectorAll('.connector-line');
+      lines.forEach(function(line) {
+        var fromId = line.getAttribute('data-from');
+        var toClass = line.getAttribute('data-to');
+        var fromEl = document.getElementById(fromId);
+        var toEl = moodboard.querySelector('.' + toClass);
+        if (!fromEl || !toEl) return;
+
+        var fromRect = fromEl.getBoundingClientRect();
+        var toRect = toEl.getBoundingClientRect();
+
+        var x1 = fromRect.left + fromRect.width / 2 - rect.left;
+        var y1 = fromRect.top + fromRect.height / 2 - rect.top;
+        var x2 = toRect.left + toRect.width / 2 - rect.left;
+        var y2 = toRect.top + toRect.height / 2 - rect.top;
+
+        line.setAttribute('x1', x1);
+        line.setAttribute('y1', y1);
+        line.setAttribute('x2', x2);
+        line.setAttribute('y2', y2);
+      });
+    }
+
+    updateLines();
+    window.addEventListener('resize', updateLines);
   })();
 
   // ── M3 Expressive — Hero scroll exit (JS fallback) ──
@@ -507,5 +530,211 @@
 
     // Initial check in case page loads scrolled (e.g. browser restore)
     if (window.scrollY > SHOW_THRESHOLD) setVisible(true);
+  })();
+
+  // ── orbit emoticon cycling (cycle through facial expressions) ──
+  (function cycleOrbitEmoticon() {
+    var container = document.getElementById('orbit-emoticon');
+    if (!container) return;
+    
+    var imgs = container.querySelectorAll('.orbit-emoticon-img');
+    if (imgs.length < 2) return;
+    
+    var TOTAL = 20;
+    var currentIndex = 1;
+    var activeIndex = 0; // which img element is currently visible
+
+    function nextEmoticon() {
+      currentIndex = (currentIndex % TOTAL) + 1;
+      var name = 'emoticon-' + (currentIndex < 10 ? '0' + currentIndex : currentIndex) + '.webp';
+      var nextImg = imgs[1 - activeIndex]; // the hidden one
+
+      // Preload into the hidden img
+      nextImg.onload = function() {
+        // Crossfade: hide current, show next
+        imgs[activeIndex].style.opacity = '0';
+        nextImg.style.opacity = '1';
+        activeIndex = 1 - activeIndex;
+      };
+      nextImg.src = '/assets/img/emoticons/' + name;
+    }
+    
+    setInterval(nextEmoticon, 3500);
+  })();
+
+  // ── dropdown menu positioning (portal pattern for blur effect) ──
+  (function initDropdownPortals() {
+    var navItems = document.querySelectorAll('.nav-item.has-children');
+    if (!navItems.length) return;
+    
+    var openSubmenu = null;
+    var closeTimer = null;
+    
+    function positionSubmenu(navItem, submenu) {
+      var navLink = navItem.querySelector('.nav-link');
+      if (!navLink) return;
+      
+      var linkRect = navLink.getBoundingClientRect();
+      
+      // Get submenu width without it being visible (to avoid layout shift)
+      var wasOpen = submenu.classList.contains('open');
+      if (!wasOpen) {
+        // Temporarily make it visible off-screen to measure
+        submenu.style.visibility = 'hidden';
+        submenu.style.opacity = '1';
+        submenu.style.display = 'flex';
+      }
+      var submenuWidth = submenu.offsetWidth;
+      if (!wasOpen) {
+        submenu.style.visibility = '';
+        submenu.style.opacity = '';
+        submenu.style.display = '';
+      }
+      
+      // Position below the nav link, centered horizontally
+      var left = linkRect.left + (linkRect.width / 2) - (submenuWidth / 2);
+      var top = linkRect.bottom + 12;  // Increased gap from 6px to 12px
+      
+      // Keep within viewport bounds
+      var rightEdge = left + submenuWidth;
+      if (rightEdge > window.innerWidth - 14) {
+        left = window.innerWidth - submenuWidth - 14;
+      }
+      if (left < 14) left = 14;
+      
+      submenu.style.left = left + 'px';
+      submenu.style.top = top + 'px';
+    }
+    
+    function showSubmenu(navItem, submenu) {
+      // Close any other open submenu
+      if (openSubmenu && openSubmenu !== submenu) {
+        openSubmenu.classList.remove('open');
+        var prevNavItem = Array.prototype.find.call(navItems, function(item) {
+          return item.querySelector('.nav-submenu') === openSubmenu;
+        });
+        if (prevNavItem) prevNavItem.classList.remove('submenu-open');
+      }
+      
+      clearTimeout(closeTimer);
+      // Position once when opening, not on every hover
+      if (!submenu.classList.contains('open')) {
+        positionSubmenu(navItem, submenu);
+      }
+      submenu.classList.add('open');
+      navItem.classList.add('submenu-open');
+      openSubmenu = submenu;
+    }
+    
+    function hideSubmenu(navItem, submenu, immediate) {
+      clearTimeout(closeTimer);
+      if (immediate) {
+        submenu.classList.remove('open');
+        navItem.classList.remove('submenu-open');
+        if (openSubmenu === submenu) openSubmenu = null;
+      } else {
+        // Delay to allow moving from link to submenu
+        closeTimer = setTimeout(function() {
+          submenu.classList.remove('open');
+          navItem.classList.remove('submenu-open');
+          if (openSubmenu === submenu) openSubmenu = null;
+        }, 150);
+      }
+    }
+    
+    navItems.forEach(function(navItem) {
+      var submenu = navItem.querySelector('.nav-submenu');
+      var navLink = navItem.querySelector('.nav-link');
+      if (!submenu || !navLink) return;
+      
+      // Move submenu to body (portal pattern to escape appbar's backdrop-filter)
+      document.body.appendChild(submenu);
+      
+      // Show on hover
+      navLink.addEventListener('mouseenter', function() {
+        showSubmenu(navItem, submenu);
+      });
+      
+      // Hide when leaving link (with delay)
+      navLink.addEventListener('mouseleave', function() {
+        hideSubmenu(navItem, submenu, false);
+      });
+      
+      // Keep open when hovering submenu
+      submenu.addEventListener('mouseenter', function() {
+        clearTimeout(closeTimer);
+      });
+      
+      // Hide when leaving submenu
+      submenu.addEventListener('mouseleave', function() {
+        hideSubmenu(navItem, submenu, false);
+      });
+      
+      // Show on focus (keyboard navigation)
+      navLink.addEventListener('focus', function() {
+        showSubmenu(navItem, submenu);
+      });
+      
+      // Keep open when focusing items in submenu
+      submenu.addEventListener('focusin', function() {
+        clearTimeout(closeTimer);
+        showSubmenu(navItem, submenu);
+      });
+      
+      // Hide when focus leaves both link and submenu
+      submenu.addEventListener('focusout', function(e) {
+        // Check if focus is moving outside both navLink and submenu
+        setTimeout(function() {
+          if (!navLink.matches(':focus') && !submenu.contains(document.activeElement)) {
+            hideSubmenu(navItem, submenu, true);
+          }
+        }, 0);
+      });
+      
+      navLink.addEventListener('blur', function() {
+        // Check if focus is moving to submenu
+        setTimeout(function() {
+          if (!submenu.contains(document.activeElement)) {
+            hideSubmenu(navItem, submenu, true);
+          }
+        }, 0);
+      });
+      
+      // Reposition on scroll/resize
+      var repositionHandler = function() {
+        if (submenu.classList.contains('open')) {
+          positionSubmenu(navItem, submenu);
+        }
+      };
+      window.addEventListener('scroll', repositionHandler, { passive: true });
+      window.addEventListener('resize', repositionHandler);
+    });
+    
+    // Close on Escape key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && openSubmenu) {
+        openSubmenu.classList.remove('open');
+        var navItem = Array.prototype.find.call(navItems, function(item) {
+          return item.querySelector('.nav-submenu') === openSubmenu;
+        });
+        if (navItem) navItem.classList.remove('submenu-open');
+        openSubmenu = null;
+      }
+    });
+    
+    // Close when clicking outside
+    document.addEventListener('click', function(e) {
+      if (!openSubmenu) return;
+      var clickedNavItem = e.target.closest('.nav-item.has-children');
+      var clickedSubmenu = e.target.closest('.nav-submenu');
+      if (!clickedNavItem && !clickedSubmenu) {
+        openSubmenu.classList.remove('open');
+        var navItem = Array.prototype.find.call(navItems, function(item) {
+          return item.querySelector('.nav-submenu') === openSubmenu;
+        });
+        if (navItem) navItem.classList.remove('submenu-open');
+        openSubmenu = null;
+      }
+    });
   })();
 })();
