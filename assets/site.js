@@ -455,4 +455,57 @@
       }, { passive: true });
     }
   })();
+
+  // ── M3 Expressive back-to-top FAB ──
+  (function initBackToTop() {
+    var fab = document.getElementById('back-to-top');
+    if (!fab) return;
+
+    var SHOW_THRESHOLD = 300; // px scrolled before showing
+    var shown = false;
+    var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function setVisible(visible) {
+      if (visible === shown) return;
+      shown = visible;
+      if (visible) {
+        fab.hidden = false;
+        fab.classList.remove('fab-exit');
+        if (!reduceMotion) {
+          fab.classList.add('fab-enter');
+        }
+      } else {
+        fab.classList.remove('fab-enter');
+        if (reduceMotion) {
+          fab.hidden = true;
+        } else {
+          fab.classList.add('fab-exit');
+        }
+      }
+    }
+
+    fab.addEventListener('animationend', function (e) {
+      if (e.animationName === 'fab-spring-out') {
+        fab.hidden = true;
+        fab.classList.remove('fab-exit');
+      }
+    });
+
+    fab.addEventListener('click', function () {
+      window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
+    });
+
+    var ticking = false;
+    window.addEventListener('scroll', function () {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(function () {
+        setVisible(window.scrollY > SHOW_THRESHOLD);
+        ticking = false;
+      });
+    }, { passive: true });
+
+    // Initial check in case page loads scrolled (e.g. browser restore)
+    if (window.scrollY > SHOW_THRESHOLD) setVisible(true);
+  })();
 })();

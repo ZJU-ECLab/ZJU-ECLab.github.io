@@ -1180,6 +1180,74 @@
     requestAnimationFrame(initReveal);
   };
 
+  // ── M3 Expressive back-to-top FAB ──
+  (function initBackToTop() {
+    var fab = document.getElementById('back-to-top');
+    if (!fab) return;
+
+    var SHOW_THRESHOLD = 300;
+    var shown = false;
+
+    function getScrollPos() {
+      if (document.body.classList.contains('issue-view')) {
+        return content ? content.scrollTop : 0;
+      }
+      return window.scrollY || 0;
+    }
+
+    function setVisible(visible) {
+      if (visible === shown) return;
+      shown = visible;
+      if (visible) {
+        fab.hidden = false;
+        fab.classList.remove('fab-exit');
+        if (!reduceMotion) fab.classList.add('fab-enter');
+      } else {
+        fab.classList.remove('fab-enter');
+        if (reduceMotion) { fab.hidden = true; }
+        else { fab.classList.add('fab-exit'); }
+      }
+    }
+
+    fab.addEventListener('animationend', function (e) {
+      if (e.animationName === 'fab-spring-out') {
+        fab.hidden = true;
+        fab.classList.remove('fab-exit');
+      }
+    });
+
+    fab.addEventListener('click', function () {
+      var behavior = reduceMotion ? 'auto' : 'smooth';
+      if (document.body.classList.contains('issue-view')) {
+        if (content) content.scrollTo({ top: 0, behavior: behavior });
+      } else {
+        window.scrollTo({ top: 0, behavior: behavior });
+      }
+    });
+
+    function check() { setVisible(getScrollPos() > SHOW_THRESHOLD); }
+
+    var ticking = false;
+    function onScroll() {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(function () { check(); ticking = false; });
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    if (content) content.addEventListener('scroll', onScroll, { passive: true });
+
+    // Re-check after route changes (scroll position resets)
+    var prevOrigRoute = origRoute;
+    var origRoute2 = route;
+    route = function () {
+      origRoute2();
+      requestAnimationFrame(function () { setVisible(false); check(); });
+    };
+
+    // Initial check
+    if (getScrollPos() > SHOW_THRESHOLD) setVisible(true);
+  })();
+
   // ── boot ────────────────────────────────────────────────────────────────────
 
   window.addEventListener('hashchange', navigate);
