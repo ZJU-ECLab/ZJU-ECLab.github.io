@@ -599,34 +599,78 @@ section { max-width: var(--w); margin: 0 auto; padding: 0 1.5rem; }
   transition: opacity 1s var(--ease-standard);
 }
 
-/* Scattered modality icons — moodboard collage style with M3E clip-path morphing */
+/* Scattered modality icons — moodboard collage style with static layered Material shapes */
 .moodboard-icon {
   position: absolute;
   z-index: 2;
+  --plate-shape: inset(0 round 24px);
   display: flex;
   align-items: center;
   justify-content: center;
   aspect-ratio: 1;
-  background: color-mix(in srgb, var(--accent) 5%, rgba(255, 255, 255, 0.78));
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: transparent;
   border: none;
   box-shadow: none;
-  transition: clip-path 1.2s var(--ease-spring), transform 0.4s var(--ease-spring);
+  isolation: isolate;
+  transition: transform 0.4s var(--ease-spring);
 }
 .moodboard-icon::before {
   display: none;
 }
 
-.moodboard-icon span {
+.moodboard-plate {
+  position: absolute;
+  inset: 50%;
+  aspect-ratio: 1;
+  pointer-events: none;
+  display: block;
+  transform: translate(-50%, -50%) rotate(var(--plate-rot, 0deg));
+  clip-path: var(--plate-shape);
+  -webkit-clip-path: var(--plate-shape);
+  transition: transform 0.4s var(--ease-spring), opacity 0.25s var(--ease-standard);
+}
+.moodboard-plate--outer {
+  width: var(--plate-outer-size, 118%);
+  z-index: 0;
+  background: color-mix(in srgb, var(--accent) 34%, #fff);
+  box-shadow: 0 14px 26px color-mix(in srgb, var(--accent) 18%, transparent);
+  opacity: 0.78;
+}
+.moodboard-plate--middle {
+  width: var(--plate-middle-size, 102%);
+  z-index: 1;
+  background: color-mix(in srgb, var(--accent) 20%, #fff);
+  opacity: 0.9;
+}
+.moodboard-plate--inner {
+  width: var(--plate-inner-size, 86%);
+  z-index: 2;
+  background: color-mix(in srgb, var(--accent) 6%, rgba(255, 255, 255, 0.92));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.72);
+}
+
+.moodboard-icon span:not(.moodboard-plate) {
   display: none;
 }
 
 [data-theme="dark"] .moodboard-icon {
-  background: color-mix(in srgb, var(--accent) 15%, rgba(45, 43, 48, 0.85));
+  background: transparent;
   border: none;
 }
-[data-theme="dark"] .moodboard-icon span {
+[data-theme="dark"] .moodboard-plate--outer {
+  background: color-mix(in srgb, var(--accent) 36%, #17151b);
+  box-shadow: 0 14px 26px color-mix(in srgb, black 34%, transparent);
+  opacity: 0.82;
+}
+[data-theme="dark"] .moodboard-plate--middle {
+  background: color-mix(in srgb, var(--accent) 24%, #25222b);
+  opacity: 0.92;
+}
+[data-theme="dark"] .moodboard-plate--inner {
+  background: color-mix(in srgb, var(--accent) 14%, rgba(45, 43, 48, 0.92));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
+}
+[data-theme="dark"] .moodboard-icon span:not(.moodboard-plate) {
   display: none;
 }
 
@@ -634,6 +678,9 @@ section { max-width: var(--w); margin: 0 auto; padding: 0 1.5rem; }
   transform: scale(1.12);
   z-index: 10;
 }
+.moodboard-icon:hover .moodboard-plate--outer { transform: translate(-50%, -50%) scale(1.05) rotate(calc(var(--plate-rot, 0deg) - 4deg)); opacity: 0.86; }
+.moodboard-icon:hover .moodboard-plate--middle { transform: translate(-50%, -50%) scale(1.03) rotate(calc(var(--plate-rot, 0deg) + 3deg)); opacity: 0.96; }
+.moodboard-icon:hover .moodboard-plate--inner { transform: translate(-50%, -50%) scale(1.01) rotate(var(--plate-rot, 0deg)); }
 
 .moodboard-icon svg {
   flex-shrink: 0;
@@ -642,6 +689,8 @@ section { max-width: var(--w); margin: 0 auto; padding: 0 1.5rem; }
   transition: transform 0.3s var(--ease-spring), opacity 0.3s;
   width: 60%;
   height: 60%;
+  position: relative;
+  z-index: 3;
 }
 [data-theme="dark"] .moodboard-icon svg {
   opacity: 1;
@@ -650,6 +699,9 @@ section { max-width: var(--w); margin: 0 auto; padding: 0 1.5rem; }
 
 /* Each icon: different size, position, rotation for collage feel */
 .mi-face {
+  --plate-outer-size: 120%;
+  --plate-middle-size: 103%;
+  --plate-inner-size: 86%;
   top: 10%;
   left: 3%;
   width: 100px;
@@ -659,6 +711,10 @@ section { max-width: var(--w); margin: 0 auto; padding: 0 1.5rem; }
 }
 
 .mi-voice {
+  --plate-outer-size: 116%;
+  --plate-middle-size: 100%;
+  --plate-inner-size: 84%;
+  --plate-rot: 8deg;
   top: 8%;
   right: 0%;
   width: 110px;
@@ -668,6 +724,10 @@ section { max-width: var(--w); margin: 0 auto; padding: 0 1.5rem; }
 }
 
 .mi-drawing {
+  --plate-outer-size: 124%;
+  --plate-middle-size: 106%;
+  --plate-inner-size: 88%;
+  --plate-rot: -10deg;
   bottom: 24%;
   left: 0%;
   width: 85px;
@@ -677,6 +737,10 @@ section { max-width: var(--w); margin: 0 auto; padding: 0 1.5rem; }
 }
 
 .mi-film {
+  --plate-outer-size: 119%;
+  --plate-middle-size: 101%;
+  --plate-inner-size: 85%;
+  --plate-rot: 12deg;
   bottom: 16%;
   right: 2%;
   width: 95px;
@@ -686,6 +750,10 @@ section { max-width: var(--w); margin: 0 auto; padding: 0 1.5rem; }
 }
 
 .mi-music {
+  --plate-outer-size: 126%;
+  --plate-middle-size: 108%;
+  --plate-inner-size: 90%;
+  --plate-rot: -6deg;
   bottom: 3%;
   left: 35%;
   width: 80px;
