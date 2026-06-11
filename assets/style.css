@@ -176,16 +176,11 @@
   background: var(--primary-container);
   border-color: color-mix(in srgb, var(--accent) 32%, #1d1b20);
 }
-[data-theme="dark"] .featured-issue:hover {
-  background: color-mix(in srgb, var(--accent) 38%, #1d1b20);
-}
+/* hover: see @media (hover: hover) block at end of file */
 [data-theme="dark"] .featured-issue::after {
   background: color-mix(in srgb, var(--on-primary-container) 6%, transparent);
 }
-[data-theme="dark"] .issue-card:hover {
-  background: color-mix(in srgb, var(--accent) 15%, #1d1b20);
-  border-color: var(--primary);
-}
+/* hover: see @media (hover: hover) block at end of file */
 
 /* ══════════════════════════════════════════════
    Reset & Base
@@ -287,12 +282,7 @@ body {
     transform 0.3s var(--ease-spring),
     box-shadow 0.25s var(--ease-standard);
 }
-.header-logo-wrap:hover {
-  transform: scale(1.05);
-  box-shadow:
-    0 0 0 1.5px var(--primary),
-    var(--elev-2);
-}
+/* hover: see @media (hover: hover) block at end of file */
 #eclab-header .header-logo-img {
   width: 103%;
   height: 103%;
@@ -329,12 +319,7 @@ body {
     background-color 0.25s var(--ease-standard),
     box-shadow 0.25s var(--ease-standard);
 }
-#eclab-header h1 a:hover {
-  background: var(--primary);
-  color: var(--on-primary);
-  transform: scale(1.03);
-  box-shadow: var(--elev-1);
-}
+/* hover: see @media (hover: hover) block at end of file */
 #eclab-header h1 a:active {
   transform: scale(0.99);
 }
@@ -354,10 +339,7 @@ body {
     color 0.2s var(--ease-standard),
     background-color 0.2s var(--ease-standard);
 }
-#eclab-header .subtitle-link:hover {
-  color: var(--primary);
-  background: var(--state-hover);
-}
+/* hover: see @media (hover: hover) block at end of file */
 
 /* ── Theme toggle — M3 icon button in top-right of header ── */
 /* header action buttons (theme toggle + lab link), positioned top-right.
@@ -379,9 +361,7 @@ body {
   height: 48px;
   border: none;
 }
-#theme-toggle:hover {
-  transform: scale(1.08);
-}
+/* hover: see @media (hover: hover) block at end of file */
 #theme-toggle:active {
   transform: scale(0.92);
 }
@@ -530,9 +510,7 @@ body:not(.issue-view) #content {
   transition: color 0.2s var(--ease-standard);
   white-space: nowrap;
 }
-.sidebar-pill:hover {
-  color: var(--ink-soft);
-}
+/* hover: see @media (hover: hover) block at end of file */
 .sidebar-pill.active {
   color: var(--on-primary);
 }
@@ -602,10 +580,7 @@ body:not(.issue-view) #content {
     background-color 0.2s var(--ease-standard);
   cursor: pointer;
 }
-.nav-track > ul > li > a:hover {
-  color: var(--on-secondary-container);
-  background: transparent;
-}
+/* hover: see @media (hover: hover) block at end of file */
 /* keep weight constant so the indicator can't break on a line-count change */
 .nav-track > ul > li > a.active {
   color: var(--on-secondary-container);
@@ -679,11 +654,7 @@ body:not(.issue-view) #content {
     transform 0.15s var(--ease-standard);
 }
 #toc-toggle svg { display: block; }
-#toc-toggle:hover {
-  box-shadow:
-    var(--elev-3),
-    0 0 0 6px var(--state-hover);
-}
+/* hover: see @media (hover: hover) block at end of file */
 #toc-toggle:active {
   transform: scale(0.92);
   border-radius: var(--shape-full);
@@ -929,9 +900,7 @@ h3.category-h {
   transition: color 0.2s var(--ease-standard);
   cursor: pointer;
 }
-.article-index-title a:hover {
-  color: var(--primary);
-}
+/* hover: see @media (hover: hover) block at end of file */
 .article-index-tags {
   display: flex;
   flex-wrap: wrap;
@@ -962,11 +931,7 @@ h3.category-h {
   line-height: 1.4;
   vertical-align: middle;
 }
-.tag:hover {
-  filter: brightness(1.04);
-  transform: translateY(-2px) scale(1.03);
-  box-shadow: var(--elev-1);
-}
+/* hover: see @media (hover: hover) block at end of file */
 .tag:active {
   transform: translateY(0) scale(1);
   box-shadow: none;
@@ -1032,11 +997,7 @@ hr {
 .article-card {
   animation-delay: calc(var(--enter-i, 0) * 0.045s);
 }
-.article-card:hover {
-  box-shadow: var(--elev-2);
-  transform: translateY(-3px);
-  border-color: transparent;
-}
+/* hover: see @media (hover: hover) block at end of file */
 .article-card:active {
   transform: translateY(-1px) scale(0.997);
 }
@@ -1162,13 +1123,7 @@ p a:hover {
   pointer-events: none;
   transition: transform 0.5s var(--ease-spring);
 }
-.featured-issue:hover {
-  transform: translateY(-4px) scale(1.005);
-  background: color-mix(in srgb, var(--accent) 28%, white);
-}
-.featured-issue:hover::after {
-  transform: scale(1.25);
-}
+/* hover: see @media (hover: hover) block at end of file */
 .featured-issue:active {
   transform: translateY(-1px) scale(0.995);
 }
@@ -1272,11 +1227,7 @@ p a:hover {
     transform: translateY(0) scale(1);
   }
 }
-.issue-card:hover {
-  transform: translateY(-4px);
-  background: var(--secondary-container);
-  border-color: var(--primary);
-}
+/* hover: see @media (hover: hover) block at end of file */
 .issue-card:active {
   transform: translateY(-1px) scale(0.99);
 }
@@ -1309,10 +1260,7 @@ p a:hover {
   border-radius: var(--shape-full);
   transition: background-color 0.2s var(--ease-standard);
 }
-.back-link:hover {
-  text-decoration: none;
-  background: var(--state-hover);
-}
+/* hover: see @media (hover: hover) block at end of file */
 
 /* ══════════════════════════════════════════════
    Issue App Bar — Google Workspace style, fixed
@@ -1354,7 +1302,7 @@ p a:hover {
   transition: color .2s var(--ease-standard), background-color .2s var(--ease-standard), border-radius .3s var(--ease-spring), transform .2s var(--ease-spring);
 }
 .appbar-icon-btn svg { display: block; }
-.appbar-icon-btn:hover { color: var(--ink); background: var(--surface-3); }
+/* hover: see @media (hover: hover) block at end of file */
 /* M3 Expressive press: the round button morphs toward a squircle + squishes */
 .appbar-icon-btn:active {
   border-radius: var(--shape-md);
@@ -1373,7 +1321,7 @@ p a:hover {
   box-shadow: 0 0 0 1.5px var(--outline);
   transition: box-shadow .2s var(--ease-standard);
 }
-.appbar-logo-wrap:hover { box-shadow: 0 0 0 1.5px var(--primary); }
+/* hover: see @media (hover: hover) block at end of file */
 .appbar-logo-img {
   width: 103%; height: 103%;
   object-fit: cover;
@@ -1446,7 +1394,7 @@ p a:hover {
   transition: color .15s, background-color .15s;
 }
 .search-clear svg { display: block; }
-.search-clear:hover { color: var(--ink); background: var(--state-hover); }
+/* hover: see @media (hover: hover) block at end of file */
 
 /* lab link button */
 .appbar-lab-link {
@@ -1552,7 +1500,7 @@ body.issue-view #toc-sidebar {
   position: absolute;
   transition: opacity .2s var(--ease-standard);
 }
-.rail-btn:hover { background: var(--state-hover); color: var(--ink); }
+/* hover: see @media (hover: hover) block at end of file */
 /* #rail-view: show keywords icon by default, journals when view=journals */
 .rail-icon-journals { opacity: 0; }
 body.view-journals .rail-icon-keywords { opacity: 0; }
@@ -1617,10 +1565,7 @@ body.issue-view #toc-nav {
     color 0.2s var(--ease-standard),
     background-color 0.2s var(--ease-standard);
 }
-.details-link:hover {
-  color: var(--on-secondary-container);
-  background: var(--state-hover);
-}
+/* hover: see @media (hover: hover) block at end of file */
 .details-link.active {
   color: color-mix(in srgb, var(--accent) 86%, black);
   background: color-mix(in srgb, var(--accent) 30%, white);
@@ -1679,42 +1624,29 @@ body.issue-view .nav-track > ul > li > a:hover {
   color: var(--ink);
   background: color-mix(in srgb, var(--accent) 13%, #fdfcff);
 }
-.theme-toggle.appbar-icon-btn:hover {
-  color: var(--ink);
-  background: color-mix(in srgb, var(--accent) 22%, #fdfcff);
-}
+/* hover: see @media (hover: hover) block at end of file */
 [data-theme="dark"] .theme-toggle.appbar-icon-btn {
   background: color-mix(in srgb, var(--accent) 12%, #1d1b20);
 }
-[data-theme="dark"] .theme-toggle.appbar-icon-btn:hover {
-  background: color-mix(in srgb, var(--accent) 20%, #1d1b20);
-}
+/* hover: see @media (hover: hover) block at end of file */
 
 /* Lab website link: full-strength color + gentle bg */
 .appbar-lab-link {
   color: var(--ink);
   background: color-mix(in srgb, var(--accent) 13%, #fdfcff);
 }
-.appbar-lab-link:hover {
-  color: var(--ink);
-  background: color-mix(in srgb, var(--accent) 22%, #fdfcff);
-}
+/* hover: see @media (hover: hover) block at end of file */
 [data-theme="dark"] .appbar-lab-link {
   background: color-mix(in srgb, var(--accent) 12%, #1d1b20);
 }
-[data-theme="dark"] .appbar-lab-link:hover {
-  background: color-mix(in srgb, var(--accent) 20%, #1d1b20);
-}
+/* hover: see @media (hover: hover) block at end of file */
 
 /* Drawer expand icon: no colored background at rest, circle only on hover */
 #appbar-drawer {
   background: transparent;
   color: var(--ink);
 }
-#appbar-drawer:hover {
-  background: var(--state-hover);
-  color: var(--ink);
-}
+/* hover: see @media (hover: hover) block at end of file */
 
 /* content becomes a distinct rounded surface card.
    The card itself stays fixed in the viewport; only its inner content scrolls.
@@ -1951,17 +1883,14 @@ mark.search-hl {
               gap 0.3s var(--ease-spring),
               padding 0.3s var(--ease-spring);
 }
-.fab:hover {
-  box-shadow: var(--elev-3), 0 6px 12px 4px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.12);
-  background: color-mix(in srgb, var(--primary-container) 80%, var(--primary));
-}
+/* hover: see @media (hover: hover) block at end of file */
 .fab:active { transform: scale(0.92); }
 
 .fab-icon {
   flex-shrink: 0; display: block; line-height: 0;
   transition: transform 0.35s var(--ease-spring);
 }
-.fab:hover .fab-icon { transform: translateY(-2px); }
+/* hover: see @media (hover: hover) block at end of file */
 
 .fab-label {
   max-width: 0; overflow: hidden; white-space: nowrap; opacity: 0;
@@ -1970,9 +1899,7 @@ mark.search-hl {
               margin 0.3s var(--ease-spring);
   margin-left: 0;
 }
-.fab:hover .fab-label {
-  max-width: 80px; opacity: 1; margin-left: 8px;
-}
+/* hover: see @media (hover: hover) block at end of file */
 
 .fab--back-to-top {
   bottom: 24px; right: 24px;
@@ -1995,7 +1922,6 @@ mark.search-hl {
 
 @media (max-width: 600px) {
   .fab--back-to-top { bottom: 16px; right: 16px; }
-  .fab:hover .fab-label { max-width: 0; opacity: 0; margin-left: 0; }
 }
 
 /* ══════════════════════════════════════════════
@@ -2027,8 +1953,126 @@ mark.search-hl {
     box-shadow: none;
     border: 1px solid #ccc;
   }
-  .article-card:hover {
-    transform: none;
-    box-shadow: none;
+  .article-card:hover { /* handled by @media (hover: hover) */ }
+}
+
+/* ══════════════════════════════════════════════
+   Hover effects — only on devices with true hover
+   Prevents "stuck" hover states on touchscreens.
+   ══════════════════════════════════════════════ */
+@media (hover: hover) and (pointer: fine) {
+  /* dark mode overrides */
+  [data-theme="dark"] .featured-issue:hover {
+    background: color-mix(in srgb, var(--accent) 38%, #1d1b20);
   }
+  [data-theme="dark"] .issue-card:hover {
+    background: color-mix(in srgb, var(--accent) 15%, #1d1b20);
+    border-color: var(--primary);
+  }
+
+  /* header */
+  .header-logo-wrap:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 1.5px var(--primary), var(--elev-2);
+  }
+  #eclab-header h1 a:hover {
+    background: var(--primary);
+    color: var(--on-primary);
+    transform: scale(1.03);
+    box-shadow: var(--elev-1);
+  }
+  #eclab-header .subtitle-link:hover {
+    color: var(--primary);
+    background: var(--state-hover);
+  }
+  #theme-toggle:hover { transform: scale(1.08); }
+
+  /* sidebar pills */
+  .sidebar-pill:hover { color: var(--ink-soft); }
+
+  /* nav drawer links */
+  .nav-track > ul > li > a:hover {
+    color: var(--on-secondary-container);
+    background: transparent;
+  }
+
+  /* TOC toggle FAB */
+  #toc-toggle:hover {
+    box-shadow: var(--elev-3), 0 0 0 6px var(--state-hover);
+  }
+
+  /* article index */
+  .article-index-title a:hover { color: var(--primary); }
+
+  /* tags */
+  .tag:hover {
+    filter: brightness(1.04);
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: var(--elev-1);
+  }
+
+  /* article cards */
+  .article-card:hover {
+    box-shadow: var(--elev-2);
+    transform: translateY(-3px);
+    border-color: transparent;
+  }
+
+  /* featured issue */
+  .featured-issue:hover {
+    transform: translateY(-4px) scale(1.005);
+    background: color-mix(in srgb, var(--accent) 28%, white);
+  }
+  .featured-issue:hover::after { transform: scale(1.25); }
+
+  /* issue cards */
+  .issue-card:hover {
+    transform: translateY(-4px);
+    background: var(--secondary-container);
+    border-color: var(--primary);
+  }
+
+  /* back link */
+  .back-link:hover {
+    text-decoration: none;
+    background: var(--state-hover);
+  }
+
+  /* appbar icon buttons */
+  .appbar-icon-btn:hover { color: var(--ink); background: var(--surface-3); }
+  .appbar-logo-wrap:hover { box-shadow: 0 0 0 1.5px var(--primary); }
+  .search-clear:hover { color: var(--ink); background: var(--state-hover); }
+  .rail-btn:hover { background: var(--state-hover); color: var(--ink); }
+  .details-link:hover {
+    color: var(--on-secondary-container);
+    background: var(--state-hover);
+  }
+
+  /* theme toggle + lab link in appbar */
+  .theme-toggle.appbar-icon-btn:hover {
+    color: var(--ink);
+    background: color-mix(in srgb, var(--accent) 22%, #fdfcff);
+  }
+  [data-theme="dark"] .theme-toggle.appbar-icon-btn:hover {
+    background: color-mix(in srgb, var(--accent) 20%, #1d1b20);
+  }
+  .appbar-lab-link:hover {
+    color: var(--ink);
+    background: color-mix(in srgb, var(--accent) 22%, #fdfcff);
+  }
+  [data-theme="dark"] .appbar-lab-link:hover {
+    background: color-mix(in srgb, var(--accent) 20%, #1d1b20);
+  }
+  #appbar-drawer:hover {
+    background: var(--state-hover);
+    color: var(--ink);
+  }
+
+  /* FAB */
+  .fab:hover {
+    box-shadow: var(--elev-3), 0 6px 12px 4px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.12);
+    background: color-mix(in srgb, var(--primary-container) 80%, var(--primary));
+  }
+  .fab:hover .fab-icon { transform: translateY(-2px); }
+  .fab:hover .fab-label { max-width: 80px; opacity: 1; margin-left: 8px; }
 }
