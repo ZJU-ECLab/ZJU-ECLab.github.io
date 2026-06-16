@@ -1,17 +1,14 @@
 name: Announce new issue
-
 # When the ECLab-News pipeline pushes a new issue file into data/issues/,
 # publish a GitHub Discussion so that repo watchers get notified.
 on:
   push:
     branches: [main]
     paths:
-      - "data/issues/**.json"
-
+      - "journal/data/issues/**.json"
 permissions:
   contents: read
   discussions: write
-
 jobs:
   announce:
     runs-on: ubuntu-latest
@@ -20,7 +17,6 @@ jobs:
         with:
           # Need enough history to diff this push against its parent.
           fetch-depth: 0
-
       - name: Find newly added issue files
         id: added
         env:
@@ -46,7 +42,6 @@ jobs:
             # Pass as a space-separated list on a single line.
             echo "files=$(echo "${FILES}" | tr '\n' ' ')" >> "$GITHUB_OUTPUT"
           fi
-
       - name: Resolve discussion category
         id: category
         if: steps.added.outputs.files != ''
@@ -81,7 +76,6 @@ jobs:
           fi
           echo "repo_id=$REPO_ID" >> "$GITHUB_OUTPUT"
           echo "category_id=$CAT_ID" >> "$GITHUB_OUTPUT"
-
       - name: Publish discussions
         if: steps.added.outputs.files != ''
         env:
@@ -149,7 +143,6 @@ jobs:
               -F body="$BODY" \
               --jq '.data.createDiscussion.discussion.url'
           done
-
       - name: Notify DingTalk group
         if: steps.added.outputs.files != ''
         env:
