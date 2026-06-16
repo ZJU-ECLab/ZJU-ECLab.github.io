@@ -2,10 +2,10 @@
 
 The website of the **Emotion & Culture Lab, Zhejiang University** — including the
 lab pages (Home, News, People, Publications, Resources, Courses, Join Us,
-Contact) and the online edition of the weekly literature digest *《东西情报》*
+Contact) and the online edition of the weekly literature digest _《东西情报》_
 (ECLab News).
 
-Live at <https://zju-eclab.github.io>.
+Live at <https://emotion.is-cool.dev>.
 
 ## Architecture
 
@@ -37,15 +37,15 @@ dist/                    generated output (git-ignored)
 
 ### Routes
 
-| URL | Source |
-|-----|--------|
-| `/` | `content/pages/home.md` |
-| `/news/`, `/news/<slug>/` | `content/news/*.md` |
-| `/people/`, `/alumni/` | `content/data/people.yml`, `alumni.yml` |
-| `/publications/` | `content/data/publications.yml` |
-| `/resources/`, `/resources/<db>/` | `content/pages/resources*.md` |
-| `/courses/`, `/join-us/`, `/contact/` | data / prose |
-| `/journal/` | the weekly-journal SPA (`journal/index.html`) |
+| URL                                   | Source                                        |
+| ------------------------------------- | --------------------------------------------- |
+| `/`                                   | `content/pages/home.md`                       |
+| `/news/`, `/news/<slug>/`             | `content/news/*.md`                           |
+| `/people/`, `/alumni/`                | `content/data/people.yml`, `alumni.yml`       |
+| `/publications/`                      | `content/data/publications.yml`               |
+| `/resources/`, `/resources/<db>/`     | `content/pages/resources*.md`                 |
+| `/courses/`, `/join-us/`, `/contact/` | data / prose                                  |
+| `/journal/`                           | the weekly-journal SPA (`journal/index.html`) |
 
 ## Editing content
 
