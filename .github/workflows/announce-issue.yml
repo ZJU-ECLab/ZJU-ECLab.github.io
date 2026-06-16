@@ -1,5 +1,5 @@
 name: Announce new issue
-# When the ECLab-News pipeline pushes a new issue file into data/issues/,
+# When the ECLab-News pipeline pushes a new issue file into journal/data/issues/,
 # publish a GitHub Discussion so that repo watchers get notified.
 on:
   push:
@@ -30,9 +30,9 @@ jobs:
           else
             RANGE_ARGS=("${BEFORE}" "${AFTER}")
           fi
-          # Only freshly ADDED files under data/issues/ — re-runs that modify an
+          # Only freshly ADDED files under journal/data/issues/ — re-runs that modify an
           # existing issue won't create a duplicate discussion.
-          FILES=$(git diff --name-only --diff-filter=A "${RANGE_ARGS[@]}" -- 'data/issues/*.json' || true)
+          FILES=$(git diff --name-only --diff-filter=A "${RANGE_ARGS[@]}" -- 'journal/data/issues/*.json' || true)
           if [[ -z "${FILES}" ]]; then
             echo "No newly added issue files in this push."
             echo "files=" >> "$GITHUB_OUTPUT"
@@ -111,7 +111,7 @@ jobs:
           count = d.get("count", len(d.get("articles", []) or []))
           arts = d.get("articles", []) or []
           rec = sum(1 for a in arts if a.get("recommended"))
-          url = f"https://zju-eclab.github.io/journal/#/issue/{label}"
+          url = f"https://emotion.is-cool.dev/journal/#/issue/{label}"
           lines = []
           lines.append(f"**{title}** 已发布到在线版《东西情报》。")
           lines.append("")
