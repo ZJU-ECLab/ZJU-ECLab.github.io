@@ -184,7 +184,7 @@
     }).catch(function () {
       setStorageStatus('离线本机模式', false);
       state.projects = normalizeProjects(state.projects);
-      showToast('暂时无法连接 Cloudflare 共享存储，当前显示本机缓存。', true);
+      showToast('暂时无法连接共享存储，当前显示本机缓存。', true);
       renderBoard();
     });
   }

@@ -82,8 +82,9 @@ this site's build.
 
 `/progress/` is intentionally absent from navigation and marked `noindex`. It is
 a lightweight static page: members select their name from the lab member list and
-record project progress in browser-local storage. See `docs/progress-page.md`
-for details and limitations.
+record project progress. Shared data is stored via a Tencent CloudBase (腾讯云
+开发) cloud function (reachable inside mainland China), with a browser-local
+fallback. See `docs/progress-page.md` for setup, data model, and limitations.
 
 ## Deployment
 

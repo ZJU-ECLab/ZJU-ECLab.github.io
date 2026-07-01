@@ -10,6 +10,13 @@ result-*
 
 __pycache__/
 
-worker/.wrangler/
-worker/wrangler.toml
-.wrangler/
+# Node / CLI tooling (local @cloudbase/cli install, tcb app scaffolding)
+node_modules/
+/package.json
+/package-lock.json
+/cloudbaserc.json
+
+# CloudBase (腾讯云开发) cloud function local state
+cloudbase/functions/**/node_modules/
+cloudbase/.env
+cloudbase/cloudbaserc.local.json

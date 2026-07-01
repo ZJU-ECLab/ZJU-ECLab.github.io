@@ -1,0 +1,9 @@
+{
+  "name": "progress-api",
+  "version": "1.0.0",
+  "description": "ECLab shared progress board — CloudBase cloud function (HTTP access service).",
+  "main": "index.js",
+  "dependencies": {
+    "@cloudbase/node-sdk": "^2.9.0"
+  }
+}
