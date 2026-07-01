@@ -32,6 +32,9 @@
 
 .progress-shell {
   padding-bottom: 4rem;
+  /* Site-wide --radius-l is 52px, which is too rounded for these dense
+     dashboard cards. Use a more comfortable radius across the workspace. */
+  --radius-progress-card: 20px;
 }
 
 .progress-gate,
@@ -39,6 +42,20 @@
   background: color-mix(in srgb, var(--accent) 6%, var(--surface-1));
   border: 1px solid var(--outline-soft);
   box-shadow: var(--shadow-soft);
+}
+
+/* Text/secondary button (used in the create form + entry dialog). The base
+   .btn from site.css has no background, so without this it falls back to the
+   UA's greenish default — give it an accent-tinted light surface instead. */
+.btn-text {
+  background: color-mix(in srgb, var(--accent) 9%, var(--surface-1));
+  color: var(--on-secondary-container);
+  border: 1px solid color-mix(in srgb, var(--accent) 22%, var(--outline-soft));
+  box-shadow: none;
+}
+
+[data-theme="dark"] .btn-text {
+  background: color-mix(in srgb, var(--accent) 14%, var(--surface-2));
 }
 
 /* ---------- gate ---------- */
@@ -49,7 +66,7 @@
   gap: clamp(1.1rem, 3vw, 2rem);
   align-items: center;
   padding: clamp(1.4rem, 3.8vw, 2.4rem);
-  border-radius: var(--radius-l);
+  border-radius: var(--radius-progress-card);
   overflow: hidden;
   position: relative;
   isolation: isolate;
@@ -405,7 +422,7 @@
   min-width: 0;
   width: 100%;
   padding: clamp(1.25rem, 3vw, 2rem);
-  border-radius: var(--radius-l);
+  border-radius: var(--radius-progress-card);
   display: flex;
   flex-direction: column;
   gap: clamp(1rem, 2.5vw, 1.5rem);
@@ -571,7 +588,7 @@
 .project-row {
   position: relative;
   border: 1px solid var(--outline-soft);
-  border-radius: var(--radius-l);
+  border-radius: var(--radius-progress-card);
   background:
     linear-gradient(180deg,
       color-mix(in srgb, var(--surface) 88%, white),
@@ -1053,6 +1070,15 @@
   line-height: 1.28;
 }
 
+/* Narrow bars drop the name chip and let the note use the whole width. */
+.calendar-bar--narrow {
+  padding-left: 0.4rem;
+}
+
+.calendar-bar--narrow .calendar-bar-note {
+  padding-top: 0;
+}
+
 .calendar-empty {
   position: relative;
   z-index: 2;
@@ -1089,9 +1115,11 @@
 .entry-dialog {
   width: min(30rem, calc(100vw - 2rem));
   max-height: min(85vh, 40rem);
+  /* Center in the viewport regardless of any global dialog margin reset. */
+  margin: auto;
   padding: 0;
   border: 1px solid var(--outline-soft);
-  border-radius: var(--radius-l);
+  border-radius: var(--radius-progress-card, 20px);
   background: var(--surface);
   color: var(--ink);
   box-shadow: var(--elev-3);
@@ -1171,10 +1199,14 @@
 .entry-dialog-delete {
   margin-right: auto;
   color: #b3261e;
+  background: color-mix(in srgb, #b3261e 8%, var(--surface-1));
+  border-color: color-mix(in srgb, #b3261e 24%, var(--outline-soft));
 }
 
 [data-theme="dark"] .entry-dialog-delete {
   color: #f2b8b5;
+  background: color-mix(in srgb, #b3261e 20%, var(--surface-2));
+  border-color: color-mix(in srgb, #f2b8b5 26%, var(--outline-soft));
 }
 
 .entry-dialog-form .progress-date-row {
@@ -1399,5 +1431,17 @@
 
   .btn:hover {
     filter: brightness(1.05);
+  }
+
+  .btn-text:hover {
+    filter: none;
+    background: color-mix(in srgb, var(--accent) 16%, var(--surface-1));
+    border-color: color-mix(in srgb, var(--accent) 34%, var(--outline-soft));
+  }
+
+  .entry-dialog-delete:hover {
+    filter: none;
+    background: color-mix(in srgb, #b3261e 14%, var(--surface-1));
+    border-color: color-mix(in srgb, #b3261e 36%, var(--outline-soft));
   }
 }

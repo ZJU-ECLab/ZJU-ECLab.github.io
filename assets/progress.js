@@ -24,6 +24,10 @@
   var DEFAULT_STATUS = STATUSES[0];
   var ENDED_STATUS = STATUSES[STATUSES.length - 1];
 
+  // Below this span (in days) a bar is too narrow to fit both the author name
+  // chip and the note, so the chip is dropped and only the note is shown.
+  var NARROW_BAR_DAYS = 3;
+
   var gate = root.querySelector('[data-progress-gate]');
   var workspace = root.querySelector('[data-workspace]');
   var storageStatus = root.querySelector('[data-storage-status]');
@@ -656,8 +660,9 @@
       var bar = el('button', 'calendar-bar');
       bar.type = 'button';
       if (editable) bar.classList.add('calendar-bar--editable');
+      var len = item.span.endDay - item.span.startDay;
       bar.style.setProperty('--start', String(item.span.startDay));
-      bar.style.setProperty('--len', String(item.span.endDay - item.span.startDay));
+      bar.style.setProperty('--len', String(len));
       bar.style.setProperty('--track', String(item.track));
       if (entry.authorId) {
         bar.style.setProperty('--bar-color', memberColor(entry.authorId));
@@ -667,8 +672,12 @@
       bar.title = (who ? who + ' · ' : '') +
         formatDateRange(entry.startDate, entry.endDate || entry.startDate) +
         '：' + (entry.note || '');
-      if (who) {
+      // Narrow bars (short spans) can't fit both a name chip and the note, and
+      // the chip would eat all the width — drop the chip and show only the note.
+      if (who && len >= NARROW_BAR_DAYS) {
         bar.appendChild(el('span', 'calendar-bar-who', who));
+      } else if (who) {
+        bar.classList.add('calendar-bar--narrow');
       }
       bar.appendChild(el('span', 'calendar-bar-note', entry.note || ''));
       bar.addEventListener('click', function () { openEntryDetail(project, entry); });
