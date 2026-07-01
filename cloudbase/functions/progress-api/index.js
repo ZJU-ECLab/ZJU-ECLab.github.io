@@ -252,6 +252,22 @@ async function setProjectStatus(body, projectId) {
   return json({ ok: true, status, endDate });
 }
 
+async function renameProject(body, projectId) {
+  if (!body) return badRequest('Invalid JSON body.');
+  const memberId = cleanText(body.memberId, 120);
+  const name = cleanText(body.name, 120);
+  if (!memberId) return badRequest('memberId is required.');
+  if (!name) return badRequest('Project name is required.');
+  if (!(await isMember(projectId, memberId))) return forbidden();
+
+  const doc = await getProjectDoc(projectId);
+  if (!doc) return notFound('Project not found.');
+  await db.collection(COL_PROJECTS).doc(doc._id).update({
+    name, updated_at: new Date().toISOString()
+  });
+  return json({ ok: true, name });
+}
+
 async function deleteProject(body, projectId) {
   const memberId = cleanText(body && body.memberId, 120);
   if (!memberId) return badRequest('memberId is required.');
@@ -325,6 +341,35 @@ async function createProgressEntry(body) {
   return json({ entry: { id, projectId, authorId: memberId, startDate, endDate, note } }, 201);
 }
 
+async function updateProgressEntry(body, entryId) {
+  if (!body) return badRequest('Invalid JSON body.');
+  const memberId = cleanText(body.memberId, 120);
+  const startDate = cleanText(body.startDate, 10);
+  const endDate = cleanText(body.endDate, 10);
+  const note = cleanText(body.note, 2000);
+  if (!memberId) return badRequest('memberId is required.');
+  if (!isDate(startDate) || !isDate(endDate)) return badRequest('Dates must be YYYY-MM-DD.');
+  if (startDate > endDate) return badRequest('startDate must be before endDate.');
+  if (!note) return badRequest('note is required.');
+
+  const res = await db.collection(COL_ENTRIES).where({ id: entryId }).limit(1).get();
+  const entry = res.data && res.data[0];
+  if (!entry) return notFound('Progress entry not found.');
+  if (!(await isMember(entry.project_id, memberId))) return forbidden();
+
+  await db.collection(COL_ENTRIES).doc(entry._id).update({
+    start_date: startDate, end_date: endDate, note, updated_at: new Date().toISOString()
+  });
+  return json({
+    entry: {
+      id: entryId,
+      projectId: entry.project_id,
+      authorId: entry.author_id,
+      startDate, endDate, note
+    }
+  });
+}
+
 async function deleteProgressEntry(body, entryId) {
   const memberId = cleanText(body && body.memberId, 120);
   if (!memberId) return badRequest('memberId is required.');
@@ -383,7 +428,14 @@ async function route(event) {
 
   const entryMatch = path.match(/^\/api\/progress\/entries\/([^/]+)$/);
   if (entryMatch) {
+    if (method === 'PATCH') return updateProgressEntry(body, decodeURIComponent(entryMatch[1]));
     if (method === 'DELETE') return deleteProgressEntry(body, decodeURIComponent(entryMatch[1]));
+    return methodNotAllowed();
+  }
+
+  const nameMatch = path.match(/^\/api\/progress\/projects\/([^/]+)\/name$/);
+  if (nameMatch) {
+    if (method === 'PATCH') return renameProject(body, decodeURIComponent(nameMatch[1]));
     return methodNotAllowed();
   }
 

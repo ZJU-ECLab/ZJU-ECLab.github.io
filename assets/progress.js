@@ -383,15 +383,36 @@
     return { start: start, end: end };
   }
 
-  /* Week-boundary tick dates (label sits ON each boundary line). */
-  function makeWeekTicks(start, end) {
+  /* Per-day tick dates across [start, end]. The timeline is day-granular: every
+     day is its own labelled cell, so even a 1–2 day entry gets a readable
+     width. */
+  function makeDayTicks(start, end) {
     var ticks = [];
-    var cursor = startOfWeek(start);
+    var cursor = new Date(start.getFullYear(), start.getMonth(), start.getDate());
     while (cursor <= end) {
       ticks.push(new Date(cursor.getFullYear(), cursor.getMonth(), cursor.getDate()));
-      cursor = addDays(cursor, 7);
+      cursor = addDays(cursor, 1);
     }
     return ticks;
+  }
+
+  // Weekday abbreviations, indexed by Date#getDay() (0 = Sunday).
+  var WEEKDAY_SHORT = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+  /* Short weekday name (Mon, Tue, …) for a day cell's top line. */
+  function weekdayShort(date) {
+    return WEEKDAY_SHORT[date.getDay()];
+  }
+
+  /* True on the first day of an ISO week (Monday). */
+  function isWeekStart(date) {
+    return (date.getDay() || 7) === 1;
+  }
+
+  /* True on weekend days (Saturday / Sunday). */
+  function isWeekend(date) {
+    var d = date.getDay();
+    return d === 0 || d === 6;
   }
 
   /* Day-accurate span of an entry, clamped to the grid [gridStart, dayCount). */
@@ -409,7 +430,8 @@
   }
 
   /* Greedy interval scheduling on day spans, so overlapping bars stagger into
-     separate tracks (rows). */
+     separate tracks (rows). This is the first-paint fallback; the authoritative
+     packing is the pixel-accurate stackBars() pass after render. */
   function layoutTracks(entries, gridStart, dayCount) {
     var placed = [];
     entries.forEach(function (entry) {
@@ -580,25 +602,31 @@
     var calendar = el('div', 'project-calendar');
     calendar.style.setProperty('--day-count', String(dayCount));
 
-    // Header: week-boundary date labels sitting ON each gridline.
+    // Header: one cell per day showing its weekday name (Mon/Tue/…) above the
+    // date. Mondays and weekends get a class hook for emphasis.
     var header = el('div', 'calendar-header');
     ticks.forEach(function (tick) {
       var offset = diffDays(gridStart, tick);
-      if (offset < 0 || offset > dayCount) return;
-      var label = el('span', 'calendar-tick-label', formatShort(tick));
-      label.style.setProperty('--day', String(offset));
-      header.appendChild(label);
+      if (offset < 0 || offset >= dayCount) return;
+      var cell = el('span', 'calendar-tick');
+      cell.style.setProperty('--day', String(offset));
+      if (isWeekStart(tick)) cell.classList.add('calendar-tick--week');
+      if (isWeekend(tick)) cell.classList.add('calendar-tick--weekend');
+      cell.appendChild(el('span', 'calendar-tick-day', weekdayShort(tick)));
+      cell.appendChild(el('span', 'calendar-tick-date', formatShort(tick)));
+      header.appendChild(cell);
     });
     calendar.appendChild(header);
 
-    // Body: gridlines (at week boundaries) + overlaid bars.
+    // Body: per-day gridlines (Mondays emphasized) + overlaid bars.
     var body = el('div', 'calendar-body');
 
     var lines = el('div', 'calendar-lines');
     ticks.forEach(function (tick) {
       var offset = diffDays(gridStart, tick);
-      if (offset < 0 || offset > dayCount) return;
+      if (offset < 0 || offset >= dayCount) return;
       var line = el('span', 'calendar-line');
+      if (isWeekStart(tick)) line.classList.add('calendar-line--week');
       line.style.setProperty('--day', String(offset));
       lines.appendChild(line);
     });
@@ -655,8 +683,119 @@
     return calendar;
   }
 
+  /* Pixel-accurate re-packing after bars are in the DOM.
+     Bars now vary in both width (a readable min-width overrides very short date
+     spans) and height (notes wrap up to --bar-max-lines). The day-based
+     layoutTracks() used at render time can't see either, so re-pack here using
+     the real rendered geometry: assign each bar to the first track whose last
+     bar's right edge clears this bar's left edge, then position tracks
+     vertically by the tallest bar in each preceding track. */
+  function stackBars(calendar) {
+    var barsLayer = calendar.querySelector('.calendar-bars');
+    var body = calendar.querySelector('.calendar-body');
+    if (!barsLayer || !body) return;
+    var bars = Array.prototype.slice.call(barsLayer.querySelectorAll('.calendar-bar'));
+    if (!bars.length) {
+      body.style.removeProperty('--body-h');
+      return;
+    }
+
+    var cs = window.getComputedStyle(calendar);
+    var gap = parseFloat(cs.getPropertyValue('--bar-gap')) || 8;
+
+    // Measure, then order left-to-right (ties: taller first for tighter packing).
+    var items = bars.map(function (bar) {
+      return {
+        bar: bar,
+        left: bar.offsetLeft,
+        right: bar.offsetLeft + bar.offsetWidth,
+        height: bar.offsetHeight
+      };
+    });
+    items.sort(function (a, b) {
+      return a.left - b.left || b.height - a.height;
+    });
+
+    var trackRight = [];  // last occupied right edge per track
+    items.forEach(function (item) {
+      var track = -1;
+      for (var i = 0; i < trackRight.length; i++) {
+        // Small epsilon so exactly-adjacent bars can share a track.
+        if (trackRight[i] <= item.left + 1) { track = i; break; }
+      }
+      if (track === -1) { track = trackRight.length; trackRight.push(0); }
+      trackRight[track] = item.right;
+      item.track = track;
+    });
+
+    // Vertical offset of each track = sum of the tallest bar in every earlier
+    // track (plus gaps). One row's height is that track's tallest bar.
+    var trackHeight = [];
+    items.forEach(function (item) {
+      var h = trackHeight[item.track] || 0;
+      if (item.height > h) trackHeight[item.track] = item.height;
+    });
+    var trackTop = [];
+    var y = gap;
+    for (var t = 0; t < trackHeight.length; t++) {
+      trackTop[t] = y;
+      y += (trackHeight[t] || 0) + gap;
+    }
+
+    items.forEach(function (item) {
+      item.bar.style.setProperty('--top', trackTop[item.track] + 'px');
+    });
+    body.style.setProperty('--body-h', y + 'px');
+  }
+
   function statusValue(project) {
     return normalizeStatus(project.status, project.endDate);
+  }
+
+  /* Editable project title. For members it renders as a button that swaps to an
+     inline text field on click; for others it's a plain heading. */
+  function renderProjectTitle(project) {
+    if (!canEdit(project)) {
+      return el('h3', 'project-title', project.name);
+    }
+    var btn = el('button', 'project-title project-title--editable', project.name);
+    btn.type = 'button';
+    btn.title = '点击重命名课题';
+    btn.setAttribute('aria-label', '重命名课题：' + project.name);
+    btn.addEventListener('click', function () {
+      beginRenameProject(project, btn);
+    });
+    return btn;
+  }
+
+  function beginRenameProject(project, titleEl) {
+    var input = document.createElement('input');
+    input.type = 'text';
+    input.className = 'project-title-input';
+    input.value = project.name;
+    input.maxLength = 120;
+    input.setAttribute('aria-label', '课题名称');
+
+    var done = false;
+    function commit(save) {
+      if (done) return;
+      done = true;
+      var next = input.value.trim();
+      if (input.parentNode) input.parentNode.replaceChild(titleEl, input);
+      if (save && next && next !== project.name) {
+        renameProject(project.id, next);
+      }
+    }
+
+    input.addEventListener('keydown', function (event) {
+      if (event.key === 'Enter') { event.preventDefault(); commit(true); }
+      else if (event.key === 'Escape') { event.preventDefault(); commit(false); }
+    });
+    input.addEventListener('blur', function () { commit(true); });
+
+    titleEl.parentNode.replaceChild(input, titleEl);
+    input.focus();
+    input.select();
   }
 
   function renderStatusControl(project) {
@@ -696,7 +835,7 @@
     var head = el('div', 'project-row-head');
     var info = el('div', 'project-row-info');
     var titleRow = el('div', 'project-title-row');
-    titleRow.appendChild(el('h3', 'project-title', project.name));
+    titleRow.appendChild(renderProjectTitle(project));
     titleRow.appendChild(renderStatusControl(project));
     info.appendChild(titleRow);
 
@@ -803,14 +942,31 @@
     if (!projects.length) return;
 
     var range = boardWindow(projects);
-    var ticks = makeWeekTicks(range.start, range.end);
+    var ticks = makeDayTicks(range.start, range.end);
     var dayCount = diffDays(range.start, range.end) + 1;
     state.boardDayCount = dayCount;
     state.boardTodayOffset = diffDays(range.start, new Date());
     projects.forEach(function (project) {
       board.appendChild(renderProjectRow(project, ticks, range.start, dayCount));
     });
+    // Re-pack bars using their real rendered size (variable width + height).
+    // Deferred a frame so layout/fonts have settled before measuring.
+    restackBoard();
     scrollToToday();
+  }
+
+  // Measure + re-stack every calendar's bars once the board is laid out.
+  function restackBoard() {
+    if (!board) return;
+    var run = function () {
+      var calendars = board.querySelectorAll('.project-calendar');
+      Array.prototype.forEach.call(calendars, stackBars);
+    };
+    if (window.requestAnimationFrame) {
+      window.requestAnimationFrame(function () { window.requestAnimationFrame(run); });
+    } else {
+      run();
+    }
   }
 
   // Fixed day width (no time scaling): the timeline keeps a constant scale and
@@ -823,31 +979,152 @@
     Array.prototype.forEach.call(scrollers, function (scroller) {
       var calendar = scroller.querySelector('.project-calendar');
       if (!calendar) return;
-      var dayW = parseFloat(window.getComputedStyle(calendar).getPropertyValue('--day-w')) || 16;
+      var dayW = parseFloat(window.getComputedStyle(calendar).getPropertyValue('--day-w')) || 44;
       var todayX = todayOffset * dayW;
       // Center today in the visible strip (clamped by the browser).
       scroller.scrollLeft = Math.max(0, todayX - scroller.clientWidth / 2);
     });
   }
 
-  /* ---------- entry detail (view + delete) ---------- */
+  /* ---------- entry detail dialog (view / edit / delete) ---------- */
 
+  var entryDialog = null;
+
+  function closeEntryDialog() {
+    if (entryDialog && entryDialog.open) entryDialog.close();
+  }
+
+  // A single reusable <dialog>. Rebuilt per open so it always reflects the
+  // latest entry and edit permissions.
   function openEntryDetail(project, entry) {
-    var lines = [
-      formatDateRange(entry.startDate, entry.endDate || entry.startDate),
-      entry.authorId ? '记录人：' + memberName(entry.authorId) : '',
-      '',
-      entry.note || ''
-    ].filter(Boolean).join('\n');
-
-    if (canEdit(project)) {
-      if (window.confirm(lines + '\n\n点击“确定”删除此进展，点击“取消”仅关闭。')) {
-        deleteEntry(project.id, entry.id);
-      }
-    } else {
-      showToast(formatDateRange(entry.startDate, entry.endDate || entry.startDate) +
-        '：' + (entry.note || ''));
+    if (!entryDialog) {
+      entryDialog = document.createElement('dialog');
+      entryDialog.className = 'entry-dialog';
+      // Backdrop click closes the dialog.
+      entryDialog.addEventListener('click', function (event) {
+        if (event.target === entryDialog) closeEntryDialog();
+      });
+      document.body.appendChild(entryDialog);
     }
+    entryDialog.innerHTML = '';
+    entryDialog.appendChild(buildEntryView(project, entry));
+    if (typeof entryDialog.showModal === 'function') {
+      entryDialog.showModal();
+    } else {
+      entryDialog.setAttribute('open', '');
+    }
+  }
+
+  // Read-only view of an entry, with Edit / Delete for members.
+  function buildEntryView(project, entry) {
+    var wrap = el('div', 'entry-dialog-body');
+
+    var head = el('div', 'entry-dialog-head');
+    var who = entry.authorId ? memberName(entry.authorId) : '未署名';
+    var avatar = el('span', 'entry-dialog-avatar', (who || '·').slice(0, 1));
+    if (entry.authorId) {
+      avatar.style.background = memberColor(entry.authorId);
+    }
+    head.appendChild(avatar);
+    var meta = el('div', 'entry-dialog-meta');
+    meta.appendChild(el('span', 'entry-dialog-who', who));
+    meta.appendChild(el('span', 'entry-dialog-range',
+      formatDateRange(entry.startDate, entry.endDate || entry.startDate)));
+    head.appendChild(meta);
+    wrap.appendChild(head);
+
+    wrap.appendChild(el('p', 'entry-dialog-note', entry.note || '（无说明）'));
+
+    var actions = el('div', 'entry-dialog-actions');
+    if (canEdit(project)) {
+      var editBtn = el('button', 'btn btn-filled', '编辑');
+      editBtn.type = 'button';
+      editBtn.addEventListener('click', function () {
+        entryDialog.innerHTML = '';
+        entryDialog.appendChild(buildEntryEdit(project, entry));
+      });
+      var delBtn = el('button', 'btn btn-text entry-dialog-delete', '删除');
+      delBtn.type = 'button';
+      delBtn.addEventListener('click', function () {
+        if (window.confirm('确认删除此进展？此操作不可撤销。')) {
+          closeEntryDialog();
+          deleteEntry(project.id, entry.id);
+        }
+      });
+      actions.appendChild(delBtn);
+      actions.appendChild(editBtn);
+    }
+    var closeBtn = el('button', 'btn btn-text', '关闭');
+    closeBtn.type = 'button';
+    closeBtn.addEventListener('click', closeEntryDialog);
+    actions.appendChild(closeBtn);
+    wrap.appendChild(actions);
+    return wrap;
+  }
+
+  // Edit form for an entry (dates + note), with Save / Cancel.
+  function buildEntryEdit(project, entry) {
+    var form = el('form', 'entry-dialog-body entry-dialog-form');
+
+    var dateRow = el('div', 'progress-date-row');
+    var startField = el('label', 'progress-field');
+    startField.appendChild(el('span', null, '开始日期'));
+    var startInput = document.createElement('input');
+    startInput.type = 'date';
+    startInput.required = true;
+    startInput.value = entry.startDate;
+    startField.appendChild(startInput);
+
+    var endField = el('label', 'progress-field');
+    endField.appendChild(el('span', null, '结束日期'));
+    var endInput = document.createElement('input');
+    endInput.type = 'date';
+    endInput.required = true;
+    endInput.value = entry.endDate || entry.startDate;
+    endField.appendChild(endInput);
+    dateRow.appendChild(startField);
+    dateRow.appendChild(endField);
+    form.appendChild(dateRow);
+
+    var noteField = el('label', 'progress-field');
+    noteField.appendChild(el('span', null, '进展说明'));
+    var note = document.createElement('textarea');
+    note.rows = 5;
+    note.required = true;
+    note.maxLength = 2000;
+    note.value = entry.note || '';
+    noteField.appendChild(note);
+    form.appendChild(noteField);
+
+    var actions = el('div', 'entry-dialog-actions');
+    var save = el('button', 'btn btn-filled', '保存');
+    save.type = 'submit';
+    var cancel = el('button', 'btn btn-text', '取消');
+    cancel.type = 'button';
+    cancel.addEventListener('click', function () {
+      entryDialog.innerHTML = '';
+      entryDialog.appendChild(buildEntryView(project, entry));
+    });
+    actions.appendChild(cancel);
+    actions.appendChild(save);
+    form.appendChild(actions);
+
+    form.addEventListener('submit', function (event) {
+      event.preventDefault();
+      var payload = {
+        startDate: startInput.value,
+        endDate: endInput.value,
+        note: note.value.trim()
+      };
+      if (!payload.startDate || !payload.endDate || !payload.note) return;
+      if (parseISO(payload.startDate) > parseISO(payload.endDate)) {
+        showToast('开始日期不能晚于结束日期。', true);
+        return;
+      }
+      closeEntryDialog();
+      updateEntry(project.id, entry.id, payload);
+    });
+    return form;
   }
 
   /* ---------- actions ---------- */
@@ -989,6 +1266,42 @@
     });
   }
 
+  function updateEntry(projectId, entryId, payload) {
+    var project = findProject(projectId);
+    if (!project) return;
+    if (!canEdit(project)) { showToast('你不是该课题的成员。', true); return; }
+    if (!payload.startDate || !payload.endDate || !payload.note) return;
+
+    function finish() {
+      var list = project.progress || [];
+      for (var i = 0; i < list.length; i++) {
+        if (String(list[i].id) === String(entryId)) {
+          list[i].startDate = payload.startDate;
+          list[i].endDate = payload.endDate;
+          list[i].note = payload.note;
+          break;
+        }
+      }
+      saveStore();
+      renderBoard();
+      showToast('进展已更新。');
+    }
+
+    api('PATCH', '/entries/' + encodeURIComponent(entryId), {
+      memberId: state.activeMemberId,
+      startDate: payload.startDate,
+      endDate: payload.endDate,
+      note: payload.note
+    }).then(function () {
+      setStorageStatus('共享存储已连接', true);
+      finish();
+    }).catch(function () {
+      setStorageStatus('离线本机模式', false);
+      finish();
+      showToast('共享存储暂时不可用，修改已先保存在本机。', true);
+    });
+  }
+
   function inviteMember(projectId, inviteId) {
     var project = findProject(projectId);
     if (!project) return;
@@ -1044,6 +1357,33 @@
       setStorageStatus('离线本机模式', false);
       finish();
       showToast('共享存储暂时不可用，成员变更已先保存在本机。', true);
+    });
+  }
+
+  function renameProject(projectId, name) {
+    var project = findProject(projectId);
+    if (!project) return;
+    if (!canEdit(project)) { showToast('你不是该课题的成员。', true); return; }
+    name = String(name || '').trim();
+    if (!name || name === project.name) return;
+
+    function finish() {
+      project.name = name;
+      saveStore();
+      renderBoard();
+      showToast('课题名称已更新。');
+    }
+
+    api('PATCH', '/projects/' + encodeURIComponent(projectId) + '/name', {
+      memberId: state.activeMemberId,
+      name: name
+    }).then(function () {
+      setStorageStatus('共享存储已连接', true);
+      finish();
+    }).catch(function () {
+      setStorageStatus('离线本机模式', false);
+      finish();
+      showToast('共享存储暂时不可用，名称已先保存在本机。', true);
     });
   }
 
@@ -1147,6 +1487,14 @@
       projectCancel.addEventListener('click', function () { toggleCreatePanel(false); });
     }
     if (projectForm) projectForm.addEventListener('submit', createProject);
+
+    // Bar widths (rem-based min-width) and wrap points change with viewport
+    // width, so re-measure and re-stack on resize.
+    var resizeTimer = null;
+    window.addEventListener('resize', function () {
+      if (resizeTimer) window.clearTimeout(resizeTimer);
+      resizeTimer = window.setTimeout(restackBoard, 150);
+    });
   }
 
   /* ---------- boot ---------- */

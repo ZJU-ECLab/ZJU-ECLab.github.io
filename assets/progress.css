@@ -593,36 +593,76 @@
 .project-row-head {
   display: flex;
   justify-content: space-between;
-  gap: clamp(1rem, 2.5vw, 1.5rem);
-  align-items: flex-start;
-  padding: clamp(1.25rem, 3vw, 1.75rem);
+  gap: clamp(0.6rem, 2vw, 1rem);
+  align-items: center;
+  padding: 0.7rem clamp(0.85rem, 2.2vw, 1.15rem);
+  border-bottom: 1px solid color-mix(in srgb, var(--outline-soft) 70%, transparent);
 }
 
 .project-row-info {
   display: flex;
-  flex-direction: column;
-  gap: 0.65rem;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.7rem;
   min-width: 0;
 }
 
 .project-title-row {
   display: flex;
   align-items: center;
-  gap: 0.55rem;
+  gap: 0.45rem;
   flex-wrap: wrap;
+  min-width: 0;
 }
 
 .project-title {
   color: var(--ink);
-  font-size: 1.05rem;
+  font-size: 0.94rem;
   font-weight: 770;
-  line-height: 1.25;
+  line-height: 1.2;
+}
+
+/* Editable title: looks like the heading but hints at interactivity. */
+.project-title--editable {
+  border: 1px solid transparent;
+  border-radius: var(--shape-sm, 8px);
+  background: none;
+  padding: 0.08rem 0.32rem;
+  margin: -0.08rem -0.32rem;
+  font: inherit;
+  font-size: 0.94rem;
+  font-weight: 770;
+  line-height: 1.2;
+  text-align: left;
+  cursor: text;
+  transition: background-color 0.16s var(--ease-standard), border-color 0.16s var(--ease-standard);
+}
+
+.project-title-input {
+  font: inherit;
+  font-size: 0.94rem;
+  font-weight: 770;
+  line-height: 1.2;
+  color: var(--ink);
+  padding: 0.06rem 0.3rem;
+  min-width: 12ch;
+  max-width: min(100%, 28ch);
+  border: 1px solid color-mix(in srgb, var(--accent) 45%, var(--outline-soft));
+  border-radius: var(--shape-sm, 8px);
+  background: var(--surface);
+  outline: none;
+}
+
+.project-title-input:focus-visible {
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 40%, transparent);
 }
 
 .project-dates {
   color: var(--muted);
-  font-size: 0.78rem;
-  line-height: 1.45;
+  font-size: 0.72rem;
+  line-height: 1.3;
+  white-space: nowrap;
 }
 
 /* ---------- project status tag ---------- */
@@ -696,19 +736,19 @@
 .project-member-chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.45rem;
+  gap: 0.3rem;
 }
 
 .member-chip {
   display: inline-flex;
   align-items: center;
-  gap: 0.28rem;
-  padding: 0.2rem 0.55rem 0.2rem 0.52rem;
+  gap: 0.24rem;
+  padding: 0.12rem 0.45rem 0.12rem 0.42rem;
   border-radius: var(--shape-full);
   background: var(--surface-2);
   border: 1px solid var(--outline-soft);
   color: var(--ink-soft);
-  font-size: 0.74rem;
+  font-size: 0.68rem;
   font-weight: 700;
   transition: background-color 0.18s var(--ease-standard), border-color 0.18s var(--ease-standard);
 }
@@ -745,18 +785,18 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
-  gap: 0.5rem;
+  gap: 0.35rem;
   flex-shrink: 0;
 }
 
 .project-action {
-  padding: 0.34rem 0.8rem;
+  padding: 0.24rem 0.65rem;
   border: 1px solid var(--outline-soft);
   border-radius: var(--shape-full);
   background: var(--surface-1);
   color: var(--ink);
   font: inherit;
-  font-size: 0.76rem;
+  font-size: 0.72rem;
   font-weight: 720;
   cursor: pointer;
   white-space: nowrap;
@@ -820,16 +860,19 @@
 .project-calendar-scroll {
   overflow-x: auto;
   overflow-y: hidden;
-  padding: 0 clamp(1rem, 3vw, 1.75rem) clamp(1.25rem, 3vw, 1.75rem);
+  padding: 0.85rem clamp(0.85rem, 2.2vw, 1.15rem) 1rem;
   max-width: 100%;
   scrollbar-gutter: stable;
   -webkit-overflow-scrolling: touch;
 }
 
 .project-calendar {
-  --day-w: 16px;
-  --bar-h: 26px;
+  /* Day-granular timeline: every day is its own labelled cell. A wide day
+     column means even a 1–2 day entry is naturally wide enough to read. */
+  --day-w: 44px;
+  --bar-h: 26px;         /* baseline (single-line) bar height */
   --bar-gap: 8px;
+  --bar-max-lines: 3;    /* note wraps up to this many lines, then clamps */
   --track-count: 1;
   position: relative;
   width: calc(var(--day-count) * var(--day-w));
@@ -838,27 +881,63 @@
 
 .calendar-header {
   position: relative;
-  height: 1.5rem;
+  height: 2.1rem;
   margin-bottom: 0.35rem;
 }
 
-.calendar-tick-label {
+/* One label cell per day, spanning exactly one day column. */
+.calendar-tick {
   position: absolute;
   left: calc(var(--day) * var(--day-w));
-  transform: translateX(-50%);
-  white-space: nowrap;
-  color: var(--muted);
-  font-size: 0.68rem;
-  font-weight: 740;
+  width: var(--day-w);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.05rem;
+  padding-bottom: 0.12rem;
+  text-align: center;
 }
 
-/* Body height grows with the number of stacked bar tracks. */
+/* Weekday name (Mon/Tue/…) — the top line of each cell. */
+.calendar-tick-day {
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  line-height: 1;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--muted) 88%, transparent);
+}
+
+.calendar-tick-date {
+  color: var(--muted);
+  font-size: 0.66rem;
+  font-weight: 740;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+/* Monday cells anchor each week — emphasize the date. */
+.calendar-tick--week .calendar-tick-date {
+  color: var(--ink);
+  font-weight: 800;
+}
+
+/* Weekend cells are dimmed and tinted with the accent. */
+.calendar-tick--weekend .calendar-tick-day {
+  color: color-mix(in srgb, var(--accent) 70%, var(--muted));
+}
+
+/* Body height grows with the stacked bars. JS measures the real (variable)
+   bar heights after render and sets --body-h; the calc() is a first-paint
+   fallback assuming single-line bars. */
 .calendar-body {
   position: relative;
-  min-height: calc(var(--track-count) * (var(--bar-h) + var(--bar-gap)) + var(--bar-gap));
+  min-height: var(--body-h, calc(var(--track-count) * (var(--bar-h) + var(--bar-gap)) + var(--bar-gap)));
 }
 
-/* Vertical gridlines at each week boundary. */
+/* Vertical gridlines at each day boundary; Mondays are emphasized. */
 .calendar-lines {
   position: absolute;
   inset: 0;
@@ -872,7 +951,12 @@
   bottom: 0;
   left: calc(var(--day) * var(--day-w));
   width: 1px;
-  background: color-mix(in srgb, var(--outline-soft) 70%, transparent);
+  background: color-mix(in srgb, var(--outline-soft) 45%, transparent);
+}
+
+/* Week-start (Monday) lines are stronger to keep the grid orientable. */
+.calendar-line--week {
+  background: color-mix(in srgb, var(--outline-soft) 85%, transparent);
 }
 
 .calendar-today {
@@ -895,18 +979,27 @@
 }
 
 .calendar-bar {
+  --bar-radius: 11px;   /* rounded-square, not a full pill */
+  --bar-pad: 3px;       /* inset of the who-chip from the bar's edges */
   position: absolute;
   left: calc(var(--start) * var(--day-w));
   width: calc(var(--len) * var(--day-w));
-  top: calc(var(--track) * (var(--bar-h) + var(--bar-gap)) + var(--bar-gap));
-  height: var(--bar-h);
+  /* Vertical position: JS sets --top (px) after measuring real bar heights so
+     variable-height chips never overlap. The calc() is a first-paint fallback
+     that assumes uniform single-line bars. */
+  top: var(--top, calc(var(--track) * (var(--bar-h) + var(--bar-gap)) + var(--bar-gap)));
+  /* Adaptive height: grow to fit up to --bar-max-lines of note text. */
+  min-height: var(--bar-h);
   display: flex;
-  align-items: center;
-  gap: 0.24rem;
-  min-width: 8px;
-  padding: 0 0.5rem 0 0.19rem;
+  align-items: flex-start;
+  gap: 0.3rem;
+  /* Width comes from the day span (--len days × --day-w). A single-day entry
+     spans one full day column, which is already wide enough to read. */
+  min-width: var(--day-w);
+  box-sizing: border-box;
+  padding: var(--bar-pad) 0.5rem var(--bar-pad) var(--bar-pad);
   border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--outline-soft));
-  border-radius: var(--shape-full);
+  border-radius: var(--bar-radius);
   background: color-mix(in srgb, var(--accent) 12%, var(--surface));
   color: var(--ink);
   font: inherit;
@@ -926,29 +1019,15 @@
   border-color: color-mix(in srgb, var(--bar-color) 45%, var(--outline-soft));
 }
 
-/* Cross icon hint on hover — only for bars the current editor can delete. */
-.calendar-bar--editable::after {
-  content: "\00d7";
-  position: absolute;
-  right: 0.4rem;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 1rem;
-  font-weight: 700;
-  line-height: 1;
-  color: var(--ink-soft);
-  opacity: 0;
-  transition: opacity 0.15s var(--ease-standard);
-  pointer-events: none;
-}
-
 .calendar-bar-who {
   flex: 0 0 auto;
   display: inline-flex;
   align-items: center;
-  height: 18px;
-  padding: 0 0.42rem;
-  border-radius: var(--shape-full);
+  /* Fill the bar's inner height so the chip nestles into the rounded corner;
+     its radius is concentric with the bar's (outer radius minus the inset). */
+  min-height: calc(var(--bar-h) - 2 * var(--bar-pad));
+  padding: 0 0.46rem;
+  border-radius: calc(var(--bar-radius) - var(--bar-pad));
   background: var(--bar-color, color-mix(in srgb, var(--accent) 55%, var(--surface)));
   color: #fff;
   font-weight: 760;
@@ -958,10 +1037,20 @@
 .calendar-bar-note {
   flex: 1 1 auto;
   min-width: 0;
+  /* Nudge the note down so it optically centers against the who-chip on a
+     single-row bar. */
+  padding-top: calc(var(--bar-pad) + 1px);
   color: var(--ink);
   overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
+  /* Wrap up to --bar-max-lines lines, then clamp with an ellipsis. Combined
+     with the bar's adaptive min-height this turns a cramped narrow bar into a
+     readable multi-line chip instead of clipping the text to nothing. */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: var(--bar-max-lines);
+  line-clamp: var(--bar-max-lines);
+  overflow-wrap: anywhere;
+  line-height: 1.28;
 }
 
 .calendar-empty {
@@ -993,6 +1082,109 @@
 .progress-toast.is-error {
   background: color-mix(in srgb, #b3261e 86%, black);
   color: #fff;
+}
+
+/* ---------- entry detail dialog ---------- */
+
+.entry-dialog {
+  width: min(30rem, calc(100vw - 2rem));
+  max-height: min(85vh, 40rem);
+  padding: 0;
+  border: 1px solid var(--outline-soft);
+  border-radius: var(--radius-l);
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: var(--elev-3);
+  overflow: hidden;
+}
+
+.entry-dialog::backdrop {
+  background: color-mix(in srgb, var(--ink) 45%, transparent);
+  backdrop-filter: blur(2px);
+}
+
+.entry-dialog-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: clamp(1.15rem, 3vw, 1.5rem);
+  overflow-y: auto;
+}
+
+.entry-dialog-head {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.entry-dialog-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.15rem;
+  height: 2.15rem;
+  flex: 0 0 auto;
+  border-radius: var(--shape-full);
+  background: color-mix(in srgb, var(--accent) 55%, var(--surface));
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 780;
+}
+
+.entry-dialog-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.entry-dialog-who {
+  font-size: 0.92rem;
+  font-weight: 760;
+  color: var(--ink);
+}
+
+.entry-dialog-range {
+  font-size: 0.76rem;
+  font-weight: 640;
+  color: var(--muted);
+}
+
+.entry-dialog-note {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--ink);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.entry-dialog-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Push Delete to the far left, keep Save/Cancel/Close on the right. */
+.entry-dialog-delete {
+  margin-right: auto;
+  color: #b3261e;
+}
+
+[data-theme="dark"] .entry-dialog-delete {
+  color: #f2b8b5;
+}
+
+.entry-dialog-form .progress-date-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.entry-dialog-form .progress-field {
+  flex: 1 1 8rem;
 }
 
 /* ---------- animations ---------- */
@@ -1094,6 +1286,7 @@
 
   .project-row-head {
     flex-direction: column;
+    align-items: flex-start;
   }
 
   .project-row-actions {
@@ -1157,6 +1350,11 @@
     border-color: color-mix(in srgb, var(--accent) 55%, var(--outline-soft));
   }
 
+  .project-title--editable:hover {
+    background: color-mix(in srgb, var(--accent) 10%, var(--surface-1));
+    border-color: color-mix(in srgb, var(--accent) 30%, var(--outline-soft));
+  }
+
   .progress-viewer-all:hover {
     background: color-mix(in srgb, var(--accent) 20%, var(--surface-2));
     color: var(--on-secondary-container);
@@ -1192,10 +1390,6 @@
   .calendar-bar:hover {
     box-shadow: var(--elev-2);
     filter: brightness(1.08);
-  }
-
-  .calendar-bar--editable:hover::after {
-    opacity: 0.85;
   }
 
   .project-row:hover {

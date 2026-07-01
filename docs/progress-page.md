@@ -108,8 +108,10 @@ All under `.../api/progress`:
 | GET | `/api/progress` | List all projects w/ members + entries |
 | POST | `/api/progress` | Create project |
 | POST | `/api/progress/entries` | Add a progress entry |
+| PATCH | `/api/progress/entries/:id` | Edit an entry (note + dates) |
 | DELETE | `/api/progress/entries/:id` | Delete an entry |
 | PATCH | `/api/progress/projects/:id/status` | Change status |
+| PATCH | `/api/progress/projects/:id/name` | Rename a project |
 | PATCH | `/api/progress/projects/:id` | End a project |
 | DELETE | `/api/progress/projects/:id` | Delete project + children |
 | POST | `/api/progress/projects/:id/members` | Invite a member |
