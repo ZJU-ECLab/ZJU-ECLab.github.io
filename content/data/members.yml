@@ -1,0 +1,113 @@
+# Progress-board member roster.
+#
+# This file is intentionally SEPARATE from people.yml. The People page reflects
+# the lab's current roster (people come and go), but progress-board membership
+# must stay stable so historical projects keep their members even after someone
+# leaves the People page. Derived once from people.yml; maintain it by hand.
+#
+# Fields:
+#   id       stable slug used as the member id everywhere (URLs, D1 rows).
+#            Keep it stable forever — changing it orphans existing project data.
+#   name_zh  Chinese name (shown first when present).
+#   name_en  English name.
+#   group    grouping label (informational only).
+#   leader   optional; exactly one member should be true. The Worker auto-adds
+#            this member to every project and the UI cannot remove them.
+#
+# The build derives `label` as "name_zh / name_en". The lab mascot is excluded.
+
+leader_id: xia-fang
+
+members:
+  - id: xia-fang
+    name_zh: 方霞
+    name_en: Xia Fang
+    group: Principal Investigator
+    leader: true
+
+  - id: zhihe-pan
+    name_zh: 潘之禾
+    name_en: Zhihe Pan
+    group: PhD Candidates
+  - id: shutong-liu
+    name_zh: 刘书彤
+    name_en: Shutong Liu
+    group: PhD Candidates
+  - id: ziyu-zhang
+    name_zh: 张子玉
+    name_en: Ziyu Zhang
+    group: PhD Candidates
+  - id: qi-peng
+    name_zh: 彭琦
+    name_en: Qi Peng
+    group: PhD Candidates
+  - id: yong-zhuang
+    name_zh: 庄湧
+    name_en: Yong Zhuang
+    group: PhD Candidates
+
+  - id: jiawen-zhu
+    name_zh: 朱嘉雯
+    name_en: Jiawen Zhu
+    group: Postgraduate Students
+  - id: hongxu-zhou
+    name_zh: 周洪旭
+    name_en: Hongxu Zhou
+    group: Postgraduate Students
+  - id: hweemin-tan
+    name_zh: 陈惠敏
+    name_en: Hweemin Tan
+    group: Postgraduate Students
+  - id: weitie-song
+    name_zh: 宋炜铁
+    name_en: Weitie Song
+    group: Postgraduate Students
+  - id: shiyan-zhan
+    name_zh: 詹诗妍
+    name_en: Shiyan Zhan
+    group: Postgraduate Students
+  - id: xin-peng
+    name_zh: 彭欣
+    name_en: Xin Peng
+    group: Postgraduate Students
+
+  - id: shuoan-li
+    name_zh: 李烁安
+    name_en: Shuoan Li
+    group: Undergraduate Students
+  - id: feiyu-zhang
+    name_zh: 张斐煜
+    name_en: Feiyu Zhang
+    group: Undergraduate Students
+  - id: ruotian-zheng
+    name_zh: 郑若天
+    name_en: Ruotian Zheng
+    group: Undergraduate Students
+  - id: xinyan-pan
+    name_zh: 潘心焱
+    name_en: Xinyan Pan
+    group: Undergraduate Students
+  - id: kexin-chen
+    name_zh: 陈可欣
+    name_en: Kexin Chen
+    group: Undergraduate Students
+  - id: ting-chen
+    name_zh: 陈婷
+    name_en: Ting Chen
+    group: Undergraduate Students
+  - id: chuying-wu
+    name_zh: 吴楚颖
+    name_en: Chuying Wu
+    group: Undergraduate Students
+  - id: zichao-lin
+    name_zh: 林子超
+    name_en: Zichao Lin
+    group: Undergraduate Students
+  - id: yunzhao-yang
+    name_zh: 杨昀昭
+    name_en: Yunzhao Yang
+    group: Undergraduate Students
+  - id: yilin-long
+    name_zh: 龙奕霖
+    name_en: Yilin Long
+    group: Undergraduate Students

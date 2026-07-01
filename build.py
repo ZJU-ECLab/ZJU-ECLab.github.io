@@ -61,6 +61,7 @@ ACCENTS = {
     "resources": "hsl(185, 60%, 44%)",   # Cyan
     "courses": "hsl(220, 70%, 56%)",     # Blue
     "join-us": "hsl(250, 55%, 60%)",     # Indigo
+    "progress": "hsl(265, 56%, 58%)",    # Internal lab page
     "contact": "hsl(280, 50%, 56%)",     # Purple
 }
 
@@ -75,6 +76,7 @@ COMPLEMENTS = {
     "resources": "hsl(5, 60%, 44%)",     # Red (opposite of cyan)
     "courses": "hsl(40, 70%, 56%)",      # Yellow (opposite of blue)
     "join-us": "hsl(70, 55%, 60%)",      # Yellow-green (opposite of indigo)
+    "progress": "hsl(85, 56%, 58%)",     # Yellow-green (opposite of violet)
     "contact": "hsl(100, 50%, 56%)",     # Green (opposite of purple)
 }
 
@@ -327,6 +329,10 @@ def build_pages(env: Environment) -> None:
         if slug == "home" and latest_journal_href:
             ctx["latest_journal_href"] = latest_journal_href
             ctx["latest_journal_title"] = latest_journal_title
+        if slug == "progress":
+            members, leader_id = _progress_members(load_yaml(CONTENT / "data" / "members.yml"))
+            ctx["members"] = members
+            ctx["leader_id"] = leader_id
         html = template.render(**ctx)
         write_page(url, html)
         print(f"  built  {url}  ({slug})")
@@ -361,6 +367,35 @@ def _group_publications(data: dict) -> dict:
     data["by_year"] = by_year
     data["total"] = len(items)
     return data
+
+
+def _progress_members(data: dict) -> tuple[list[dict], str]:
+    """Load the stable progress-board roster from members.yml.
+
+    Returns (members, leader_id). Membership is intentionally decoupled from
+    people.yml so historical projects keep their members after someone leaves
+    the People page. The Worker auto-adds the leader to every project.
+    """
+    leader_id = str(data.get("leader_id", "")).strip()
+    members = []
+    for member in data.get("members", []):
+        member_id = str(member.get("id", "")).strip()
+        name_en = str(member.get("name_en", "")).strip()
+        if not member_id or not name_en:
+            continue
+        name_zh = str(member.get("name_zh", "")).strip()
+        is_leader = bool(member.get("leader")) or member_id == leader_id
+        if is_leader and not leader_id:
+            leader_id = member_id
+        members.append({
+            "id": member_id,
+            "name_en": name_en,
+            "name_zh": name_zh,
+            "label": f"{name_zh} / {name_en}" if name_zh else name_en,
+            "group": str(member.get("group", "")),
+            "is_leader": is_leader,
+        })
+    return members, leader_id
 
 
 def _format_date(value) -> str:

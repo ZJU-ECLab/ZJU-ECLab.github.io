@@ -56,7 +56,8 @@ content/                 ← EDIT THIS for content changes
   pages/*.md             Prose pages (YAML front-matter + Markdown body)
     resources/*.md       Per-database resource sub-pages
   news/*.md              One file per news post
-  data/*.yml             Structured data: people, alumni, publications, courses
+  data/*.yml             Structured data: people, alumni, publications, courses,
+                         members (stable progress-board roster, separate from people)
 
 templates/*.html         Jinja2 templates (extend base.html)
 

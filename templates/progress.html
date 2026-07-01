@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-head progress-head reveal">
+  <p class="progress-kicker">实验室内部</p>
+  <h1 class="page-title">{{ page.title }}</h1>
+  {% if page.subtitle %}<p class="page-subtitle">{{ page.subtitle }}</p>{% endif %}
+</section>
+
+<section class="progress-shell" data-progress-app
+         data-api-base="{{ page.api_base | default('/api/progress', true) }}"
+         data-leader-id="{{ leader_id }}">
+  <div class="progress-gate reveal" data-progress-gate>
+    <div class="progress-gate-copy">
+      <p class="progress-gate-eyebrow">共享工作台</p>
+      <h2>选择你的名字即可开始记录</h2>
+      <p class="progress-gate-lead">选定身份后，你可以新建课题、更新进展、管理成员。</p>
+    </div>
+    <label class="progress-field progress-field--member">
+      <span>我是谁</span>
+      <select data-active-member aria-label="选择当前编辑成员">
+        <option value="">请选择成员</option>
+        {% for member in members %}
+        <option value="{{ member.id }}">{{ member.label }}</option>
+        {% endfor %}
+      </select>
+    </label>
+  </div>
+
+  <div class="progress-workspace" data-workspace hidden>
+    <script type="application/json" data-progress-members>{{ members | tojson }}</script>
+
+    <header class="progress-toolbar reveal">
+      <div class="progress-toolbar-lead">
+        <h2 data-current-user>课题进展</h2>
+      </div>
+
+      <div class="progress-toolbar-controls">
+        <div class="progress-viewer" role="group" aria-label="查看范围">
+          <span class="progress-viewer-label">查看</span>
+          <label class="progress-viewer-select">
+            <span class="sr-only">查看某位成员的进展</span>
+            <select data-member-select aria-label="查看某位成员的进展"></select>
+            <span class="progress-viewer-caret" aria-hidden="true">▾</span>
+          </label>
+          <button class="progress-viewer-all" type="button" data-view-all>全部</button>
+        </div>
+
+        <div class="progress-editor">
+          <span class="progress-editor-avatar" data-editor-avatar aria-hidden="true">—</span>
+          <span class="progress-editor-meta">
+            <span class="progress-editor-label">当前身份</span>
+            <span class="progress-editor-name" data-editor-name>—</span>
+          </span>
+          <button class="progress-editor-switch" type="button" data-change-user>切换</button>
+        </div>
+      </div>
+    </header>
+
+    <section class="progress-panel progress-panel--board reveal" aria-live="polite">
+      <div class="progress-board-head">
+        <div>
+          <h2>进展看板</h2>
+        </div>
+        <span class="progress-status-pill" data-project-count>0 个课题</span>
+      </div>
+
+      <div class="progress-create" data-project-create>
+        <button class="progress-create-toggle" type="button" data-project-toggle
+                aria-expanded="false">
+          <span class="progress-create-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none"
+                 stroke="currentColor" stroke-width="2.4" stroke-linecap="round">
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+          </span>
+          <span>新建课题</span>
+        </button>
+        <form class="progress-create-panel" data-project-form hidden>
+          <div class="progress-create-fields">
+            <label class="progress-field">
+              <span>课题名称</span>
+              <input name="name" type="text" autocomplete="off" required maxlength="120"
+                     placeholder="例如：情绪调节与文化差异" />
+            </label>
+            <label class="progress-field">
+              <span>开始时间</span>
+              <input name="startDate" type="date" required />
+            </label>
+          </div>
+          <div class="progress-create-actions">
+            <button class="btn btn-filled" type="submit">创建</button>
+            <button class="btn btn-text" type="button" data-project-cancel>取消</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="progress-empty" data-empty-state hidden>
+        暂时还没有课题。请选择自己的名字后，先新建一个课题。
+      </div>
+      <div class="progress-board" data-progress-board></div>
+    </section>
+  </div>
+
+  <div class="progress-toast" data-progress-toast role="status" aria-live="polite" hidden></div>
+</section>
+{% endblock %}

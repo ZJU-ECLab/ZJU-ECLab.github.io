@@ -46,6 +46,7 @@ dist/                    generated output (git-ignored)
 | `/resources/`, `/resources/<db>/`     | `content/pages/resources*.md`                 |
 | `/courses/`, `/join-us/`, `/contact/` | data / prose                                  |
 | `/journal/`                           | the weekly-journal SPA (`journal/index.html`) |
+| `/progress/`                          | hidden lab-internal progress page             |
 
 ## Editing content
 
@@ -76,6 +77,13 @@ pipeline, which pushes `journal/data/issues/<label>.json` and rebuilds
 `journal/data/manifest.json` here. The deploy workflow rebuilds the site on every push
 to `main`, so new issues go live automatically. That pipeline is untouched by
 this site's build.
+
+## Hidden internal progress page
+
+`/progress/` is intentionally absent from navigation and marked `noindex`. It is
+a lightweight static page: members select their name from the lab member list and
+record project progress in browser-local storage. See `docs/progress-page.md`
+for details and limitations.
 
 ## Deployment
 

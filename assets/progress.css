@@ -1,0 +1,1209 @@
+/* Private lab progress workspace. Loaded only by /progress/. */
+
+/* Override global section max-width for progress sections to use full
+   available width up to a generous cap, and center properly. */
+.progress-head,
+.progress-shell {
+  max-width: min(var(--w), 100%);
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: clamp(1rem, 4vw, 1.5rem);
+  padding-right: clamp(1rem, 4vw, 1.5rem);
+  box-sizing: border-box;
+}
+
+.progress-head {
+  padding-bottom: 1rem;
+}
+
+.progress-kicker {
+  display: inline-flex;
+  margin-bottom: 0.55rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--shape-full);
+  background: var(--secondary-container);
+  color: var(--on-secondary-container);
+  font-size: 0.74rem;
+  font-weight: 780;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.progress-shell {
+  padding-bottom: 4rem;
+}
+
+.progress-gate,
+.progress-panel {
+  background: color-mix(in srgb, var(--accent) 6%, var(--surface-1));
+  border: 1px solid var(--outline-soft);
+  box-shadow: var(--shadow-soft);
+}
+
+/* ---------- gate ---------- */
+
+.progress-gate {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(240px, 0.85fr);
+  gap: clamp(1.1rem, 3vw, 2rem);
+  align-items: center;
+  padding: clamp(1.4rem, 3.8vw, 2.4rem);
+  border-radius: var(--radius-l);
+  overflow: hidden;
+  position: relative;
+  isolation: isolate;
+  background:
+    radial-gradient(circle at 100% 0%, color-mix(in srgb, var(--accent) 12%, transparent), transparent 44%),
+    color-mix(in srgb, var(--accent) 6%, var(--surface-1));
+}
+
+.progress-gate::after {
+  content: "";
+  position: absolute;
+  right: 1rem;
+  top: 1rem;
+  width: clamp(7rem, 16vw, 11rem);
+  height: clamp(7rem, 16vw, 11rem);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 40% 40%, color-mix(in srgb, var(--accent) 18%, transparent), transparent 60%);
+  border: 1px solid color-mix(in srgb, var(--accent) 14%, transparent);
+  opacity: 0.72;
+  pointer-events: none;
+}
+
+.progress-gate-copy {
+  position: relative;
+  z-index: 1;
+  max-width: 44rem;
+}
+
+.progress-gate-eyebrow {
+  display: inline-flex;
+  margin-bottom: 0.55rem;
+  padding: 0.24rem 0.72rem;
+  border-radius: var(--shape-full);
+  background: color-mix(in srgb, var(--accent) 14%, var(--surface-2));
+  color: var(--on-secondary-container);
+  font-size: 0.72rem;
+  font-weight: 760;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.progress-gate-lead {
+  max-width: 32rem;
+  margin-top: 0.75rem;
+  color: var(--muted);
+  font-size: 0.94rem;
+  line-height: 1.65;
+}
+
+.progress-gate h2,
+.progress-board-head h2 {
+  color: var(--ink);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.progress-gate h2 {
+  margin: 0;
+  font-size: clamp(1.35rem, 3vw, 2rem);
+}
+
+.progress-board-head p {
+  color: var(--ink-soft);
+}
+
+.progress-field--member {
+  justify-self: end;
+  width: min(100%, 280px);
+  min-width: 0;
+  padding: 1rem 1rem 1.05rem;
+  border-radius: calc(var(--radius-m) + 0.15rem);
+  background: color-mix(in srgb, var(--surface-1) 84%, white);
+  border: 1px solid color-mix(in srgb, var(--outline-soft) 88%, var(--accent));
+  box-shadow: var(--elev-1);
+}
+
+[data-theme="dark"] .progress-field--member {
+  background: var(--surface-2);
+}
+
+.progress-field--member > span {
+  color: var(--muted);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.progress-field--member select {
+  min-width: 0;
+}
+
+/* ---------- status pills ----------
+   Pill shapes are fully rounded (border-radius: 999px). A pill's curvature
+   is height/2, so a pill nested inside another rounded/pill container stays
+   concentric as long as it also uses the full-pill radius — no shrinking
+   needed. Keep every nested chip/button at --shape-full. */
+
+.progress-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  align-self: flex-start;
+  padding: 0.22rem 0.65rem;
+  border-radius: var(--shape-full);
+  background: var(--surface-2);
+  color: var(--ink-soft);
+  border: 1px solid var(--outline-soft);
+  font-size: 0.74rem;
+  font-weight: 720;
+  transition: background-color 0.2s var(--ease-standard);
+}
+
+.progress-status-pill--ok {
+  background: color-mix(in srgb, var(--accent) 16%, var(--surface-2));
+  color: var(--on-secondary-container);
+}
+
+/* ---------- workspace ---------- */
+
+.progress-workspace {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1rem, 2.5vw, 1.5rem);
+}
+
+/* ---------- toolbar ("banner") ----------
+   A single balanced control bar: a titled lead on the left, and on the right a
+   viewer segment (scope select + "all") paired with a distinct identity pill
+   (avatar · label/name · switch). Both control groups are fully-rounded pill
+   surfaces so nested chips stay concentric. */
+
+.progress-toolbar {
+  --pill-h: 2.6rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(0.85rem, 2vw, 1.25rem);
+  padding: clamp(0.85rem, 2vw, 1.1rem) clamp(1rem, 2.4vw, 1.35rem);
+  border-radius: var(--shape-xl);
+  background:
+    radial-gradient(circle at 0% 0%, color-mix(in srgb, var(--accent) 12%, transparent), transparent 50%),
+    color-mix(in srgb, var(--accent) 6%, var(--surface-1));
+  border: 1px solid color-mix(in srgb, var(--accent) 12%, var(--outline-soft));
+  box-shadow: var(--elev-1);
+}
+
+.progress-toolbar-lead {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.progress-toolbar h2 {
+  font-size: clamp(1.05rem, 2.4vw, 1.3rem);
+  color: var(--ink);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.progress-toolbar-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: clamp(0.55rem, 1.6vw, 0.85rem);
+}
+
+/* --- viewer segment: [ 查看 | ▾ select ] [ 全部 ] --- */
+
+.progress-viewer {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  height: var(--pill-h);
+  box-sizing: border-box;
+  padding: 0.3rem 0.3rem 0.3rem 0.85rem;
+  border-radius: var(--shape-full);
+  background: color-mix(in srgb, var(--surface) 82%, white);
+  border: 1px solid var(--outline-soft);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, white 40%, transparent);
+}
+
+[data-theme="dark"] .progress-viewer {
+  background: color-mix(in srgb, var(--surface-2) 88%, black);
+  box-shadow: none;
+}
+
+.progress-viewer-label {
+  color: var(--muted);
+  font-size: 0.74rem;
+  font-weight: 720;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.progress-viewer-select {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  height: 100%;
+}
+
+.progress-viewer-select select {
+  appearance: none;
+  -webkit-appearance: none;
+  height: 100%;
+  min-height: 0;
+  width: auto;
+  min-width: 5.5rem;
+  max-width: 11rem;
+  padding: 0 1.5rem 0 0.75rem;
+  border: 1px solid transparent;
+  border-radius: var(--shape-full);
+  background: color-mix(in srgb, var(--accent) 10%, var(--surface-2));
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 720;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: background-color 0.18s var(--ease-standard), box-shadow 0.18s var(--ease-standard);
+}
+
+.progress-viewer-select select:focus-visible {
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 45%, transparent);
+  outline: none;
+}
+
+.progress-viewer-caret {
+  position: absolute;
+  right: 0.6rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.6rem;
+  color: var(--on-secondary-container);
+  pointer-events: none;
+}
+
+.progress-viewer-all {
+  display: inline-flex;
+  align-items: center;
+  height: 100%;
+  padding: 0 0.9rem;
+  border: none;
+  border-radius: var(--shape-full);
+  background: color-mix(in srgb, var(--accent) 10%, var(--surface-2));
+  color: var(--ink-soft);
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 740;
+  cursor: pointer;
+  transition: background-color 0.18s var(--ease-standard), color 0.18s var(--ease-standard);
+}
+
+/* --- identity pill: [ (avatar) | 当前身份 / name | 切换 ] --- */
+
+.progress-editor {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  height: var(--pill-h);
+  box-sizing: border-box;
+  padding: 0.3rem;
+  border-radius: var(--shape-full);
+  background: color-mix(in srgb, var(--accent) 14%, var(--surface-2));
+  border: 1px solid color-mix(in srgb, var(--accent) 22%, var(--outline-soft));
+}
+
+.progress-editor-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  aspect-ratio: 1;
+  height: 100%;
+  border-radius: var(--shape-full);
+  background: var(--avatar-color, color-mix(in srgb, var(--accent) 40%, var(--surface)));
+  color: #fff;
+  font-size: 0.82rem;
+  font-weight: 780;
+  line-height: 1;
+  box-shadow: var(--elev-1);
+}
+
+.progress-editor-avatar:not(.is-set) {
+  background: color-mix(in srgb, var(--ink) 12%, var(--surface));
+  color: var(--muted);
+  box-shadow: none;
+}
+
+.progress-editor-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.05rem;
+  min-width: 0;
+}
+
+.progress-editor-label {
+  color: var(--muted);
+  font-size: 0.66rem;
+  font-weight: 720;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.progress-editor-name {
+  color: var(--ink);
+  font-size: 0.86rem;
+  font-weight: 780;
+  line-height: 1.15;
+  white-space: nowrap;
+}
+
+.progress-editor-switch {
+  display: inline-flex;
+  align-items: center;
+  height: 100%;
+  padding: 0 0.85rem;
+  border: none;
+  border-radius: var(--shape-full);
+  background: color-mix(in srgb, var(--surface) 70%, white);
+  color: var(--on-secondary-container);
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 740;
+  cursor: pointer;
+  transition: background-color 0.18s var(--ease-standard), color 0.18s var(--ease-standard);
+}
+
+[data-theme="dark"] .progress-editor-switch {
+  background: color-mix(in srgb, var(--surface-2) 60%, black);
+  color: var(--ink);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------- board panel ---------- */
+
+.progress-panel--board {
+  min-width: 0;
+  width: 100%;
+  padding: clamp(1.25rem, 3vw, 2rem);
+  border-radius: var(--radius-l);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1rem, 2.5vw, 1.5rem);
+  box-sizing: border-box;
+}
+
+.progress-board-head {
+  display: flex;
+  justify-content: space-between;
+  gap: clamp(0.75rem, 2vw, 1rem);
+  align-items: flex-start;
+}
+
+.progress-board-head h2 {
+  font-size: 1.2rem;
+}
+
+/* ---------- expandable "new project" ---------- */
+
+.progress-create {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.progress-create-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  align-self: flex-start;
+  padding: 0.58rem 1.1rem 0.58rem 0.58rem;
+  border: 1px solid color-mix(in srgb, var(--accent) 40%, var(--outline-soft));
+  border-radius: var(--shape-full);
+  background: color-mix(in srgb, var(--accent) 12%, var(--surface-1));
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 740;
+  cursor: pointer;
+  transition: background-color 0.2s var(--ease-standard), border-radius 0.2s var(--ease-standard);
+}
+
+.progress-create-toggle.is-open {
+  border-radius: var(--shape-md) var(--shape-md) 0 0;
+  border-bottom-color: transparent;
+}
+
+.progress-create-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.22rem;
+  height: 1.22rem;
+  border-radius: var(--shape-full);
+  background: color-mix(in srgb, var(--accent) 26%, var(--surface));
+  color: var(--on-secondary-container);
+  transition: transform 0.2s var(--ease-standard);
+}
+
+.progress-create-icon svg {
+  display: block;
+}
+
+.progress-create-toggle.is-open .progress-create-icon {
+  transform: rotate(45deg);
+}
+
+.progress-create-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: clamp(1rem, 3vw, 1.4rem);
+  border: 1px solid color-mix(in srgb, var(--accent) 40%, var(--outline-soft));
+  border-radius: 0 var(--shape-md) var(--shape-md) var(--shape-md);
+  background: var(--surface-1);
+  box-shadow: var(--elev-1);
+  animation: panel-enter 0.25s var(--ease-standard) both;
+}
+
+.progress-create-fields {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  gap: clamp(0.6rem, 2vw, 1rem);
+}
+
+.progress-create-actions {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+/* ---------- form fields ---------- */
+
+.progress-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  color: var(--ink-soft);
+  font-size: 0.78rem;
+  font-weight: 720;
+}
+
+.progress-field input,
+.progress-field select,
+.progress-field textarea {
+  width: 100%;
+  min-height: 42px;
+  border: 1px solid var(--outline-soft);
+  border-radius: var(--shape-md);
+  background: color-mix(in srgb, var(--surface) 88%, white);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  padding: 0.55rem 0.75rem;
+  outline: none;
+  transition: border-color 0.2s var(--ease-standard), box-shadow 0.2s var(--ease-standard), background-color 0.2s var(--ease-standard);
+}
+
+[data-theme="dark"] .progress-field input,
+[data-theme="dark"] .progress-field select,
+[data-theme="dark"] .progress-field textarea {
+  background: color-mix(in srgb, var(--surface-2) 86%, black);
+}
+
+.progress-field input:focus,
+.progress-field select:focus,
+.progress-field textarea:focus {
+  border-color: color-mix(in srgb, var(--accent) 60%, var(--outline));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
+}
+
+.progress-field textarea {
+  min-height: 104px;
+  resize: vertical;
+}
+
+.progress-date-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.7rem;
+}
+
+.progress-empty {
+  padding: clamp(1.5rem, 4vw, 2.5rem);
+  border: 2px dashed color-mix(in srgb, var(--accent) 25%, var(--outline));
+  border-radius: var(--radius-m);
+  color: var(--muted);
+  text-align: center;
+  font-size: 0.92rem;
+  line-height: 1.6;
+  background: color-mix(in srgb, var(--accent) 3%, var(--surface-1));
+}
+
+/* ---------- project cards ---------- */
+
+.progress-board {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.5rem, 3.5vw, 2.25rem);
+}
+
+.project-row {
+  position: relative;
+  border: 1px solid var(--outline-soft);
+  border-radius: var(--radius-l);
+  background:
+    linear-gradient(180deg,
+      color-mix(in srgb, var(--surface) 88%, white),
+      var(--surface-1)
+    );
+  box-shadow: var(--elev-1);
+  overflow: hidden;
+  transition: box-shadow 0.2s var(--ease-standard), border-color 0.2s var(--ease-standard), transform 0.2s var(--ease-standard);
+}
+
+[data-theme="dark"] .project-row {
+  background: var(--surface-2);
+}
+
+.project-row--ended {
+  opacity: 0.82;
+}
+
+.project-row-head {
+  display: flex;
+  justify-content: space-between;
+  gap: clamp(1rem, 2.5vw, 1.5rem);
+  align-items: flex-start;
+  padding: clamp(1.25rem, 3vw, 1.75rem);
+}
+
+.project-row-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  min-width: 0;
+}
+
+.project-title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  flex-wrap: wrap;
+}
+
+.project-title {
+  color: var(--ink);
+  font-size: 1.05rem;
+  font-weight: 770;
+  line-height: 1.25;
+}
+
+.project-dates {
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+/* ---------- project status tag ---------- */
+
+.project-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  position: relative;
+  padding: 0.18rem 0.55rem 0.18rem 0.5rem;
+  border-radius: var(--shape-full);
+  background: color-mix(in srgb, var(--accent) 16%, var(--surface-2));
+  color: var(--on-secondary-container);
+  border: 1px solid color-mix(in srgb, var(--accent) 26%, var(--outline-soft));
+  font-size: 0.72rem;
+  font-weight: 740;
+  white-space: nowrap;
+}
+
+.project-status[data-ended="true"] {
+  background: var(--surface-2);
+  color: var(--muted);
+  border-color: var(--outline-soft);
+}
+
+/* Editable variant: a select styled as a pill, with a caret glyph. */
+.project-status--editable {
+  padding: 0;
+  cursor: pointer;
+}
+
+.project-status-select {
+  appearance: none;
+  -webkit-appearance: none;
+  margin: 0;
+  padding: 0.2rem 1.4rem 0.2rem 0.6rem;
+  border: none;
+  border-radius: var(--shape-full);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 0.72rem;
+  font-weight: 740;
+  line-height: 1.2;
+  cursor: pointer;
+  outline: none;
+}
+
+.project-status-select:focus-visible {
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 45%, transparent);
+}
+
+.project-status-caret {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.6rem;
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.project-status-select option {
+  color: var(--ink);
+  background: var(--surface);
+  font-weight: 600;
+}
+
+/* ---------- member chips ---------- */
+
+.project-member-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.member-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.28rem;
+  padding: 0.2rem 0.55rem 0.2rem 0.52rem;
+  border-radius: var(--shape-full);
+  background: var(--surface-2);
+  border: 1px solid var(--outline-soft);
+  color: var(--ink-soft);
+  font-size: 0.74rem;
+  font-weight: 700;
+  transition: background-color 0.18s var(--ease-standard), border-color 0.18s var(--ease-standard);
+}
+
+.member-chip--leader {
+  background: color-mix(in srgb, var(--accent) 18%, var(--surface-2));
+  color: var(--on-secondary-container);
+  border-color: color-mix(in srgb, var(--accent) 30%, var(--outline-soft));
+}
+
+.member-chip-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.15rem;
+  height: 1.15rem;
+  padding: 0;
+  border: none;
+  border-radius: var(--shape-full);
+  background: color-mix(in srgb, var(--ink) 10%, transparent);
+  color: var(--ink-soft);
+  cursor: pointer;
+}
+
+.member-chip-remove svg {
+  display: block;
+  width: 0.72rem;
+  height: 0.72rem;
+}
+
+/* ---------- per-row actions ---------- */
+
+.project-row-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.project-action {
+  padding: 0.34rem 0.8rem;
+  border: 1px solid var(--outline-soft);
+  border-radius: var(--shape-full);
+  background: var(--surface-1);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.76rem;
+  font-weight: 720;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.18s var(--ease-standard), border-color 0.18s var(--ease-standard), color 0.18s var(--ease-standard);
+}
+
+.project-action.is-active {
+  background: color-mix(in srgb, var(--accent) 18%, var(--surface-1));
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--outline-soft));
+  color: var(--on-secondary-container);
+}
+
+.project-action--danger {
+  color: #b3261e;
+  border-color: color-mix(in srgb, #b3261e 34%, var(--outline-soft));
+}
+
+[data-theme="dark"] .project-action--danger {
+  color: #f2b8b5;
+}
+
+/* ---------- inline panels (progress / members) ---------- */
+
+.project-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+  margin: 0 clamp(1rem, 3vw, 1.75rem) clamp(1.25rem, 3vw, 1.75rem);
+  padding: clamp(1.15rem, 3vw, 1.5rem);
+  border: 1px solid var(--outline-soft);
+  border-radius: var(--shape-md);
+  background: color-mix(in srgb, var(--accent) 5%, var(--surface-1));
+  box-shadow: var(--elev-1);
+  animation: panel-enter 0.25s var(--ease-standard) both;
+}
+
+.project-panel-title {
+  color: var(--ink-soft);
+  font-size: 0.78rem;
+  font-weight: 760;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.project-progress-form,
+.project-invite {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.project-invite .progress-field select {
+  min-width: 220px;
+}
+
+/* ---------- calendar ----------
+   Header (week labels) sits above the bars. The body's height adapts to the
+   number of stacked tracks — no forced vertical scrolling. Only the row's
+   horizontal scroller (for the day timeline) scrolls. */
+
+.project-calendar-scroll {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0 clamp(1rem, 3vw, 1.75rem) clamp(1.25rem, 3vw, 1.75rem);
+  max-width: 100%;
+  scrollbar-gutter: stable;
+  -webkit-overflow-scrolling: touch;
+}
+
+.project-calendar {
+  --day-w: 16px;
+  --bar-h: 26px;
+  --bar-gap: 8px;
+  --track-count: 1;
+  position: relative;
+  width: calc(var(--day-count) * var(--day-w));
+  min-width: 100%;
+}
+
+.calendar-header {
+  position: relative;
+  height: 1.5rem;
+  margin-bottom: 0.35rem;
+}
+
+.calendar-tick-label {
+  position: absolute;
+  left: calc(var(--day) * var(--day-w));
+  transform: translateX(-50%);
+  white-space: nowrap;
+  color: var(--muted);
+  font-size: 0.68rem;
+  font-weight: 740;
+}
+
+/* Body height grows with the number of stacked bar tracks. */
+.calendar-body {
+  position: relative;
+  min-height: calc(var(--track-count) * (var(--bar-h) + var(--bar-gap)) + var(--bar-gap));
+}
+
+/* Vertical gridlines at each week boundary. */
+.calendar-lines {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.calendar-line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(var(--day) * var(--day-w));
+  width: 1px;
+  background: color-mix(in srgb, var(--outline-soft) 70%, transparent);
+}
+
+.calendar-today {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(var(--day) * var(--day-w));
+  width: 2px;
+  transform: translateX(-1px);
+  background: color-mix(in srgb, var(--accent) 55%, transparent);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.calendar-bars {
+  position: relative;
+  z-index: 2;
+  min-height: inherit;
+  padding: calc(var(--bar-gap) * 0.85) 0 calc(var(--bar-gap) * 1.1);
+}
+
+.calendar-bar {
+  position: absolute;
+  left: calc(var(--start) * var(--day-w));
+  width: calc(var(--len) * var(--day-w));
+  top: calc(var(--track) * (var(--bar-h) + var(--bar-gap)) + var(--bar-gap));
+  height: var(--bar-h);
+  display: flex;
+  align-items: center;
+  gap: 0.24rem;
+  min-width: 8px;
+  padding: 0 0.5rem 0 0.19rem;
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--outline-soft));
+  border-radius: var(--shape-full);
+  background: color-mix(in srgb, var(--accent) 12%, var(--surface));
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+  box-shadow: var(--elev-1);
+  overflow: hidden;
+  transition: box-shadow 0.16s var(--ease-standard);
+}
+
+/* Per-member color: --bar-color set from the author's stable hue. The bar
+   stays a light surface tinted by the member color, with dark text. */
+.calendar-bar--colored {
+  background: color-mix(in srgb, var(--bar-color) 14%, var(--surface));
+  border-color: color-mix(in srgb, var(--bar-color) 45%, var(--outline-soft));
+}
+
+/* Cross icon hint on hover — only for bars the current editor can delete. */
+.calendar-bar--editable::after {
+  content: "\00d7";
+  position: absolute;
+  right: 0.4rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--ink-soft);
+  opacity: 0;
+  transition: opacity 0.15s var(--ease-standard);
+  pointer-events: none;
+}
+
+.calendar-bar-who {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  height: 18px;
+  padding: 0 0.42rem;
+  border-radius: var(--shape-full);
+  background: var(--bar-color, color-mix(in srgb, var(--accent) 55%, var(--surface)));
+  color: #fff;
+  font-weight: 760;
+  white-space: nowrap;
+}
+
+.calendar-bar-note {
+  flex: 1 1 auto;
+  min-width: 0;
+  color: var(--ink);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.calendar-empty {
+  position: relative;
+  z-index: 2;
+  padding: 1.1rem 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+/* ---------- toast ---------- */
+
+.progress-toast {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 1050;
+  max-width: min(360px, calc(100vw - 2rem));
+  padding: 0.8rem 1.15rem;
+  border-radius: var(--radius-s);
+  background: color-mix(in srgb, var(--ink) 88%, black);
+  color: var(--bg);
+  box-shadow: var(--elev-3);
+  font-size: 0.86rem;
+  font-weight: 650;
+  animation: toast-enter 0.3s var(--ease-spring) both;
+}
+
+.progress-toast.is-error {
+  background: color-mix(in srgb, #b3261e 86%, black);
+  color: #fff;
+}
+
+/* ---------- animations ---------- */
+
+@keyframes panel-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes toast-enter {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes row-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ---------- project row entrance ---------- */
+
+.project-row {
+  animation: row-enter 0.3s var(--ease-standard) both;
+}
+
+.project-row:nth-child(1) { animation-delay: 0s; }
+.project-row:nth-child(2) { animation-delay: 0.04s; }
+.project-row:nth-child(3) { animation-delay: 0.08s; }
+.project-row:nth-child(4) { animation-delay: 0.12s; }
+.project-row:nth-child(5) { animation-delay: 0.16s; }
+
+/* ---------- focus-visible ring ---------- */
+
+.progress-field input:focus-visible,
+.progress-field select:focus-visible,
+.progress-field textarea:focus-visible {
+  border-color: color-mix(in srgb, var(--accent) 60%, var(--outline));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
+  outline: none;
+}
+
+.project-action:focus-visible,
+.progress-create-toggle:focus-visible,
+.btn:focus-visible {
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 40%, transparent);
+  outline: none;
+}
+
+.calendar-bar:focus-visible {
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 50%, transparent);
+  outline: none;
+}
+
+/* ---------- responsive ---------- */
+
+@media (max-width: 1024px) {
+  .progress-gate {
+    grid-template-columns: minmax(0, 1fr) minmax(220px, 0.9fr);
+  }
+}
+
+@media (max-width: 840px) {
+  .progress-gate {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .progress-gate .progress-field--member {
+    justify-self: center;
+    width: min(100%, 320px);
+  }
+
+  .progress-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .progress-toolbar-controls {
+    justify-content: space-between;
+  }
+
+  .project-row-head {
+    flex-direction: column;
+  }
+
+  .project-row-actions {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 620px) {
+  .progress-gate,
+  .progress-panel--board {
+    padding: clamp(1rem, 4vw, 1.25rem);
+    border-radius: var(--radius-m);
+  }
+
+  .progress-create-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .progress-date-row {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .progress-toolbar-controls {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+  }
+
+  .progress-viewer,
+  .progress-editor {
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .progress-viewer-select {
+    flex: 1 1 auto;
+  }
+
+  .progress-viewer-select select {
+    width: 100%;
+    max-width: none;
+  }
+
+  .progress-editor-meta {
+    flex: 1 1 auto;
+  }
+
+  .project-calendar-scroll,
+  .project-panel {
+    margin-left: 0;
+    margin-right: 0;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .progress-create-toggle:hover {
+    background: color-mix(in srgb, var(--accent) 18%, var(--surface-1));
+    border-color: color-mix(in srgb, var(--accent) 55%, var(--outline-soft));
+  }
+
+  .progress-viewer-all:hover {
+    background: color-mix(in srgb, var(--accent) 20%, var(--surface-2));
+    color: var(--on-secondary-container);
+  }
+
+  .progress-viewer-select select:hover {
+    background: color-mix(in srgb, var(--accent) 16%, var(--surface-2));
+  }
+
+  .progress-editor-switch:hover {
+    background: var(--surface);
+    color: var(--ink);
+  }
+
+  [data-theme="dark"] .progress-editor-switch:hover {
+    background: color-mix(in srgb, var(--surface-2) 80%, black);
+  }
+
+  .project-action:hover {
+    background: color-mix(in srgb, var(--accent) 12%, var(--surface-1));
+    border-color: color-mix(in srgb, var(--accent) 30%, var(--outline-soft));
+  }
+
+  .project-status--editable:hover {
+    background: color-mix(in srgb, var(--accent) 24%, var(--surface-2));
+  }
+
+  .member-chip-remove:hover {
+    background: color-mix(in srgb, #b3261e 22%, transparent);
+    color: #b3261e;
+  }
+
+  .calendar-bar:hover {
+    box-shadow: var(--elev-2);
+    filter: brightness(1.08);
+  }
+
+  .calendar-bar--editable:hover::after {
+    opacity: 0.85;
+  }
+
+  .project-row:hover {
+    box-shadow: var(--elev-2);
+    border-color: color-mix(in srgb, var(--accent) 25%, var(--outline-soft));
+  }
+
+  .btn:hover {
+    filter: brightness(1.05);
+  }
+}

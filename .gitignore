@@ -9,3 +9,7 @@ result
 result-*
 
 __pycache__/
+
+worker/.wrangler/
+worker/wrangler.toml
+.wrangler/
