@@ -171,42 +171,6 @@
     });
   })();
 
-  // ── Moodboard connector lines ──
-  (function initConnectors() {
-    var svg = document.querySelector('.moodboard-connectors');
-    if (!svg) return;
-    var moodboard = svg.closest('.hero-moodboard');
-    if (!moodboard) return;
-
-    function updateLines() {
-      var rect = moodboard.getBoundingClientRect();
-      var lines = svg.querySelectorAll('.connector-line');
-      lines.forEach(function(line) {
-        var fromId = line.getAttribute('data-from');
-        var toClass = line.getAttribute('data-to');
-        var fromEl = document.getElementById(fromId);
-        var toEl = moodboard.querySelector('.' + toClass);
-        if (!fromEl || !toEl) return;
-
-        var fromRect = fromEl.getBoundingClientRect();
-        var toRect = toEl.getBoundingClientRect();
-
-        var x1 = fromRect.left + fromRect.width / 2 - rect.left;
-        var y1 = fromRect.top + fromRect.height / 2 - rect.top;
-        var x2 = toRect.left + toRect.width / 2 - rect.left;
-        var y2 = toRect.top + toRect.height / 2 - rect.top;
-
-        line.setAttribute('x1', x1);
-        line.setAttribute('y1', y1);
-        line.setAttribute('x2', x2);
-        line.setAttribute('y2', y2);
-      });
-    }
-
-    updateLines();
-    window.addEventListener('resize', updateLines);
-  })();
-
   // ── M3 Expressive — Hero scroll exit (JS fallback) ──
   (function initHeroScrollExit() {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
@@ -530,36 +494,6 @@
 
     // Initial check in case page loads scrolled (e.g. browser restore)
     if (window.scrollY > SHOW_THRESHOLD) setVisible(true);
-  })();
-
-  // ── orbit emoticon cycling (cycle through facial expressions) ──
-  (function cycleOrbitEmoticon() {
-    var container = document.getElementById('orbit-emoticon');
-    if (!container) return;
-    
-    var imgs = container.querySelectorAll('.orbit-emoticon-img');
-    if (imgs.length < 2) return;
-    
-    var TOTAL = 20;
-    var currentIndex = 1;
-    var activeIndex = 0; // which img element is currently visible
-
-    function nextEmoticon() {
-      currentIndex = (currentIndex % TOTAL) + 1;
-      var name = 'emoticon-' + (currentIndex < 10 ? '0' + currentIndex : currentIndex) + '.webp';
-      var nextImg = imgs[1 - activeIndex]; // the hidden one
-
-      // Preload into the hidden img
-      nextImg.onload = function() {
-        // Crossfade: hide current, show next
-        imgs[activeIndex].style.opacity = '0';
-        nextImg.style.opacity = '1';
-        activeIndex = 1 - activeIndex;
-      };
-      nextImg.src = '/assets/img/emoticons/' + name;
-    }
-    
-    setInterval(nextEmoticon, 3500);
   })();
 
   // ── dropdown menu positioning (portal pattern for blur effect) ──

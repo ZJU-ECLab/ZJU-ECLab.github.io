@@ -70,7 +70,7 @@
 
   /* layout */
   --w: 1100px;
-  --appbar-h: 56px;
+  --appbar-h: 68px;
 
   /* expressive gradient tokens */
   --gradient-primary: linear-gradient(135deg, color-mix(in oklch, var(--accent), black 8%), color-mix(in oklch, var(--accent), white 26%));
@@ -138,7 +138,7 @@ a { color: var(--primary); }
   width: min(1160px, calc(100% - 28px));
   left: 14px; right: 14px; margin: 0 auto;
   height: var(--appbar-h);
-  padding: 10px 12px 10px 18px;
+  padding: 10px 14px 10px 22px;
   background: color-mix(in srgb, var(--bg) 50%, transparent);
   backdrop-filter: saturate(180%) blur(16px);
   -webkit-backdrop-filter: saturate(180%) blur(16px);
@@ -186,22 +186,22 @@ a { color: var(--primary); }
 }
 .appbar-logo { display: grid; place-items: center; line-height: 0; }
 .appbar-logo svg, .appbar-logo img {
-  display: block; height: 22px; width: auto;
+  display: block; height: 30px; width: auto;
   transition: transform 0.4s var(--ease-spring);
 }
 /* hover: see @media (hover: hover) block at end of file */
 .appbar-titles { display: flex; flex-direction: column; line-height: 1.15; }
 .appbar-name {
-  font-weight: 750; font-size: 0.92rem; color: var(--ink); letter-spacing: -0.01em;
+  font-weight: 750; font-size: 1.05rem; color: var(--ink); letter-spacing: -0.01em;
 }
-.appbar-sub { font-size: 0.68rem; font-weight: 500; color: var(--muted); }
+.appbar-sub { font-size: 0.74rem; font-weight: 500; color: var(--muted); }
 
-.appbar-nav { display: flex; align-items: center; gap: 0; margin-left: auto; }
+.appbar-nav { display: flex; align-items: center; gap: 0.1rem; margin-left: auto; }
 .nav-item { position: relative; }
 .nav-link {
   display: inline-flex; align-items: center; gap: 0.1rem;
-  padding: 0.4rem 0.55rem;
-  font-size: 0.82rem; font-weight: 600; color: var(--ink-soft);
+  padding: 0.55rem 0.8rem;
+  font-size: 0.95rem; font-weight: 600; color: var(--ink-soft);
   text-decoration: none; border-radius: var(--shape-full);
   white-space: nowrap; position: relative;
   transition: background-color 0.2s var(--ease-standard), color 0.2s var(--ease-standard),
@@ -234,7 +234,7 @@ a { color: var(--primary); }
 
 /* M3 Expressive icon button — matches journal style */
 .icon-btn {
-  width: 40px; height: 40px; border: none;
+  width: 46px; height: 46px; border: none;
   background: color-mix(in srgb, var(--accent) 10%, transparent);
   color: var(--ink); cursor: pointer; border-radius: var(--shape-full);
   display: grid; place-items: center; line-height: 0;
@@ -282,13 +282,13 @@ a { color: var(--primary); }
 }
 .mobile-drawer.open { transform: translateX(0); }
 .drawer-link {
-  display: block; padding: 0.7rem 1rem; font-size: 1rem; font-weight: 650;
+  display: block; padding: 0.85rem 1.1rem; font-size: 1.1rem; font-weight: 650;
   color: var(--ink); text-decoration: none; border-radius: var(--shape-sm);
   transition: background-color 0.15s, transform 0.2s var(--ease-spring);
 }
 /* hover: see @media (hover: hover) block at end of file */
 .drawer-sublink {
-  display: block; padding: 0.5rem 1rem 0.5rem 1.8rem; font-size: 0.9rem;
+  display: block; padding: 0.6rem 1.1rem 0.6rem 2rem; font-size: 0.98rem;
   font-weight: 500; color: var(--ink-soft); text-decoration: none; border-radius: var(--shape-sm);
   transition: background-color 0.15s, transform 0.2s var(--ease-spring);
 }
@@ -392,354 +392,126 @@ section { max-width: var(--w); margin: 0 auto; padding: 0 1.5rem; }
 }
 .btn:active::after { opacity: 1; transform: scale(2.5); transition: 0s; }
 
+
 /* ══════════════════════════════════════════════
-   Home — hero (M3 Expressive, contained banner with blobs)
+   Home — hero (M3 Expressive; matches the rest of the site).
+   Two-cell tonal layout, gradient-clipped accent text, pill buttons,
+   a soft accent glow (design-system token, not a blob), and the face
+   blended into the page so it melts into the paper rather than sitting
+   on a card.
    ══════════════════════════════════════════════ */
-/* ══════════════════════════════════════════════
-   Home — Emotion Atlas Hero (living atlas pattern)
-   ══════════════════════════════════════════════ */
-.emotion-atlas-hero {
-  display: grid;
-  grid-template-columns: minmax(0, 1.08fr) minmax(330px, 0.92fr);
-  gap: 28px;
-  align-items: center;
-  min-height: 620px;
-  padding: 4rem 1.5rem;
+.hero {
+  position: relative;
+  z-index: 2;
   max-width: var(--w);
   margin: 0 auto;
+  padding: clamp(2.5rem, 6vw, 4.5rem) 1.5rem clamp(2rem, 4vw, 3rem);
+  display: grid;
+  grid-template-columns: minmax(0, 1.06fr) minmax(300px, 0.94fr);
+  gap: clamp(1.5rem, 4vw, 3.5rem);
+  align-items: center;
 }
 
-.atlas-content {
+.hero-copy {
   position: relative;
   z-index: 2;
 }
 
-.hero-badge {
+/* Tonal eyebrow pill — mirrors .btn-tonal surfaces */
+.hero-eyebrow {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  padding: 12px 20px;
+  gap: 0.55rem;
+  padding: 0.5rem 1rem;
   border-radius: var(--shape-full);
-  background: color-mix(in srgb, var(--emotion-rose) 10%, rgba(255, 255, 255, 0.95));
-  border: 1px solid color-mix(in srgb, var(--emotion-rose) 15%, rgba(255, 255, 255, 0.9));
-  box-shadow: var(--shadow-soft);
-  font-size: 0.95rem;
-  font-weight: 750;
-  color: color-mix(in srgb, var(--emotion-rose) 60%, #4a2030);
-  margin-bottom: 1.5rem;
+  background: var(--secondary-container);
+  color: var(--on-secondary-container);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  margin-bottom: clamp(1.1rem, 2.5vw, 1.6rem);
+}
+
+/* The lab name — the single most dominant piece of text on the page */
+.hero-title {
+  margin: 0;
+  font-size: clamp(2.9rem, 7vw, 4.8rem);
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+  font-weight: 850;
+  color: var(--ink);
+  text-wrap: balance;
+}
+
+/* Secondary tagline — accent gradient clip, same language as .section-h etc. */
+.hero-tagline {
+  margin: clamp(1rem, 2.2vw, 1.4rem) 0 0;
+  font-size: clamp(1.15rem, 2.2vw, 1.55rem);
+  line-height: 1.35;
+  font-weight: 700;
   letter-spacing: -0.01em;
-}
-
-[data-theme="dark"] .hero-badge {
-  background: color-mix(in srgb, var(--emotion-rose) 20%, rgba(29, 27, 32, 0.85));
-  color: color-mix(in srgb, var(--emotion-coral) 80%, white);
-  border: 1px solid color-mix(in srgb, var(--emotion-rose) 30%, rgba(255, 255, 255, 0.12));
-}
-
-.atlas-highlight,
-.hero-title .atlas-highlight.word-inner {
   color: transparent;
-  -webkit-text-fill-color: transparent;
-  background: linear-gradient(135deg, var(--ink) 20%, color-mix(in srgb, var(--accent) 70%, var(--ink)) 50%, var(--primary) 80%);
-  background-size: 200% 200%;
+  background: var(--gradient-primary);
   -webkit-background-clip: text;
   background-clip: text;
-}
-
-.hero-title {
-  font-size: clamp(3rem, 8vw, 4.2rem);
-  line-height: 1.1;
-  margin: 0 0 1.2rem;
-  letter-spacing: -0.045em;
-  max-width: 580px;
-  font-weight: 800;
-  color: var(--ink);
+  max-width: 22ch;
 }
 
 .hero-lead {
-  font-size: clamp(1.1rem, 2vw, 1.35rem);
-  line-height: 1.55;
+  margin: 1.1rem 0 0;
+  font-size: clamp(1rem, 1.4vw, 1.12rem);
+  line-height: 1.7;
   color: var(--ink-soft);
-  margin: 0 0 1.5rem;
-  max-width: 560px;
+  max-width: 44ch;
 }
 
 .hero-actions {
-  display: flex; gap: 0.75rem; flex-wrap: wrap;
-  margin-top: 1.5rem;
-}
-
-/* ── Watercolor Moodboard hero illustration ── */
-.hero-moodboard {
-  position: relative;
-  min-height: 500px;
-  overflow: visible;
-}
-
-/* Soft watercolor wash — layered radial gradients with logo colors */
-.moodboard-wash {
-  position: absolute;
-  inset: -20%;
-  pointer-events: none;
-  z-index: 0;
-  background:
-    radial-gradient(ellipse 65% 55% at 20% 25%, color-mix(in srgb, var(--logo-red) 38%, transparent) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 60% at 80% 20%, color-mix(in srgb, var(--logo-blue) 32%, transparent) 0%, transparent 55%),
-    radial-gradient(ellipse 55% 50% at 15% 85%, color-mix(in srgb, var(--logo-orange) 30%, transparent) 0%, transparent 50%),
-    radial-gradient(ellipse 60% 55% at 82% 80%, color-mix(in srgb, var(--logo-gray) 24%, transparent) 0%, transparent 55%),
-    radial-gradient(ellipse 45% 45% at 50% 50%, color-mix(in srgb, var(--logo-red) 20%, transparent) 0%, transparent 50%);
-  filter: blur(45px);
-  animation: wash-drift 8s ease-in-out infinite alternate;
-}
-
-@keyframes wash-drift {
-  0% { transform: translate(0, 0) scale(0.85) rotate(0deg); opacity: 0.7; }
-  20% { transform: translate(25px, -20px) scale(1.08) rotate(5deg); opacity: 1; }
-  40% { transform: translate(-20px, 15px) scale(0.9) rotate(-4deg); opacity: 0.8; }
-  60% { transform: translate(18px, -12px) scale(1.12) rotate(6deg); opacity: 1; }
-  80% { transform: translate(-15px, 10px) scale(0.88) rotate(-3deg); opacity: 0.75; }
-  100% { transform: translate(10px, -8px) scale(1.15) rotate(-5deg); opacity: 0.9; }
-}
-
-[data-theme="dark"] .moodboard-wash {
-  opacity: 0.6;
-}
-
-/* Dashed connector lines */
-.moodboard-connectors {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 1;
-}
-.connector-line {
-  stroke: color-mix(in srgb, var(--accent) 30%, #888);
-  stroke-width: 1.5;
-  stroke-dasharray: 6 6;
-  opacity: 0.5;
-}
-[data-theme="dark"] .connector-line {
-  stroke: color-mix(in srgb, var(--accent) 40%, #aaa);
-  opacity: 0.4;
-}
-
-/* Central cycling emoticon — the hero piece */
-.moodboard-emoticon {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  width: 160px;
-  height: 160px;
-  z-index: 3;
-  filter: drop-shadow(0 20px 50px rgba(0, 0, 0, 0.15));
-  animation: emoticon-breathe 4s ease-in-out infinite alternate;
-}
-
-@keyframes emoticon-breathe {
-  0% { transform: translate(-50%, -50%) scale(1) rotate(0deg); }
-  25% { transform: translate(-50%, -48%) scale(1.06) rotate(2deg); }
-  50% { transform: translate(-50%, -52%) scale(0.97) rotate(-1.5deg); }
-  75% { transform: translate(-48%, -50%) scale(1.08) rotate(1deg); }
-  100% { transform: translate(-52%, -50%) scale(1.03) rotate(-2deg); }
-}
-
-/* Dual-img crossfade */
-.orbit-emoticon-img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  display: block;
-  object-fit: contain;
-  transition: opacity 1s var(--ease-standard);
-}
-
-/* Scattered modality icons — moodboard collage style with static layered Material shapes */
-.moodboard-icon {
-  position: absolute;
-  z-index: 2;
-  --plate-shape: inset(0 round 24px);
   display: flex;
-  align-items: center;
-  justify-content: center;
-  aspect-ratio: 1;
-  background: transparent;
-  border: none;
-  box-shadow: none;
-  isolation: isolate;
-  transition: transform 0.4s var(--ease-spring);
-}
-.moodboard-icon::before {
-  display: none;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: clamp(1.6rem, 3.5vw, 2.25rem);
 }
 
-.moodboard-plate {
-  position: absolute;
-  inset: 50%;
-  aspect-ratio: 1;
-  pointer-events: none;
-  display: block;
-  transform: translate(-50%, -50%) rotate(var(--plate-rot, 0deg));
-  clip-path: var(--plate-shape);
-  -webkit-clip-path: var(--plate-shape);
-  transition: transform 0.4s var(--ease-spring), opacity 0.25s var(--ease-standard);
-}
-.moodboard-plate--outer {
-  width: var(--plate-outer-size, 118%);
-  z-index: 0;
-  background: color-mix(in srgb, var(--accent) 34%, #fff);
-  box-shadow: 0 14px 26px color-mix(in srgb, var(--accent) 18%, transparent);
-  opacity: 0.78;
-}
-.moodboard-plate--middle {
-  width: var(--plate-middle-size, 102%);
-  z-index: 1;
-  background: color-mix(in srgb, var(--accent) 20%, #fff);
-  opacity: 0.9;
-}
-.moodboard-plate--inner {
-  width: var(--plate-inner-size, 86%);
-  z-index: 2;
-  background: color-mix(in srgb, var(--accent) 6%, rgba(255, 255, 255, 0.92));
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.72);
-}
-
-.moodboard-icon span:not(.moodboard-plate) {
-  display: none;
-}
-
-[data-theme="dark"] .moodboard-icon {
-  background: transparent;
-  border: none;
-}
-[data-theme="dark"] .moodboard-plate--outer {
-  background: color-mix(in srgb, var(--accent) 36%, #17151b);
-  box-shadow: 0 14px 26px color-mix(in srgb, black 34%, transparent);
-  opacity: 0.82;
-}
-[data-theme="dark"] .moodboard-plate--middle {
-  background: color-mix(in srgb, var(--accent) 24%, #25222b);
-  opacity: 0.92;
-}
-[data-theme="dark"] .moodboard-plate--inner {
-  background: color-mix(in srgb, var(--accent) 14%, rgba(45, 43, 48, 0.92));
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
-}
-[data-theme="dark"] .moodboard-icon span:not(.moodboard-plate) {
-  display: none;
-}
-
-.moodboard-icon:hover {
-  transform: scale(1.12);
-  z-index: 10;
-}
-.moodboard-icon:hover .moodboard-plate--outer { transform: translate(-50%, -50%) scale(1.05) rotate(calc(var(--plate-rot, 0deg) - 4deg)); opacity: 0.86; }
-.moodboard-icon:hover .moodboard-plate--middle { transform: translate(-50%, -50%) scale(1.03) rotate(calc(var(--plate-rot, 0deg) + 3deg)); opacity: 0.96; }
-.moodboard-icon:hover .moodboard-plate--inner { transform: translate(-50%, -50%) scale(1.01) rotate(var(--plate-rot, 0deg)); }
-
-.moodboard-icon svg {
-  flex-shrink: 0;
-  opacity: 0.9;
-  color: color-mix(in srgb, var(--accent) 60%, #2a181e);
-  transition: transform 0.3s var(--ease-spring), opacity 0.3s;
-  width: 60%;
-  height: 60%;
+/* ── The face: dominant visual, melted into the page with a soft glow ── */
+.hero-figure {
   position: relative;
-  z-index: 3;
+  z-index: 1;
+  margin: 0;
+  justify-self: center;
+  width: 100%;
+  max-width: 430px;
+  display: grid;
+  place-items: center;
 }
-[data-theme="dark"] .moodboard-icon svg {
-  opacity: 1;
-  color: color-mix(in srgb, var(--accent) 50%, white);
+/* Soft accent glow — the shared --gradient-glow token, gently tinted by
+   the logo palette so it feels warm without being a hard shape. */
+.hero-figure::before {
+  content: "";
+  position: absolute;
+  inset: -8% -6% -4%;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 60% 55% at 38% 30%, color-mix(in srgb, var(--accent) 22%, transparent) 0%, transparent 66%),
+    radial-gradient(ellipse 55% 50% at 72% 74%, color-mix(in srgb, var(--logo-orange) 16%, transparent) 0%, transparent 62%);
+  filter: blur(40px);
+  opacity: 0.85;
 }
+[data-theme="dark"] .hero-figure::before { opacity: 0.5; }
 
-/* Each icon: different size, position, rotation for collage feel */
-.mi-face {
-  --plate-outer-size: 120%;
-  --plate-middle-size: 103%;
-  --plate-inner-size: 86%;
-  top: 10%;
-  left: 3%;
-  width: 100px;
-  padding: 12px;
-  border-radius: 24px;
-  animation: mi-drift-a 7s ease-in-out infinite alternate;
+.hero-face {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: auto;
+  /* Multiply melts the cream gutters + transparent edges into the page,
+     so the sepia face sits *in* the layout, not on a rectangle. */
+  mix-blend-mode: multiply;
 }
-
-.mi-voice {
-  --plate-outer-size: 116%;
-  --plate-middle-size: 100%;
-  --plate-inner-size: 84%;
-  --plate-rot: 8deg;
-  top: 8%;
-  right: 0%;
-  width: 110px;
-  padding: 12px;
-  border-radius: 24px;
-  animation: mi-drift-b 8.5s ease-in-out infinite alternate;
-}
-
-.mi-drawing {
-  --plate-outer-size: 124%;
-  --plate-middle-size: 106%;
-  --plate-inner-size: 88%;
-  --plate-rot: -10deg;
-  bottom: 24%;
-  left: 0%;
-  width: 85px;
-  padding: 12px;
-  border-radius: 24px;
-  animation: mi-drift-c 6.5s ease-in-out infinite alternate;
-}
-
-.mi-film {
-  --plate-outer-size: 119%;
-  --plate-middle-size: 101%;
-  --plate-inner-size: 85%;
-  --plate-rot: 12deg;
-  bottom: 16%;
-  right: 2%;
-  width: 95px;
-  padding: 12px;
-  border-radius: 24px;
-  animation: mi-drift-a 9s ease-in-out infinite alternate;
-}
-
-.mi-music {
-  --plate-outer-size: 126%;
-  --plate-middle-size: 108%;
-  --plate-inner-size: 90%;
-  --plate-rot: -6deg;
-  bottom: 3%;
-  left: 35%;
-  width: 80px;
-  padding: 12px;
-  border-radius: 24px;
-  animation: mi-drift-b 7.5s ease-in-out infinite alternate;
-}
-
-@keyframes mi-drift-a {
-  0% { transform: translateY(0) rotate(0deg); }
-  25% { transform: translateY(-18px) rotate(4deg); }
-  50% { transform: translateY(6px) rotate(-2deg); }
-  75% { transform: translateY(-10px) rotate(3deg); }
-  100% { transform: translateY(14px) rotate(-3deg); }
-}
-@keyframes mi-drift-b {
-  0% { transform: translateY(0) rotate(0deg); }
-  25% { transform: translateY(14px) rotate(-3.5deg); }
-  50% { transform: translateY(-16px) rotate(2.5deg); }
-  75% { transform: translateY(8px) rotate(-1.5deg); }
-  100% { transform: translateY(-12px) rotate(4deg); }
-}
-@keyframes mi-drift-c {
-  0% { transform: translateY(0) rotate(0deg); }
-  25% { transform: translateY(-14px) rotate(3deg); }
-  50% { transform: translateY(18px) rotate(-4deg); }
-  75% { transform: translateY(-8px) rotate(2deg); }
-  100% { transform: translateY(10px) rotate(-2.5deg); }
+[data-theme="dark"] .hero-face {
+  mix-blend-mode: normal;
+  filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.5));
 }
 
 /* ── Scattered watercolor emoticons drifting across banner + welcome ── */
@@ -1106,11 +878,12 @@ section { max-width: var(--w); margin: 0 auto; padding: 0 1.5rem; }
 @media (max-width: 1180px) {
   .appbar-sub { display: none; }
 }
-/* Tighten nav so all 9 tabs fit before collapsing to the drawer */
-@media (max-width: 1100px) {
-  .nav-link { padding: 0.4rem 0.4rem; font-size: 0.78rem; }
+/* Tighten the (now larger) nav so all tabs fit before collapsing to the drawer */
+@media (max-width: 1120px) {
+  .nav-link { padding: 0.5rem 0.55rem; font-size: 0.86rem; }
+  .appbar-nav { gap: 0; }
 }
-@media (max-width: 920px) {
+@media (max-width: 980px) {
   .appbar-nav { display: none; }
   .nav-toggle { display: grid; }
   /* Nav (which carried margin-left:auto) is gone — push actions to the right */
@@ -1126,27 +899,24 @@ section { max-width: var(--w); margin: 0 auto; padding: 0 1.5rem; }
   .quick-nav-grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
 }
 
-/* ── Emotion Atlas Hero responsive ── */
-@media (max-width: 900px) {
-  .emotion-atlas-hero {
+/* ── Hero responsive ── */
+@media (max-width: 820px) {
+  .hero {
     grid-template-columns: 1fr;
-    min-height: auto;
     gap: 2rem;
     text-align: center;
+    padding-top: clamp(2rem, 8vw, 3rem);
   }
-  .atlas-content { display: flex; flex-direction: column; align-items: center; }
-  .hero-title { max-width: 100%; }
+  .hero-copy { display: flex; flex-direction: column; align-items: center; }
+  .hero-tagline,
   .hero-lead { margin-left: auto; margin-right: auto; }
   .hero-actions { justify-content: center; }
-  .hero-moodboard { min-height: 400px; }
+  /* Face leads on mobile: place it above the copy */
+  .hero-figure { order: -1; max-width: 340px; }
 }
-@media (max-width: 560px) {
-  .emotion-atlas-hero { padding: 2rem 1rem; }
-  .hero-title { font-size: 2.6rem; }
-  .hero-moodboard { min-height: 320px; }
-  .moodboard-emoticon { width: 120px; height: 120px; }
-  .moodboard-icon { padding: 7px 10px; }
-  .moodboard-icon svg { width: 50% !important; height: 50% !important; }
+@media (max-width: 480px) {
+  .hero { padding: 1.5rem 1rem 2rem; }
+  .hero-figure { max-width: 270px; }
 }
 
 /* ══════════════════════════════════════════════
@@ -1334,7 +1104,7 @@ section { max-width: var(--w); margin: 0 auto; padding: 0 1.5rem; }
 }
 .error-title { font-size: 1.5rem; font-weight: 750; color: var(--ink); margin: 0.5rem 0 0.75rem; }
 .error-lead { color: var(--ink-soft); margin-bottom: 1.75rem; }
-.error-page .hero-actions { justify-content: center; }
+.error-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; justify-content: center; }
 
 /* ══════════════════════════════════════════════
    Structured pages

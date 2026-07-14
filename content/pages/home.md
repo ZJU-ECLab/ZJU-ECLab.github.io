@@ -8,10 +8,11 @@ description: >-
 
 hero:
   title: Emotion & Culture Lab
+  tagline: Understanding emotion across expressions and cultures.
   lead: >-
-    We study the fascinating intersection of emotion science and cross-cultural
-    psychology — how people express and perceive emotion across faces, voices,
-    bodies, and the arts.
+    At Zhejiang University, we study how people express and perceive emotion —
+    across faces, voices, bodies, and the arts — and how culture shapes every
+    step of that process.
   actions:
     - { label: "Read our research", href: "/publications/" }
     - { label: "Meet the lab", href: "/people/" }
