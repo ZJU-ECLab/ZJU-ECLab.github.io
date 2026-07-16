@@ -69,7 +69,7 @@
     sharedStorage: false,
     toastTimer: null,
     boardDayCount: 1,
-    openPanels: {} // projectId -> 'progress' | 'members' | null
+    openPanels: {} // projectId -> 'progress' | 'plan' | 'members' | null
   };
 
   /* ---------- members ---------- */
@@ -391,7 +391,18 @@
         endDate: project.endDate || null,
         createdBy: project.createdBy || '',
         members: membersArr,
-        progress: Array.isArray(project.progress) ? project.progress.slice() : []
+        progress: Array.isArray(project.progress) ? project.progress.slice() : [],
+        plans: Array.isArray(project.plans) ? project.plans.map(function (plan) {
+          return {
+            id: plan.id,
+            projectId: plan.projectId || project.id,
+            authorId: plan.authorId || '',
+            deadline: plan.deadline,
+            text: plan.text || '',
+            completed: !!plan.completed,
+            completedAt: plan.completedAt || null
+          };
+        }) : []
       };
     });
   }
@@ -541,6 +552,10 @@
     return Array.isArray(project.progress) ? project.progress : [];
   }
 
+  function projectPlans(project) {
+    return Array.isArray(project.plans) ? project.plans : [];
+  }
+
   function boardWindow(projects) {
     var today = new Date();
     var min = addDays(today, -42);
@@ -555,6 +570,11 @@
         var e = parseISO(entry.endDate || entry.startDate);
         if (s && s < min) min = s;
         if (e && e > max) max = e;
+      });
+      projectPlans(project).forEach(function (plan) {
+        var deadline = parseISO(plan.deadline);
+        if (deadline && deadline < min) min = deadline;
+        if (deadline && deadline > max) max = deadline;
       });
     });
     // Snap to whole weeks so week gridlines/labels line up cleanly.
@@ -778,6 +798,120 @@
     return panel;
   }
 
+  function renderPlanPanel(project) {
+    var panel = el('div', 'project-panel project-panel--plan');
+    panel.appendChild(el('h4', 'project-panel-title', '添加计划'));
+    var form = el('form', 'project-plan-form');
+
+    var textField = el('label', 'progress-field');
+    textField.appendChild(el('span', null, '计划内容'));
+    var textInput = document.createElement('textarea');
+    textInput.rows = 3;
+    textInput.required = true;
+    textInput.maxLength = 500;
+    textInput.placeholder = '例如：完成预实验并整理反馈';
+    textField.appendChild(textInput);
+    form.appendChild(textField);
+
+    var deadlineField = el('label', 'progress-field project-plan-deadline-field');
+    deadlineField.appendChild(el('span', null, '截止日期'));
+    var deadlineInput = document.createElement('input');
+    deadlineInput.type = 'date';
+    deadlineInput.required = true;
+    deadlineInput.value = dateToISO(addDays(new Date(), 7));
+    deadlineField.appendChild(deadlineInput);
+    form.appendChild(deadlineField);
+
+    var submit = el('button', 'btn btn-filled', '添加计划');
+    submit.type = 'submit';
+    form.appendChild(submit);
+    form.addEventListener('submit', function (event) {
+      event.preventDefault();
+      addPlan(project.id, {
+        deadline: deadlineInput.value,
+        text: textInput.value.trim()
+      });
+    });
+    panel.appendChild(form);
+    return panel;
+  }
+
+  function sortedPlans(project) {
+    return projectPlans(project).slice().sort(function (a, b) {
+      if (a.completed !== b.completed) return a.completed ? 1 : -1;
+      if (a.deadline !== b.deadline) return a.deadline < b.deadline ? -1 : 1;
+      return String(a.id).localeCompare(String(b.id));
+    });
+  }
+
+  function renderPlanList(project) {
+    var plans = sortedPlans(project);
+    var editable = canEdit(project);
+    if (!plans.length && !editable) return null;
+
+    var section = el('section', 'project-plans');
+    var head = el('div', 'project-plans-head');
+    head.appendChild(el('h4', 'project-plans-title', '计划'));
+    var completedCount = plans.filter(function (plan) { return plan.completed; }).length;
+    head.appendChild(el('span', 'project-plans-summary',
+      completedCount + ' / ' + plans.length + ' 已完成'));
+    section.appendChild(head);
+
+    if (!plans.length) {
+      section.appendChild(el('p', 'project-plans-empty', '还没有计划。'));
+      return section;
+    }
+
+    var list = el('ul', 'project-plan-list');
+    plans.forEach(function (plan) {
+      var item = el('li', 'project-plan-item');
+      item.id = 'plan-' + String(plan.id).replace(/[^a-zA-Z0-9_-]/g, '');
+      if (plan.completed) item.classList.add('is-completed');
+      var overdue = !plan.completed && plan.deadline < todayISO();
+      if (overdue) item.classList.add('is-overdue');
+
+      var label = el('label', 'project-plan-toggle');
+      var checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+      checkbox.checked = !!plan.completed;
+      checkbox.disabled = !editable;
+      checkbox.setAttribute('aria-label',
+        (plan.completed ? '重新打开计划：' : '完成计划：') + plan.text);
+      checkbox.addEventListener('change', function () {
+        checkbox.disabled = true;
+        setPlanCompleted(project.id, plan.id, checkbox.checked);
+      });
+      label.appendChild(checkbox);
+      label.appendChild(el('span', 'project-plan-check', ''));
+
+      var content = el('span', 'project-plan-content');
+      content.appendChild(el('span', 'project-plan-text', plan.text));
+      var deadline = el('time', 'project-plan-deadline',
+        (overdue ? '已逾期 · ' : '截止 ') + formatDate(plan.deadline));
+      deadline.dateTime = plan.deadline;
+      content.appendChild(deadline);
+      label.appendChild(content);
+      item.appendChild(label);
+
+      if (editable) {
+        var remove = el('button', 'project-plan-delete');
+        remove.type = 'button';
+        remove.title = '删除计划';
+        remove.setAttribute('aria-label', '删除计划：' + plan.text);
+        remove.appendChild(svgIcon('close'));
+        remove.addEventListener('click', function () {
+          if (window.confirm('确认删除计划「' + plan.text + '」吗？')) {
+            deletePlan(project.id, plan.id);
+          }
+        });
+        item.appendChild(remove);
+      }
+      list.appendChild(item);
+    });
+    section.appendChild(list);
+    return section;
+  }
+
   function renderCalendar(project, ticks, gridStart, dayCount) {
     var calendar = el('div', 'project-calendar');
     calendar.style.setProperty('--day-count', String(dayCount));
@@ -820,6 +954,41 @@
       todayLine.title = '今天';
       body.appendChild(todayLine);
     }
+
+    // Plan deadlines occupy their own marker layer. Plans sharing a deadline
+    // collapse into one marker with a count so they never obscure each other.
+    var plansByDeadline = {};
+    projectPlans(project).forEach(function (plan) {
+      if (!parseISO(plan.deadline)) return;
+      if (!plansByDeadline[plan.deadline]) plansByDeadline[plan.deadline] = [];
+      plansByDeadline[plan.deadline].push(plan);
+    });
+    var deadlineLayer = el('div', 'calendar-deadlines');
+    Object.keys(plansByDeadline).forEach(function (deadline) {
+      var offset = diffDays(gridStart, parseISO(deadline));
+      if (offset < 0 || offset >= dayCount) return;
+      var duePlans = plansByDeadline[deadline];
+      var marker = el('button', 'calendar-deadline');
+      marker.type = 'button';
+      marker.style.setProperty('--day', String(offset));
+      var allCompleted = duePlans.every(function (plan) { return plan.completed; });
+      var overdue = !allCompleted && deadline < todayISO();
+      if (allCompleted) marker.classList.add('is-completed');
+      if (overdue) marker.classList.add('is-overdue');
+      marker.title = '计划截止 ' + formatDate(deadline) + '：' + duePlans.map(function (plan) {
+        return (plan.completed ? '✓ ' : '') + plan.text;
+      }).join('；');
+      marker.setAttribute('aria-label', '查看 ' + formatDate(deadline) + ' 截止的计划');
+      marker.appendChild(el('span', 'calendar-deadline-diamond', ''));
+      if (duePlans.length > 1) {
+        marker.appendChild(el('span', 'calendar-deadline-count', String(duePlans.length)));
+      }
+      marker.addEventListener('click', function () {
+        openPlanDeadlineDetail(project, duePlans, deadline);
+      });
+      deadlineLayer.appendChild(marker);
+    });
+    body.appendChild(deadlineLayer);
 
     var layout = layoutTracks(projectEntries(project), gridStart, dayCount);
     var trackCount = Math.max(1, layout.trackCount);
@@ -1037,6 +1206,9 @@
     var ended = isEnded(project);
 
     if (editable && !ended) {
+      actions.appendChild(makeActionBtn('添加计划', openPanel === 'plan', function () {
+        togglePanel(project.id, 'plan');
+      }));
       actions.appendChild(makeActionBtn('添加进展', openPanel === 'progress', function () {
         togglePanel(project.id, 'progress');
       }));
@@ -1054,8 +1226,16 @@
 
     if (editable && openPanel === 'progress' && !ended) {
       row.appendChild(renderProgressPanel(project));
+    } else if (editable && openPanel === 'plan' && !ended) {
+      row.appendChild(renderPlanPanel(project));
     } else if (editable && openPanel === 'members') {
       row.appendChild(renderMembersPanel(project));
+    }
+
+    var planList = renderPlanList(project);
+    if (planList) {
+      row.classList.add('project-row--has-plans');
+      row.appendChild(planList);
     }
 
     var scroller = el('div', 'project-calendar-scroll');
@@ -1312,6 +1492,54 @@
     return form;
   }
 
+  /* ---------- plan deadline dialog ---------- */
+
+  var planDialog = null;
+
+  function closePlanDialog() {
+    if (planDialog && planDialog.open) planDialog.close();
+  }
+
+  function openPlanDeadlineDetail(project, plans, deadline) {
+    if (!planDialog) {
+      planDialog = document.createElement('dialog');
+      planDialog.className = 'entry-dialog plan-dialog';
+      planDialog.addEventListener('click', function (event) {
+        if (event.target === planDialog) closePlanDialog();
+      });
+      document.body.appendChild(planDialog);
+    }
+
+    planDialog.innerHTML = '';
+    var wrap = el('div', 'entry-dialog-body plan-dialog-body');
+    wrap.appendChild(el('h3', 'plan-dialog-title', '计划截止 · ' + formatDate(deadline)));
+    wrap.appendChild(el('p', 'plan-dialog-project', project.name));
+
+    var list = el('ul', 'plan-dialog-list');
+    plans.forEach(function (plan) {
+      var item = el('li', 'plan-dialog-item');
+      if (plan.completed) item.classList.add('is-completed');
+      item.appendChild(el('span', 'plan-dialog-status', plan.completed ? '已完成' : '待完成'));
+      item.appendChild(el('p', 'plan-dialog-text', plan.text));
+      list.appendChild(item);
+    });
+    wrap.appendChild(list);
+
+    var actions = el('div', 'entry-dialog-actions');
+    var close = el('button', 'btn btn-filled', '关闭');
+    close.type = 'button';
+    close.addEventListener('click', closePlanDialog);
+    actions.appendChild(close);
+    wrap.appendChild(actions);
+    planDialog.appendChild(wrap);
+
+    if (typeof planDialog.showModal === 'function') {
+      planDialog.showModal();
+    } else {
+      planDialog.setAttribute('open', '');
+    }
+  }
+
   /* ---------- actions ---------- */
 
   function findProject(projectId) {
@@ -1452,6 +1680,86 @@
     });
   }
 
+  function addPlan(projectId, payload) {
+    if (!state.activeMemberId) { showToast('请先使用手机号登录。', true); return; }
+    var project = findProject(projectId);
+    if (!project) return;
+    if (!canEdit(project)) { showToast('你不是该课题的成员。', true); return; }
+    if (!payload.deadline || !payload.text) return;
+
+    function finish(plan) {
+      project.plans = project.plans || [];
+      project.plans.push(plan);
+      state.openPanels[projectId] = null;
+      saveStore();
+      renderBoard();
+      showToast('计划已添加。');
+    }
+
+    api('POST', '/plans', {
+      projectId: projectId,
+      deadline: payload.deadline,
+      text: payload.text
+    }).then(function (data) {
+      setStorageStatus('共享存储已连接', true);
+      finish(data.plan);
+    }).catch(function (error) {
+      handleWriteError(error, '计划添加失败。');
+    });
+  }
+
+  function setPlanCompleted(projectId, planId, completed) {
+    var project = findProject(projectId);
+    if (!project) return;
+    if (!canEdit(project)) { showToast('你不是该课题的成员。', true); return; }
+
+    function finish(planData) {
+      var plans = project.plans || [];
+      for (var i = 0; i < plans.length; i++) {
+        if (String(plans[i].id) === String(planId)) {
+          plans[i].completed = !!completed;
+          plans[i].completedAt = planData.completedAt || null;
+          break;
+        }
+      }
+      saveStore();
+      renderBoard();
+      showToast(completed ? '计划已完成。' : '计划已重新打开。');
+    }
+
+    api('PATCH', '/plans/' + encodeURIComponent(planId), {
+      completed: !!completed
+    }).then(function (data) {
+      setStorageStatus('共享存储已连接', true);
+      finish(data.plan);
+    }).catch(function (error) {
+      renderBoard();
+      handleWriteError(error, '计划状态更新失败。');
+    });
+  }
+
+  function deletePlan(projectId, planId) {
+    var project = findProject(projectId);
+    if (!project) return;
+    if (!canEdit(project)) { showToast('你不是该课题的成员。', true); return; }
+
+    function finish() {
+      project.plans = (project.plans || []).filter(function (plan) {
+        return String(plan.id) !== String(planId);
+      });
+      saveStore();
+      renderBoard();
+      showToast('计划已删除。');
+    }
+
+    api('DELETE', '/plans/' + encodeURIComponent(planId)).then(function () {
+      setStorageStatus('共享存储已连接', true);
+      finish();
+    }).catch(function (error) {
+      handleWriteError(error, '计划删除失败。');
+    });
+  }
+
   function inviteMember(projectId, inviteId) {
     var project = findProject(projectId);
     if (!project) return;
@@ -1560,7 +1868,8 @@
   function deleteProject(projectId) {
     var project = findProject(projectId);
     if (!project) return;
-    if (!window.confirm('确认永久删除课题「' + project.name + '」及其全部进展吗？此操作不可撤销。')) {
+    if (!window.confirm('确认永久删除课题「' + project.name +
+        '」及其全部进展和计划吗？此操作不可撤销。')) {
       return;
     }
 

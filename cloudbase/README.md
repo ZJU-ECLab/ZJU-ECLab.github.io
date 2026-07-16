@@ -20,5 +20,6 @@ tcb fn deploy progress-api
 ```
 
 Before deployment, enable SMS Auth, configure the private `member_identities`
-collection, and require non-anonymous login for function invocation. The HTTP
+collection, set every board collection (including `project_plans`) to
+`ADMINONLY`, and require non-anonymous login for function invocation. The HTTP
 gateway is no longer used by the browser page.

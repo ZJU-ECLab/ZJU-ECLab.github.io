@@ -11,10 +11,11 @@
 // isBase64Encoded, queryStringParameters) and expects a { statusCode, headers,
 // body } return value.
 //
-// Data lives in four admin-only collections:
+// Data lives in five admin-only collections:
 //   projects          — one doc per project
 //   project_members   — one doc per (project, member)
 //   progress_entries  — one doc per progress entry
+//   project_plans     — one todo item with a deadline per doc
 //   member_identities — private phone -> roster member bindings
 // Each doc keeps its own string `id` field (project-<uuid> / progress-<uuid>)
 // so the client keeps keying on `id`, independent of CloudBase's own `_id`.
@@ -28,6 +29,7 @@ const db = app.database();
 const COL_PROJECTS = 'projects';
 const COL_MEMBERS = 'project_members';
 const COL_ENTRIES = 'progress_entries';
+const COL_PLANS = 'project_plans';
 const COL_IDENTITIES = 'member_identities';
 
 // Lab leader is auto-added to every project. Overridable via env LEADER_ID.
@@ -233,7 +235,8 @@ function projectFromRow(row) {
     endDate: row.end_date || null,
     createdBy: row.created_by,
     members: [],
-    progress: []
+    progress: [],
+    plans: []
   };
 }
 
@@ -245,6 +248,18 @@ function entryFromRow(row) {
     startDate: row.start_date,
     endDate: row.end_date,
     note: row.note
+  };
+}
+
+function planFromRow(row) {
+  return {
+    id: row.id,
+    projectId: row.project_id,
+    authorId: row.author_id,
+    deadline: row.deadline,
+    text: row.text,
+    completed: !!row.completed,
+    completedAt: row.completed_at || null
   };
 }
 
@@ -278,10 +293,11 @@ async function addMember(projectId, memberId, addedBy) {
 /* ---------- handlers (ported 1:1 from the Worker) ---------- */
 
 async function listProjects() {
-  const [projectRes, memberRes, entryRes] = await Promise.all([
+  const [projectRes, memberRes, entryRes, planRes] = await Promise.all([
     db.collection(COL_PROJECTS).limit(1000).get(),
     db.collection(COL_MEMBERS).limit(1000).get(),
-    db.collection(COL_ENTRIES).limit(1000).get()
+    db.collection(COL_ENTRIES).limit(1000).get(),
+    db.collection(COL_PLANS).limit(1000).get()
   ]);
 
   const projectRows = (projectRes.data || []).slice().sort((a, b) => {
@@ -305,6 +321,17 @@ async function listProjects() {
   for (const row of entryRows) {
     const project = byId.get(row.project_id);
     if (project) project.progress.push(entryFromRow(row));
+  }
+  const planRows = (planRes.data || []).slice().sort((a, b) => {
+    if (!!a.completed !== !!b.completed) return a.completed ? 1 : -1;
+    if ((a.deadline || '') !== (b.deadline || '')) {
+      return (a.deadline || '') < (b.deadline || '') ? -1 : 1;
+    }
+    return (a.created_at || '') < (b.created_at || '') ? -1 : 1;
+  });
+  for (const row of planRows) {
+    const project = byId.get(row.project_id);
+    if (project) project.plans.push(planFromRow(row));
   }
   return json({ projects });
 }
@@ -336,7 +363,7 @@ async function createProject(body, memberId) {
   return json({
     project: {
       id, name, status: DEFAULT_STATUS, startDate,
-      endDate: null, createdBy: memberId, members, progress: []
+      endDate: null, createdBy: memberId, members, progress: [], plans: []
     }
   }, 201);
 }
@@ -396,6 +423,7 @@ async function deleteProject(projectId, memberId) {
   await db.collection(COL_PROJECTS).doc(doc._id).remove();
   await db.collection(COL_MEMBERS).where({ project_id: projectId }).remove();
   await db.collection(COL_ENTRIES).where({ project_id: projectId }).remove();
+  await db.collection(COL_PLANS).where({ project_id: projectId }).remove();
   return json({ ok: true });
 }
 
@@ -488,6 +516,77 @@ async function deleteProgressEntry(entryId, memberId) {
   return json({ ok: true });
 }
 
+async function createPlan(body, memberId) {
+  if (!body) return badRequest('Invalid JSON body.');
+  const projectId = cleanText(body.projectId, 160);
+  const deadline = cleanText(body.deadline, 10);
+  const text = cleanText(body.text, 500);
+  if (!projectId) return badRequest('projectId is required.');
+  if (!isDate(deadline)) return badRequest('deadline must be YYYY-MM-DD.');
+  if (!text) return badRequest('text is required.');
+  if (!(await isMember(projectId, memberId))) return forbidden();
+
+  const doc = await getProjectDoc(projectId);
+  if (!doc) return notFound('Project not found.');
+
+  const id = makeId('plan');
+  await db.collection(COL_PLANS).add({
+    id,
+    project_id: projectId,
+    author_id: memberId,
+    deadline,
+    text,
+    completed: false,
+    completed_at: null,
+    created_at: new Date().toISOString()
+  });
+  return json({
+    plan: {
+      id, projectId, authorId: memberId, deadline, text,
+      completed: false, completedAt: null
+    }
+  }, 201);
+}
+
+async function updatePlan(body, planId, memberId) {
+  if (!body || typeof body.completed !== 'boolean') {
+    return badRequest('completed must be a boolean.');
+  }
+
+  const res = await db.collection(COL_PLANS).where({ id: planId }).limit(1).get();
+  const plan = res.data && res.data[0];
+  if (!plan) return notFound('Plan not found.');
+  if (!(await isMember(plan.project_id, memberId))) return forbidden();
+
+  const completedAt = body.completed ? new Date().toISOString() : null;
+  await db.collection(COL_PLANS).doc(plan._id).update({
+    completed: body.completed,
+    completed_at: completedAt,
+    updated_at: new Date().toISOString()
+  });
+  return json({
+    plan: {
+      id: plan.id,
+      projectId: plan.project_id,
+      authorId: plan.author_id,
+      deadline: plan.deadline,
+      text: plan.text,
+      completed: body.completed,
+      completedAt
+    }
+  });
+}
+
+async function deletePlan(planId, memberId) {
+  const res = await db.collection(COL_PLANS).where({ id: planId }).limit(1).get();
+  const plan = res.data && res.data[0];
+  if (!plan) return notFound('Plan not found.');
+  if (!(await isMember(plan.project_id, memberId))) return forbidden();
+
+  await db.collection(COL_PLANS).doc(plan._id).remove();
+  return json({ ok: true });
+}
+
 /* ---------- HTTP event parsing ---------- */
 
 function parseBody(event) {
@@ -552,6 +651,22 @@ async function route(event, context) {
     }
     if (method === 'DELETE') {
       return deleteProgressEntry(decodeURIComponent(entryMatch[1]), memberId);
+    }
+    return methodNotAllowed();
+  }
+
+  if (path === '/api/progress/plans') {
+    if (method === 'POST') return createPlan(body, memberId);
+    return methodNotAllowed();
+  }
+
+  const planMatch = path.match(/^\/api\/progress\/plans\/([^/]+)$/);
+  if (planMatch) {
+    if (method === 'PATCH') {
+      return updatePlan(body, decodeURIComponent(planMatch[1]), memberId);
+    }
+    if (method === 'DELETE') {
+      return deletePlan(decodeURIComponent(planMatch[1]), memberId);
     }
     return methodNotAllowed();
   }

@@ -84,8 +84,9 @@ this site's build.
 members sign in with a phone number and SMS code; the CloudBase function resolves
 the verified account through a private member-identity collection, so users no
 longer select an editing identity. Shared data is stored in CloudBase's document
-database. Cached browser data is read-only when the service is unavailable. See
-`docs/progress-page.md` for Auth setup and the data model.
+database. Project cards include shared todo plans whose deadlines are marked on
+the progress timeline. Cached browser data is read-only when the service is
+unavailable. See `docs/progress-page.md` for Auth setup and the data model.
 
 ## Deployment
 

@@ -14,7 +14,7 @@ Browser (/progress/)
               │
     member_identities (admin-only)
               │ member_id
-    projects · project_members · progress_entries
+    projects · project_members · progress_entries · project_plans
 ```
 
 ## Identity flow
@@ -23,8 +23,9 @@ First login:
 
 1. The member requests an SMS code and signs in through CloudBase Auth.
 2. The browser sends the same normalized phone number to `progress-api`.
-3. The function asks CloudBase's admin Auth API which UUID owns that phone and
-   requires it to equal the platform-injected caller UUID.
+3. The function asks CloudBase's admin Auth API for the platform-injected UUID's
+   account and requires its normalized phone to match the login claim. A reverse
+   phone lookup remains as a compatibility fallback.
 4. The verified phone is matched against `member_identities.phone_e164`.
 5. The function saves the UUID in `auth_uid` and returns the roster `member_id`.
 
@@ -40,8 +41,8 @@ the acting member. Signing out is the only way to change accounts.
 
 | Path | Role |
 |------|------|
-| `assets/progress.js` | SMS login, persisted session handling, authenticated function calls, and board UI |
-| `cloudbase/functions/progress-api/index.js` | Server-side phone verification, member resolution, and board operations |
+| `assets/progress.js` | SMS login, persisted session handling, authenticated function calls, todo plans, timeline deadlines, and board UI |
+| `cloudbase/functions/progress-api/index.js` | Server-side phone verification, member resolution, and authenticated board/plan operations |
 | `cloudbase/functions/progress-api/package.json` | Pinned CloudBase Node SDK dependency |
 | `cloudbase/cloudbaserc.json` | Function deployment settings |
 | `content/pages/progress.md` | Public env ID, region, function name, and Web SDK script |
@@ -55,8 +56,8 @@ The current environment is `eclab-progress-d9gm1x6ro276d951a` in Shanghai.
 
 Console → **身份认证 → 登录方式** → enable **短信验证码登录**.
 
-Current environment audit (2026-07-16): `PhoneNumberLogin` is `false`, so this
-switch still needs to be enabled before the page can send verification codes.
+Current environment audit (2026-07-16): SMS login is enabled and verified in
+production.
 
 SMS login is supported only in the Shanghai region. Sends are rate-limited and
 use the CloudBase SMS quota.
@@ -73,19 +74,19 @@ Current environment audit (2026-07-16): `emotion.is-cool.dev` and
 
 ### 3. Configure the private identity collection
 
-These four collections are used:
+These five collections are used:
 
 - `projects`
 - `project_members`
 - `progress_entries`
+- `project_plans`
 - `member_identities`
 
 Set every collection to **仅管理端可读写 (ADMINONLY)**. In particular,
 `member_identities` must never be readable through the browser SDK.
 
-Current environment audit (2026-07-16): `member_identities` exists and is empty,
-but its ACL is `PRIVATE`. Change it to `ADMINONLY` before adding identities. The
-three progress-data collections are already `ADMINONLY`.
+Current environment audit (2026-07-16): the existing progress and identity
+collections are `ADMINONLY`. Keep `project_plans` at the same level.
 
 Create one `member_identities` document per roster member:
 
@@ -143,11 +144,14 @@ The browser sends the existing HTTP-like route shape inside an authenticated
 | Method | Path | Purpose |
 |--------|------|---------|
 | POST | `/api/progress/auth/me` | Resolve/enroll the current verified phone user |
-| GET | `/api/progress` | List projects with members and entries |
+| GET | `/api/progress` | List projects with members, entries, and plans |
 | POST | `/api/progress` | Create a project |
 | POST | `/api/progress/entries` | Add a progress entry |
 | PATCH | `/api/progress/entries/:id` | Edit an entry |
 | DELETE | `/api/progress/entries/:id` | Delete an entry |
+| POST | `/api/progress/plans` | Add a todo plan with a deadline |
+| PATCH | `/api/progress/plans/:id` | Complete or reopen a plan |
+| DELETE | `/api/progress/plans/:id` | Delete a plan |
 | PATCH | `/api/progress/projects/:id/status` | Change status |
 | PATCH | `/api/progress/projects/:id/name` | Rename a project |
 | PATCH | `/api/progress/projects/:id` | End a project |
@@ -171,6 +175,9 @@ it exclusively from verified CloudBase identity.
 **`progress_entries`**: `id`, `project_id`, `author_id`, `start_date`,
 `end_date`, `note`, `created_at`, optional `updated_at`.
 
+**`project_plans`**: `id`, `project_id`, `author_id`, `deadline`, `text`,
+`completed`, `completed_at`, `created_at`, optional `updated_at`.
+
 The lab leader (`LEADER_ID`, default `xia-fang`) is auto-added to each project
 and cannot be removed.
 
@@ -183,14 +190,16 @@ After console setup and deployment:
 3. Sign in and confirm the toolbar shows the automatically matched member and
    only an **退出登录** identity action.
 4. Create or edit a small test entry, refresh, and confirm it persisted.
-5. Sign out and log in with the same phone again.
-6. Try a phone not in `member_identities`; access must be denied.
+5. Add a plan and confirm its deadline marker appears on the timeline; complete
+   and reopen it, then refresh to confirm both states persist.
+6. Sign out and log in with the same phone again.
+7. Try a phone not in `member_identities`; access must be denied.
 
 ## Operational notes
 
 - CloudBase Auth persists Web login locally for up to 30 days until sign-out.
 - Failed writes are not applied to the local cache. If CloudBase is unavailable,
   cached board data is displayed read-only.
-- Project/member/entry listing loads up to 1000 documents per collection.
+- Project/member/entry/plan listing loads up to 1000 documents per collection.
 - The old HTTP gateway and Cloudflare Worker are no longer part of the active
   authenticated browser path.
