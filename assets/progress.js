@@ -6,9 +6,14 @@
   if (!root) return;
 
   var STORAGE_KEY = 'eclab-progress-v2';
-  var ACTIVE_MEMBER_KEY = 'eclab-progress-active-member';
-  var apiBase = root.getAttribute('data-api-base') || '/api/progress';
+  var envId = root.getAttribute('data-cloudbase-env') || '';
+  var region = root.getAttribute('data-cloudbase-region') || 'ap-shanghai';
+  var functionName = root.getAttribute('data-cloudbase-function') || 'progress-api';
   var leaderId = root.getAttribute('data-leader-id') || '';
+  var cloudApp = null;
+  var auth = null;
+  var verificationInfo = null;
+  var countdownTimer = null;
 
   // Selectable project status tags. The last one is the terminal "ended" state
   // and is also implied whenever a project has an endDate.
@@ -31,10 +36,12 @@
   var gate = root.querySelector('[data-progress-gate]');
   var workspace = root.querySelector('[data-workspace]');
   var storageStatus = root.querySelector('[data-storage-status]');
-  var activeMemberSelect = root.querySelector('[data-active-member]');
+  var phoneLoginForm = root.querySelector('[data-phone-login]');
+  var sendCodeBtn = root.querySelector('[data-send-code]');
+  var loginStatus = root.querySelector('[data-login-status]');
   var memberSelect = root.querySelector('[data-member-select]');
   var viewAllBtn = root.querySelector('[data-view-all]');
-  var changeUserBtn = root.querySelector('[data-change-user]');
+  var signOutBtn = root.querySelector('[data-sign-out]');
   var currentUserTitle = root.querySelector('[data-current-user]');
   var editorName = root.querySelector('[data-editor-name]');
   var editorAvatar = root.querySelector('[data-editor-avatar]');
@@ -124,7 +131,6 @@
       var parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
       state.projects = Array.isArray(parsed.projects) ? parsed.projects : [];
       state.selectedMemberId = parsed.selectedMemberId || 'all';
-      state.activeMemberId = localStorage.getItem(ACTIVE_MEMBER_KEY) || parsed.activeMemberId || '';
     } catch (_) {
       state.projects = [];
     }
@@ -134,10 +140,8 @@
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify({
         projects: state.projects,
-        selectedMemberId: state.selectedMemberId,
-        activeMemberId: state.activeMemberId
+        selectedMemberId: state.selectedMemberId
       }));
-      if (state.activeMemberId) localStorage.setItem(ACTIVE_MEMBER_KEY, state.activeMemberId);
     } catch (_) {}
   }
 
@@ -150,31 +154,203 @@
 
   /* ---------- api ---------- */
 
-  function apiPath(path) {
-    return apiBase.replace(/\/+$/, '') + path;
+  function api(method, path, body) {
+    if (!cloudApp) return Promise.reject(new Error('CloudBase SDK 尚未初始化。'));
+    return cloudApp.callFunction({
+      name: functionName,
+      data: {
+        httpMethod: method,
+        path: '/api/progress' + path,
+        body: body || null
+      }
+    }).then(function (response) {
+      var proxy = response && response.result ? response.result : response;
+      var data = {};
+      if (proxy && proxy.body) {
+        try { data = typeof proxy.body === 'string' ? JSON.parse(proxy.body) : proxy.body; }
+        catch (_) { data = { message: String(proxy.body) }; }
+      }
+      var status = Number(proxy && proxy.statusCode) || 200;
+      if (status < 200 || status >= 300) {
+        var error = new Error(data.message || data.error || ('请求失败：' + status));
+        error.status = status;
+        error.code = data.error || '';
+        throw error;
+      }
+      return data;
+    });
   }
 
-  function api(method, path, body) {
-    var options = {
-      method: method,
-      headers: { 'Accept': 'application/json' }
-    };
-    if (body) {
-      options.headers['Content-Type'] = 'application/json';
-      options.body = JSON.stringify(body);
+  /* ---------- CloudBase phone authentication ---------- */
+
+  function setLoginStatus(message, isError) {
+    if (!loginStatus) return;
+    loginStatus.textContent = message || '';
+    loginStatus.classList.toggle('is-error', !!isError);
+  }
+
+  function setLoginBusy(busy) {
+    if (sendCodeBtn) sendCodeBtn.disabled = !!busy || !!countdownTimer;
+    if (phoneLoginForm) {
+      var submit = phoneLoginForm.querySelector('[type="submit"]');
+      if (submit) submit.disabled = !!busy || !verificationInfo;
     }
-    return fetch(apiPath(path), options).then(function (response) {
-      return response.text().then(function (text) {
-        var data = {};
-        if (text) {
-          try { data = JSON.parse(text); }
-          catch (_) { data = { message: text }; }
+  }
+
+  function normalizePhone(value) {
+    var digits = String(value || '').replace(/\D/g, '');
+    if (/^1\d{10}$/.test(digits)) return '+86' + digits;
+    if (/^861\d{10}$/.test(digits)) return '+' + digits;
+    return '';
+  }
+
+  function authErrorMessage(error, fallback) {
+    if (!error) return fallback;
+    var message = typeof error === 'string' ? error :
+      (error.message || error.error_description || error.msg ||
+        error.error || error.code || '');
+    var details = [message, error && error.code, error && error.error_description]
+      .filter(Boolean).join(' ').toLowerCase();
+    if (details.indexOf('verification code does not match') !== -1 ||
+        details.indexOf('invalid verification code') !== -1 ||
+        details.indexOf('无效的验证码') !== -1 ||
+        details.indexOf('验证码不匹配') !== -1) {
+      return '验证码不正确，请重新输入。';
+    }
+    return message || fallback;
+  }
+
+  function resolveMember(phone) {
+    return api('POST', '/auth/me', { phone: phone || '' }).then(function (data) {
+      var member = findMember(data.memberId);
+      if (!member) throw new Error('登录账号关联了未知的成员记录。');
+      return data;
+    });
+  }
+
+  function openMemberSession(data) {
+    setActiveMember(data.memberId);
+    setLoginStatus('');
+    return loadSharedProjects();
+  }
+
+  function sendPhoneCode() {
+    if (!auth || !phoneLoginForm) return;
+    var phone = normalizePhone(phoneLoginForm.elements.phone.value);
+    if (!phone) {
+      setLoginStatus('请输入正确的中国大陆手机号。', true);
+      return;
+    }
+
+    setLoginBusy(true);
+    setLoginStatus('正在发送验证码…');
+    auth.getVerification({ phone_number: phone }).then(function (info) {
+      verificationInfo = info;
+      var code = phoneLoginForm.elements.code;
+      var submit = phoneLoginForm.querySelector('[type="submit"]');
+      if (code) { code.disabled = false; code.focus(); }
+      if (submit) submit.disabled = false;
+      setLoginStatus('验证码已发送，请查看短信。');
+
+      var remaining = 60;
+      if (sendCodeBtn) {
+        sendCodeBtn.disabled = true;
+        sendCodeBtn.textContent = remaining + ' 秒后重发';
+      }
+      countdownTimer = window.setInterval(function () {
+        remaining -= 1;
+        if (remaining <= 0) {
+          window.clearInterval(countdownTimer);
+          countdownTimer = null;
+          if (sendCodeBtn) { sendCodeBtn.disabled = false; sendCodeBtn.textContent = '重新发送'; }
+          return;
         }
-        if (!response.ok) {
-          throw new Error(data.message || data.error || ('请求失败：' + response.status));
+        if (sendCodeBtn) sendCodeBtn.textContent = remaining + ' 秒后重发';
+      }, 1000);
+    }).catch(function (error) {
+      setLoginStatus(authErrorMessage(error, '验证码发送失败。'), true);
+    }).then(function () {
+      setLoginBusy(false);
+    });
+  }
+
+  function completePhoneLogin(event) {
+    event.preventDefault();
+    if (!auth || !phoneLoginForm || !verificationInfo) return;
+    var phone = normalizePhone(phoneLoginForm.elements.phone.value);
+    var code = String(phoneLoginForm.elements.code.value || '').trim();
+    if (!phone || !/^\d{6}$/.test(code)) {
+      setLoginStatus('请输入手机号和 6 位验证码。', true);
+      return;
+    }
+
+    setLoginBusy(true);
+    setLoginStatus('正在验证手机号…');
+    var signedIn = false;
+    auth.signInWithSms({
+      verificationInfo: verificationInfo,
+      verificationCode: code,
+      phoneNum: phone
+    }).then(function () {
+      signedIn = true;
+      return resolveMember(phone);
+    }).then(function (memberData) {
+      verificationInfo = null;
+      if (countdownTimer) {
+        window.clearInterval(countdownTimer);
+        countdownTimer = null;
+      }
+      if (sendCodeBtn) sendCodeBtn.textContent = '获取验证码';
+      phoneLoginForm.reset();
+      return openMemberSession(memberData);
+    }).catch(function (error) {
+      // A rejected SMS code does not invalidate the verification request. Keep
+      // the input enabled so the member can correct the code immediately.
+      if (!signedIn) {
+        var retryInput = phoneLoginForm.elements.code;
+        if (retryInput) {
+          retryInput.value = '';
+          retryInput.disabled = false;
+          retryInput.focus();
         }
-        return data;
+        setLoginStatus(authErrorMessage(error, '登录失败，请检查验证码后重试。'), true);
+        return;
+      }
+      return auth.signOut().catch(function () {}).then(function () {
+        verificationInfo = null;
+        var codeInput = phoneLoginForm.elements.code;
+        var submit = phoneLoginForm.querySelector('[type="submit"]');
+        if (codeInput) { codeInput.value = ''; codeInput.disabled = true; }
+        if (submit) submit.disabled = true;
+        setLoginStatus(authErrorMessage(error, '手机号未匹配到实验室成员。'), true);
       });
+    }).then(function () {
+      setLoginBusy(false);
+    });
+  }
+
+  function signOut() {
+    if (!auth) return;
+    auth.signOut().catch(function () {}).then(function () {
+      state.activeMemberId = '';
+      state.selectedMemberId = 'all';
+      state.openPanels = {};
+      showWorkspace(false);
+      verificationInfo = null;
+      if (countdownTimer) {
+        window.clearInterval(countdownTimer);
+        countdownTimer = null;
+      }
+      if (sendCodeBtn) { sendCodeBtn.disabled = false; sendCodeBtn.textContent = '获取验证码'; }
+      if (phoneLoginForm) {
+        phoneLoginForm.reset();
+        var code = phoneLoginForm.elements.code;
+        var submit = phoneLoginForm.querySelector('[type="submit"]');
+        if (code) code.disabled = true;
+        if (submit) submit.disabled = true;
+      }
+      setLoginStatus('已退出登录。');
+      updateHeading();
     });
   }
 
@@ -186,11 +362,16 @@
       saveStore();
       renderBoard();
     }).catch(function () {
-      setStorageStatus('离线本机模式', false);
+      setStorageStatus('本机缓存（只读）', false);
       state.projects = normalizeProjects(state.projects);
-      showToast('暂时无法连接共享存储，当前显示本机缓存。', true);
+      showToast('暂时无法连接共享存储，当前仅显示本机缓存。', true);
       renderBoard();
     });
+  }
+
+  function handleWriteError(error, fallbackMessage) {
+    setStorageStatus('共享存储连接失败', false);
+    showToast((error && error.message) || fallbackMessage, true);
   }
 
   function normalizeProjects(list) {
@@ -286,10 +467,6 @@
     return formatDate(startDate) + ' 至 ' + formatDate(endDate);
   }
 
-  function uid(prefix) {
-    return prefix + '-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
-  }
-
   /* ---------- membership helpers ---------- */
 
   function isProjectMember(project, memberId) {
@@ -322,7 +499,6 @@
   function setActiveMember(memberId) {
     state.activeMemberId = memberId;
     state.selectedMemberId = memberId || 'all';
-    if (activeMemberSelect) activeMemberSelect.value = memberId;
     if (memberSelect) memberSelect.value = state.selectedMemberId;
     saveStore();
     showWorkspace(!!memberId);
@@ -1160,23 +1336,10 @@
 
   function createProject(event) {
     event.preventDefault();
-    if (!state.activeMemberId) { showToast('请先选择自己的名字。', true); return; }
+    if (!state.activeMemberId) { showToast('请先使用手机号登录。', true); return; }
     var name = projectForm.elements.name.value.trim();
     var startDate = projectForm.elements.startDate.value;
     if (!name || !startDate) return;
-
-    var localMembers = [state.activeMemberId];
-    if (leaderId && leaderId !== state.activeMemberId) localMembers.push(leaderId);
-    var localProject = {
-      id: uid('project'),
-      name: name,
-      status: DEFAULT_STATUS,
-      startDate: startDate,
-      endDate: null,
-      createdBy: state.activeMemberId,
-      members: localMembers,
-      progress: []
-    };
 
     function finish(project) {
       var normalized = normalizeProjects([project])[0];
@@ -1192,21 +1355,18 @@
     }
 
     api('POST', '/projects', {
-      memberId: state.activeMemberId,
       name: name,
       startDate: startDate
     }).then(function (data) {
       setStorageStatus('共享存储已连接', true);
-      finish(data.project || localProject);
-    }).catch(function () {
-      setStorageStatus('离线本机模式', false);
-      finish(localProject);
-      showToast('共享存储暂时不可用，课题已先保存在本机。', true);
+      finish(data.project);
+    }).catch(function (error) {
+      handleWriteError(error, '课题创建失败。');
     });
   }
 
   function addProgress(projectId, payload) {
-    if (!state.activeMemberId) { showToast('请先选择自己的名字。', true); return; }
+    if (!state.activeMemberId) { showToast('请先使用手机号登录。', true); return; }
     var project = findProject(projectId);
     if (!project) return;
     if (!canEdit(project)) { showToast('你不是该课题的成员。', true); return; }
@@ -1215,15 +1375,6 @@
       showToast('开始日期不能晚于结束日期。', true);
       return;
     }
-
-    var localEntry = {
-      id: uid('progress'),
-      projectId: projectId,
-      authorId: state.activeMemberId,
-      startDate: payload.startDate,
-      endDate: payload.endDate,
-      note: payload.note
-    };
 
     function finish(entry) {
       project.progress = project.progress || [];
@@ -1235,18 +1386,15 @@
     }
 
     api('POST', '/entries', {
-      memberId: state.activeMemberId,
       projectId: projectId,
       startDate: payload.startDate,
       endDate: payload.endDate,
       note: payload.note
     }).then(function (data) {
       setStorageStatus('共享存储已连接', true);
-      finish(data.entry || localEntry);
-    }).catch(function () {
-      setStorageStatus('离线本机模式', false);
-      finish(localEntry);
-      showToast('共享存储暂时不可用，进展已先保存在本机。', true);
+      finish(data.entry);
+    }).catch(function (error) {
+      handleWriteError(error, '进展添加失败。');
     });
   }
 
@@ -1263,15 +1411,11 @@
       showToast('进展已删除。');
     }
 
-    api('DELETE', '/entries/' + encodeURIComponent(entryId), {
-      memberId: state.activeMemberId
-    }).then(function () {
+    api('DELETE', '/entries/' + encodeURIComponent(entryId)).then(function () {
       setStorageStatus('共享存储已连接', true);
       finish();
-    }).catch(function () {
-      setStorageStatus('离线本机模式', false);
-      finish();
-      showToast('共享存储暂时不可用，删除已先保存在本机。', true);
+    }).catch(function (error) {
+      handleWriteError(error, '进展删除失败。');
     });
   }
 
@@ -1297,17 +1441,14 @@
     }
 
     api('PATCH', '/entries/' + encodeURIComponent(entryId), {
-      memberId: state.activeMemberId,
       startDate: payload.startDate,
       endDate: payload.endDate,
       note: payload.note
     }).then(function () {
       setStorageStatus('共享存储已连接', true);
       finish();
-    }).catch(function () {
-      setStorageStatus('离线本机模式', false);
-      finish();
-      showToast('共享存储暂时不可用，修改已先保存在本机。', true);
+    }).catch(function (error) {
+      handleWriteError(error, '进展更新失败。');
     });
   }
 
@@ -1326,15 +1467,12 @@
     }
 
     api('POST', '/projects/' + encodeURIComponent(projectId) + '/members', {
-      memberId: state.activeMemberId,
       inviteId: inviteId
     }).then(function () {
       setStorageStatus('共享存储已连接', true);
       finish();
-    }).catch(function () {
-      setStorageStatus('离线本机模式', false);
-      finish();
-      showToast('共享存储暂时不可用，成员变更已先保存在本机。', true);
+    }).catch(function (error) {
+      handleWriteError(error, '成员添加失败。');
     });
   }
 
@@ -1357,15 +1495,11 @@
     }
 
     api('DELETE', '/projects/' + encodeURIComponent(projectId) +
-      '/members/' + encodeURIComponent(targetId), {
-      memberId: state.activeMemberId
-    }).then(function () {
+      '/members/' + encodeURIComponent(targetId)).then(function () {
       setStorageStatus('共享存储已连接', true);
       finish();
-    }).catch(function () {
-      setStorageStatus('离线本机模式', false);
-      finish();
-      showToast('共享存储暂时不可用，成员变更已先保存在本机。', true);
+    }).catch(function (error) {
+      handleWriteError(error, '成员移除失败。');
     });
   }
 
@@ -1384,15 +1518,12 @@
     }
 
     api('PATCH', '/projects/' + encodeURIComponent(projectId) + '/name', {
-      memberId: state.activeMemberId,
       name: name
     }).then(function () {
       setStorageStatus('共享存储已连接', true);
       finish();
-    }).catch(function () {
-      setStorageStatus('离线本机模式', false);
-      finish();
-      showToast('共享存储暂时不可用，名称已先保存在本机。', true);
+    }).catch(function (error) {
+      handleWriteError(error, '课题名称更新失败。');
     });
   }
 
@@ -1417,15 +1548,12 @@
     }
 
     api('PATCH', '/projects/' + encodeURIComponent(projectId) + '/status', {
-      memberId: state.activeMemberId,
       status: status
     }).then(function () {
       setStorageStatus('共享存储已连接', true);
       finish();
-    }).catch(function () {
-      setStorageStatus('离线本机模式', false);
-      finish();
-      showToast('共享存储暂时不可用，状态已先保存在本机。', true);
+    }).catch(function (error) {
+      handleWriteError(error, '课题状态更新失败。');
     });
   }
 
@@ -1446,26 +1574,20 @@
       showToast('课题已删除。');
     }
 
-    api('DELETE', '/projects/' + encodeURIComponent(projectId), {
-      memberId: state.activeMemberId
-    }).then(function () {
+    api('DELETE', '/projects/' + encodeURIComponent(projectId)).then(function () {
       setStorageStatus('共享存储已连接', true);
       finish();
-    }).catch(function () {
-      setStorageStatus('离线本机模式', false);
-      finish();
-      showToast('共享存储暂时不可用，删除已先保存在本机。', true);
+    }).catch(function (error) {
+      handleWriteError(error, '课题删除失败。');
     });
   }
 
   /* ---------- events ---------- */
 
   function bindEvents() {
-    if (activeMemberSelect) {
-      activeMemberSelect.addEventListener('change', function () {
-        setActiveMember(activeMemberSelect.value);
-      });
-    }
+    if (sendCodeBtn) sendCodeBtn.addEventListener('click', sendPhoneCode);
+    if (phoneLoginForm) phoneLoginForm.addEventListener('submit', completePhoneLogin);
+    if (signOutBtn) signOutBtn.addEventListener('click', signOut);
     if (memberSelect) {
       memberSelect.addEventListener('change', function () {
         state.selectedMemberId = memberSelect.value || 'all';
@@ -1481,12 +1603,6 @@
         saveStore();
         updateHeading();
         renderBoard();
-      });
-    }
-    if (changeUserBtn) {
-      changeUserBtn.addEventListener('click', function () {
-        showWorkspace(false);
-        if (activeMemberSelect) { activeMemberSelect.value = ''; activeMemberSelect.focus(); }
       });
     }
     if (projectToggle) {
@@ -1506,16 +1622,49 @@
     });
   }
 
+  function bootAuthentication() {
+    if (!envId) {
+      setLoginStatus('页面缺少 CloudBase 环境配置。', true);
+      return;
+    }
+    if (!window.cloudbase) {
+      setLoginStatus('CloudBase 登录组件加载失败，请刷新页面。', true);
+      return;
+    }
+
+    try {
+      cloudApp = window.cloudbase.init({ env: envId, region: region });
+      auth = cloudApp.auth({ persistence: 'local' });
+    } catch (error) {
+      setLoginStatus(error.message || 'CloudBase 初始化失败。', true);
+      return;
+    }
+
+    if (!auth.hasLoginState()) {
+      setLoginStatus('请输入手机号并获取验证码。');
+      return;
+    }
+
+    setLoginBusy(true);
+    setLoginStatus('正在恢复登录状态…');
+    resolveMember('').then(openMemberSession).catch(function (error) {
+      return auth.signOut().catch(function () {}).then(function () {
+        setLoginStatus(error.message || '登录状态无效，请重新使用手机号登录。', true);
+      });
+    }).then(function () {
+      setLoginBusy(false);
+    });
+  }
+
   /* ---------- boot ---------- */
 
   loadStore();
   state.projects = normalizeProjects(state.projects);
   fillViewerSelect();
   bindEvents();
-  if (activeMemberSelect && state.activeMemberId) activeMemberSelect.value = state.activeMemberId;
   if (memberSelect) memberSelect.value = state.selectedMemberId;
-  showWorkspace(!!state.activeMemberId);
+  showWorkspace(false);
   updateHeading();
   renderBoard();
-  loadSharedProjects();
+  bootAuthentication();
 })();

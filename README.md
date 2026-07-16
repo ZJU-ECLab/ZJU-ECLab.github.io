@@ -80,11 +80,12 @@ this site's build.
 
 ## Hidden internal progress page
 
-`/progress/` is intentionally absent from navigation and marked `noindex`. It is
-a lightweight static page: members select their name from the lab member list and
-record project progress. Shared data is stored via a Tencent CloudBase (腾讯云
-开发) cloud function (reachable inside mainland China), with a browser-local
-fallback. See `docs/progress-page.md` for setup, data model, and limitations.
+`/progress/` is intentionally absent from navigation and marked `noindex`. Lab
+members sign in with a phone number and SMS code; the CloudBase function resolves
+the verified account through a private member-identity collection, so users no
+longer select an editing identity. Shared data is stored in CloudBase's document
+database. Cached browser data is read-only when the service is unavailable. See
+`docs/progress-page.md` for Auth setup and the data model.
 
 ## Deployment
 

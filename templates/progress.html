@@ -7,23 +7,38 @@
 </section>
 
 <section class="progress-shell" data-progress-app
-         data-api-base="{{ page.api_base | default('/api/progress', true) }}"
+         data-cloudbase-env="{{ page.cloudbase_env }}"
+         data-cloudbase-region="{{ page.cloudbase_region | default('ap-shanghai', true) }}"
+         data-cloudbase-function="{{ page.cloudbase_function | default('progress-api', true) }}"
          data-leader-id="{{ leader_id }}">
   <div class="progress-gate reveal" data-progress-gate>
-    <div class="progress-gate-copy">
-      <p class="progress-gate-eyebrow">共享工作台</p>
-      <h2>选择你的名字即可开始记录</h2>
-      <p class="progress-gate-lead">选定身份后，你可以新建课题、更新进展、管理成员。</p>
+    <div class="progress-login-card">
+      <h2 class="progress-login-title">手机号登录</h2>
+      <form class="progress-login-form" data-phone-login>
+        <label class="progress-field">
+          <span>手机号</span>
+          <input name="phone" type="tel" inputmode="tel" autocomplete="tel"
+                 placeholder="中国大陆手机号" required />
+        </label>
+        <div class="progress-code-row">
+          <label class="progress-field">
+            <span>短信验证码</span>
+            <input name="code" type="text" inputmode="numeric" autocomplete="one-time-code"
+                   pattern="[0-9]{6}" maxlength="6" placeholder="6 位验证码"
+                   required disabled />
+          </label>
+          <button class="btn btn-tonal progress-send-code" type="button" data-send-code>
+            获取验证码
+          </button>
+        </div>
+        <button class="btn btn-filled progress-login-submit" type="submit" disabled>
+          手机号登录
+        </button>
+      </form>
+      <p class="progress-login-note">验证码仅用于登录和自动匹配实验室成员。</p>
+
+      <p class="progress-login-status" data-login-status role="status" aria-live="polite"></p>
     </div>
-    <label class="progress-field progress-field--member">
-      <span>我是谁</span>
-      <select data-active-member aria-label="选择当前编辑成员">
-        <option value="">请选择成员</option>
-        {% for member in members %}
-        <option value="{{ member.id }}">{{ member.label }}</option>
-        {% endfor %}
-      </select>
-    </label>
   </div>
 
   <div class="progress-workspace" data-workspace hidden>
@@ -51,7 +66,7 @@
             <span class="progress-editor-label">当前身份</span>
             <span class="progress-editor-name" data-editor-name>—</span>
           </span>
-          <button class="progress-editor-switch" type="button" data-change-user>切换</button>
+          <button class="progress-editor-switch" type="button" data-sign-out>退出登录</button>
         </div>
       </div>
     </header>
@@ -96,7 +111,7 @@
       </div>
 
       <div class="progress-empty" data-empty-state hidden>
-        暂时还没有课题。请选择自己的名字后，先新建一个课题。
+        暂时还没有课题。登录后可以先新建一个课题。
       </div>
       <div class="progress-board" data-progress-board></div>
     </section>

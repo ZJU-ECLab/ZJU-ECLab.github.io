@@ -2,20 +2,20 @@
 
 // ECLab shared progress board — CloudBase (腾讯云开发) cloud function.
 //
-// This is a direct port of the former Cloudflare Worker (worker/src/index.js).
-// It is exposed over CloudBase "HTTP 网关" (formerly "HTTP 访问服务"; renamed by
-// Tencent in June 2026), so the static site calls it with plain fetch() exactly
-// like it called the Worker.
+// The browser calls this function through the authenticated CloudBase Web SDK.
+// The legacy HTTP 网关 route can remain attached, but requests without a
+// verified CloudBase user context are rejected.
 //
 // Runtime: Nodejs (CloudBase 云函数). Entry: exports.main(event, context).
 // The HTTP 网关 passes the request as `event` (path, httpMethod, headers, body,
 // isBase64Encoded, queryStringParameters) and expects a { statusCode, headers,
 // body } return value.
 //
-// Data lives in three collections that mirror the old D1 tables:
+// Data lives in four admin-only collections:
 //   projects          — one doc per project
 //   project_members   — one doc per (project, member)
 //   progress_entries  — one doc per progress entry
+//   member_identities — private phone -> roster member bindings
 // Each doc keeps its own string `id` field (project-<uuid> / progress-<uuid>)
 // so the client keeps keying on `id`, independent of CloudBase's own `_id`.
 
@@ -24,11 +24,11 @@ const crypto = require('crypto');
 
 const app = tcb.init({ env: process.env.CLOUDBASE_ENV || tcb.SYMBOL_CURRENT_ENV });
 const db = app.database();
-const _ = db.command;
 
 const COL_PROJECTS = 'projects';
 const COL_MEMBERS = 'project_members';
 const COL_ENTRIES = 'progress_entries';
+const COL_IDENTITIES = 'member_identities';
 
 // Lab leader is auto-added to every project. Overridable via env LEADER_ID.
 const DEFAULT_LEADER_ID = 'xia-fang';
@@ -70,7 +70,9 @@ function reply(statusCode, data) {
 function json(data, status = 200) { return reply(status, data); }
 function notFound(message) { return reply(404, { error: 'not_found', message: message || 'API route not found.' }); }
 function badRequest(message) { return reply(400, { error: 'bad_request', message }); }
+function unauthorized(message) { return reply(401, { error: 'unauthorized', message: message || 'Login required.' }); }
 function forbidden(message) { return reply(403, { error: 'forbidden', message: message || 'Not a member of this project.' }); }
+function conflict(message) { return reply(409, { error: 'conflict', message }); }
 function methodNotAllowed() { return reply(405, { error: 'method_not_allowed', message: 'Method not allowed.' }); }
 
 /* ---------- validation helpers (unchanged from Worker) ---------- */
@@ -84,6 +86,13 @@ function cleanText(value, maxLength) {
   return value.trim().slice(0, maxLength);
 }
 
+function normalizePhone(value) {
+  const digits = cleanText(value, 40).replace(/\D/g, '');
+  if (/^1\d{10}$/.test(digits)) return `+86${digits}`;
+  if (/^861\d{10}$/.test(digits)) return `+${digits}`;
+  return '';
+}
+
 function makeId(prefix) {
   return `${prefix}-${crypto.randomUUID()}`;
 }
@@ -94,6 +103,123 @@ function leaderId() {
 
 function todayISO() {
   return new Date().toISOString().slice(0, 10);
+}
+
+/* ---------- authenticated roster identity ---------- */
+
+function callerIdentity(context) {
+  const cloudContext = tcb.getCloudbaseContext(context) || {};
+  return {
+    uid: cleanText(cloudContext.TCB_UUID, 160),
+    loginType: cleanText(cloudContext.LOGINTYPE, 80),
+    isAnonymous: String(cloudContext.TCB_ISANONYMOUS_USER || '').toLowerCase() === 'true' ||
+      String(cloudContext.LOGINTYPE || '').toUpperCase() === 'ANONYMOUS'
+  };
+}
+
+async function firstIdentity(where) {
+  const res = await db.collection(COL_IDENTITIES).where(where).limit(1).get();
+  return (res.data && res.data[0]) || null;
+}
+
+function profileUid(userInfo) {
+  if (!userInfo) return '';
+  return cleanText(userInfo.uid || userInfo.uuid || userInfo.Uid || userInfo.UUID || userInfo.sub, 160);
+}
+
+function profilePhone(userInfo) {
+  if (!userInfo) return '';
+  return normalizePhone(
+    userInfo.phone || userInfo.Phone || userInfo.phoneNumber ||
+    userInfo.phone_number || userInfo.mobile || userInfo.mobilePhone ||
+    userInfo.mobile_phone
+  );
+}
+
+async function verifyPhoneClaim(uid, phone) {
+  const compact = normalizePhone(phone);
+  if (!compact) return false;
+
+  // Start from the platform-injected UID and inspect that exact CloudBase
+  // account. This avoids relying on PHONE reverse lookup, which is not
+  // consistent across Auth v2 account-directory formats.
+  try {
+    const result = await app.auth().queryUserInfo({ uid });
+    const userInfo = result && result.userInfo;
+    const returnedUid = profileUid(userInfo);
+    if ((!returnedUid || returnedUid === uid) && profilePhone(userInfo) === compact) {
+      return true;
+    }
+  } catch (_) {
+    // Retain reverse lookup below for older CloudBase environments.
+  }
+
+  // CloudBase's SMS user directory currently stores mainland numbers as the
+  // raw 11 digits, while older examples use compact or spaced +86 forms. Try
+  // all three and require the returned UUID to equal the platform-injected
+  // caller UUID before accepting the claim.
+  const variants = [
+    compact.replace(/^\+86/, ''),
+    compact,
+    compact.replace(/^\+86/, '+86 ')
+  ];
+  for (const candidate of variants) {
+    try {
+      const result = await app.auth().queryUserInfo({
+        platform: 'PHONE',
+        platformId: candidate
+      });
+      if (profileUid(result && result.userInfo) === uid) return true;
+    } catch (_) {
+      // Try the alternate canonical spelling before rejecting the claim.
+    }
+  }
+  return false;
+}
+
+async function rememberVerifiedCaller(doc, caller) {
+  const existingUid = cleanText(doc.auth_uid, 160);
+  if (existingUid && existingUid !== caller.uid) return false;
+
+  const updates = {
+    auth_uid: caller.uid,
+    updated_at: new Date().toISOString()
+  };
+  await db.collection(COL_IDENTITIES).doc(doc._id).update(updates);
+  return true;
+}
+
+async function resolveAuthenticatedMember(context, phoneClaim) {
+  const caller = callerIdentity(context);
+  if (!caller.uid || caller.isAnonymous) {
+    return { response: unauthorized('请先通过手机号登录。') };
+  }
+
+  // On first login, the browser repeats the number used for SMS authentication.
+  // The admin Auth API proves that number belongs to this caller UUID before it
+  // is matched against the private identity collection.
+  const phone = normalizePhone(phoneClaim);
+  let identity = await firstIdentity({ auth_uid: caller.uid });
+  if (!identity && phone) {
+    if (!(await verifyPhoneClaim(caller.uid, phone))) {
+      return { response: forbidden('无法验证当前登录账号的手机号。') };
+    }
+    identity = await firstIdentity({ phone_e164: phone });
+  }
+
+  if (!identity) {
+    return { response: forbidden('此 CloudBase 账号尚未关联实验室成员。') };
+  }
+
+  const memberId = cleanText(identity.member_id, 120);
+  if (!memberId) {
+    return { response: forbidden('成员身份记录缺少 member_id。') };
+  }
+  if (!(await rememberVerifiedCaller(identity, caller))) {
+    return { response: conflict('此成员身份已绑定到另一个 CloudBase 账号。') };
+  }
+
+  return { caller, memberId };
 }
 
 /* ---------- row -> client shape ---------- */
@@ -183,12 +309,10 @@ async function listProjects() {
   return json({ projects });
 }
 
-async function createProject(body) {
+async function createProject(body, memberId) {
   if (!body) return badRequest('Invalid JSON body.');
-  const memberId = cleanText(body.memberId, 120);
   const name = cleanText(body.name, 120);
   const startDate = cleanText(body.startDate, 10);
-  if (!memberId) return badRequest('memberId is required.');
   if (!name) return badRequest('Project name is required.');
   if (!isDate(startDate)) return badRequest('startDate must be YYYY-MM-DD.');
 
@@ -217,11 +341,9 @@ async function createProject(body) {
   }, 201);
 }
 
-async function endProject(body, projectId) {
+async function endProject(body, projectId, memberId) {
   if (!body) return badRequest('Invalid JSON body.');
-  const memberId = cleanText(body.memberId, 120);
   const endDate = cleanText(body.endDate, 10);
-  if (!memberId) return badRequest('memberId is required.');
   if (!isDate(endDate)) return badRequest('endDate must be YYYY-MM-DD.');
   if (!(await isMember(projectId, memberId))) return forbidden();
 
@@ -233,11 +355,9 @@ async function endProject(body, projectId) {
   return json({ ok: true, status: ENDED_STATUS, endDate });
 }
 
-async function setProjectStatus(body, projectId) {
+async function setProjectStatus(body, projectId, memberId) {
   if (!body) return badRequest('Invalid JSON body.');
-  const memberId = cleanText(body.memberId, 120);
   const status = cleanText(body.status, 40);
-  if (!memberId) return badRequest('memberId is required.');
   if (STATUSES.indexOf(status) === -1) return badRequest('Unknown status.');
   if (!(await isMember(projectId, memberId))) return forbidden();
 
@@ -252,11 +372,9 @@ async function setProjectStatus(body, projectId) {
   return json({ ok: true, status, endDate });
 }
 
-async function renameProject(body, projectId) {
+async function renameProject(body, projectId, memberId) {
   if (!body) return badRequest('Invalid JSON body.');
-  const memberId = cleanText(body.memberId, 120);
   const name = cleanText(body.name, 120);
-  if (!memberId) return badRequest('memberId is required.');
   if (!name) return badRequest('Project name is required.');
   if (!(await isMember(projectId, memberId))) return forbidden();
 
@@ -268,9 +386,7 @@ async function renameProject(body, projectId) {
   return json({ ok: true, name });
 }
 
-async function deleteProject(body, projectId) {
-  const memberId = cleanText(body && body.memberId, 120);
-  if (!memberId) return badRequest('memberId is required.');
+async function deleteProject(projectId, memberId) {
   if (!(await isMember(projectId, memberId))) return forbidden();
 
   const doc = await getProjectDoc(projectId);
@@ -283,11 +399,9 @@ async function deleteProject(body, projectId) {
   return json({ ok: true });
 }
 
-async function addProjectMember(body, projectId) {
+async function addProjectMember(body, projectId, memberId) {
   if (!body) return badRequest('Invalid JSON body.');
-  const memberId = cleanText(body.memberId, 120);
   const inviteId = cleanText(body.inviteId, 120);
-  if (!memberId) return badRequest('memberId is required.');
   if (!inviteId) return badRequest('inviteId is required.');
   if (!(await isMember(projectId, memberId))) return forbidden();
 
@@ -298,9 +412,7 @@ async function addProjectMember(body, projectId) {
   return json({ ok: true, memberId: inviteId });
 }
 
-async function removeProjectMember(body, projectId, targetId) {
-  const memberId = cleanText(body && body.memberId, 120);
-  if (!memberId) return badRequest('memberId is required.');
+async function removeProjectMember(projectId, targetId, memberId) {
   if (!(await isMember(projectId, memberId))) return forbidden();
   if (targetId === leaderId()) {
     return badRequest('The lab leader cannot be removed from a project.');
@@ -311,14 +423,12 @@ async function removeProjectMember(body, projectId, targetId) {
   return json({ ok: true });
 }
 
-async function createProgressEntry(body) {
+async function createProgressEntry(body, memberId) {
   if (!body) return badRequest('Invalid JSON body.');
-  const memberId = cleanText(body.memberId, 120);
   const projectId = cleanText(body.projectId, 160);
   const startDate = cleanText(body.startDate, 10);
   const endDate = cleanText(body.endDate, 10);
   const note = cleanText(body.note, 2000);
-  if (!memberId) return badRequest('memberId is required.');
   if (!projectId) return badRequest('projectId is required.');
   if (!isDate(startDate) || !isDate(endDate)) return badRequest('Dates must be YYYY-MM-DD.');
   if (startDate > endDate) return badRequest('startDate must be before endDate.');
@@ -341,13 +451,11 @@ async function createProgressEntry(body) {
   return json({ entry: { id, projectId, authorId: memberId, startDate, endDate, note } }, 201);
 }
 
-async function updateProgressEntry(body, entryId) {
+async function updateProgressEntry(body, entryId, memberId) {
   if (!body) return badRequest('Invalid JSON body.');
-  const memberId = cleanText(body.memberId, 120);
   const startDate = cleanText(body.startDate, 10);
   const endDate = cleanText(body.endDate, 10);
   const note = cleanText(body.note, 2000);
-  if (!memberId) return badRequest('memberId is required.');
   if (!isDate(startDate) || !isDate(endDate)) return badRequest('Dates must be YYYY-MM-DD.');
   if (startDate > endDate) return badRequest('startDate must be before endDate.');
   if (!note) return badRequest('note is required.');
@@ -370,10 +478,7 @@ async function updateProgressEntry(body, entryId) {
   });
 }
 
-async function deleteProgressEntry(body, entryId) {
-  const memberId = cleanText(body && body.memberId, 120);
-  if (!memberId) return badRequest('memberId is required.');
-
+async function deleteProgressEntry(entryId, memberId) {
   const res = await db.collection(COL_ENTRIES).where({ id: entryId }).limit(1).get();
   const entry = res.data && res.data[0];
   if (!entry) return notFound('Progress entry not found.');
@@ -408,72 +513,96 @@ function requestMethod(event) {
   return String(m).toUpperCase();
 }
 
-async function route(event) {
+async function route(event, context) {
   const path = requestPath(event);
   const method = requestMethod(event);
   const body = (method === 'GET' || method === 'OPTIONS') ? null : parseBody(event);
 
   if (method === 'OPTIONS') return { statusCode: 204, headers: JSON_HEADERS, body: '' };
 
+  if (path === '/api/progress/auth/me') {
+    if (method !== 'GET' && method !== 'POST') return methodNotAllowed();
+    const identity = await resolveAuthenticatedMember(context, body && body.phone);
+    if (identity.response) return identity.response;
+    return json({
+      memberId: identity.memberId,
+      loginType: identity.caller.loginType || ''
+    });
+  }
+
+  const identity = await resolveAuthenticatedMember(context, '');
+  if (identity.response) return identity.response;
+  const memberId = identity.memberId;
+
   if (path === '/api/progress' || path === '/api/progress/projects') {
     if (method === 'GET') return listProjects();
-    if (method === 'POST') return createProject(body);
+    if (method === 'POST') return createProject(body, memberId);
     return methodNotAllowed();
   }
 
   if (path === '/api/progress/entries') {
-    if (method === 'POST') return createProgressEntry(body);
+    if (method === 'POST') return createProgressEntry(body, memberId);
     return methodNotAllowed();
   }
 
   const entryMatch = path.match(/^\/api\/progress\/entries\/([^/]+)$/);
   if (entryMatch) {
-    if (method === 'PATCH') return updateProgressEntry(body, decodeURIComponent(entryMatch[1]));
-    if (method === 'DELETE') return deleteProgressEntry(body, decodeURIComponent(entryMatch[1]));
+    if (method === 'PATCH') {
+      return updateProgressEntry(body, decodeURIComponent(entryMatch[1]), memberId);
+    }
+    if (method === 'DELETE') {
+      return deleteProgressEntry(decodeURIComponent(entryMatch[1]), memberId);
+    }
     return methodNotAllowed();
   }
 
   const nameMatch = path.match(/^\/api\/progress\/projects\/([^/]+)\/name$/);
   if (nameMatch) {
-    if (method === 'PATCH') return renameProject(body, decodeURIComponent(nameMatch[1]));
+    if (method === 'PATCH') {
+      return renameProject(body, decodeURIComponent(nameMatch[1]), memberId);
+    }
     return methodNotAllowed();
   }
 
   const statusMatch = path.match(/^\/api\/progress\/projects\/([^/]+)\/status$/);
   if (statusMatch) {
-    if (method === 'PATCH') return setProjectStatus(body, decodeURIComponent(statusMatch[1]));
+    if (method === 'PATCH') {
+      return setProjectStatus(body, decodeURIComponent(statusMatch[1]), memberId);
+    }
     return methodNotAllowed();
   }
 
   const memberMatch = path.match(/^\/api\/progress\/projects\/([^/]+)\/members\/([^/]+)$/);
   if (memberMatch) {
     if (method === 'DELETE') {
-      return removeProjectMember(body,
-        decodeURIComponent(memberMatch[1]), decodeURIComponent(memberMatch[2]));
+      return removeProjectMember(
+        decodeURIComponent(memberMatch[1]), decodeURIComponent(memberMatch[2]), memberId);
     }
     return methodNotAllowed();
   }
 
   const membersMatch = path.match(/^\/api\/progress\/projects\/([^/]+)\/members$/);
   if (membersMatch) {
-    if (method === 'POST') return addProjectMember(body, decodeURIComponent(membersMatch[1]));
+    if (method === 'POST') {
+      return addProjectMember(body, decodeURIComponent(membersMatch[1]), memberId);
+    }
     return methodNotAllowed();
   }
 
   const projectMatch = path.match(/^\/api\/progress\/projects\/([^/]+)$/);
   if (projectMatch) {
     const id = decodeURIComponent(projectMatch[1]);
-    if (method === 'PATCH') return endProject(body, id);
-    if (method === 'DELETE') return deleteProject(body, id);
+    if (method === 'PATCH') return endProject(body, id, memberId);
+    if (method === 'DELETE') return deleteProject(id, memberId);
     return methodNotAllowed();
   }
 
   return notFound();
 }
 
-exports.main = async function (event) {
+exports.main = async function (event, context) {
   try {
-    return await route(event);
+    return await route(event, context);
   } catch (error) {
     return reply(500, {
       error: 'server_error',
