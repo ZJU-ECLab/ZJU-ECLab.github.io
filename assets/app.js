@@ -1,17 +1,16 @@
 /* ECLab News — client-side SPA
- * Renders the journal site from JSON data:
- *   data/manifest.json          → landing page (issues grouped by year)
- *   data/issues/<label>.json    → one weekly issue (index + details + filtering)
+ * Renders the journal site from CloudBase JSON data:
+ *   journal/v1/manifest.json          → landing page (issues grouped by year)
+ *   journal/v1/issues/<label>.json    → one weekly issue (index + details + filtering)
  * Grouping logic mirrors ECLab-News/src/render.py; the interaction model
  * (tabs, filtering, scroll-spy, sliding indicator) mirrors pandoc/template.html.
  */
 (function () {
   'use strict';
 
-  // Journal data lives under /journal/data/, pushed there by the external
-  // ECLab-News pipeline. Absolute path so it resolves correctly whether the
-  // journal shell is served from /journal/ or previewed from the repo root.
-  var DATA_BASE = '/journal/data/';
+  // Journal data is published by the external ECLab-News pipeline to
+  // CloudBase object storage. Keep this absolute so hash routes do not affect it.
+  var DATA_BASE = 'https://6563-eclab-progress-d9gm1x6ro276d951a-1341393791.tcb.qcloud.la/journal/v1/';
   var REC_KEY = '⭐ 推荐阅读';
   var DETAILS_KEY = '文献详情';
   // Homepage accent: extracted from the ECLab logo's dominant warm hue (~22°),

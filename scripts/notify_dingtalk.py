@@ -21,7 +21,7 @@ def build_message(issue_path: str) -> tuple[str, str]:
     count = d.get("count", len(d.get("articles", []) or []))
     arts = d.get("articles", []) or []
     rec = sum(1 for a in arts if a.get("recommended"))
-    url = f"https://emotion.is-cool.dev/#/issue/{label}"
+    url = f"https://emotion.is-cool.dev/journal/#/issue/{label}"
 
     lines = [f"### 📰 {title} 已发布", "", f"**{title}** 已发布到在线版《东西情报》。"]
     lines.append("")

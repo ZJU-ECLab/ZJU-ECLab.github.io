@@ -13,9 +13,9 @@ Content model (hybrid):
 Output:
   dist/                   the static site (HTML + copied assets)
 
-The weekly-journal SPA (journal/index.html + assets/app.js + data/) is copied
-through unchanged by copy_journal(); its issue data is produced by the external
-ECLab-News pipeline.
+The weekly-journal SPA shell (journal/index.html + assets/app.js) is copied
+through unchanged by copy_journal(); its issue data is published to CloudBase
+object storage by the external ECLab-News pipeline.
 
 Usage:
   python3 build.py            # build into dist/
@@ -249,21 +249,15 @@ def copy_static() -> None:
 def copy_journal() -> None:
     """Copy the self-contained weekly-journal SPA to /journal/.
 
-    The journal is a standalone SPA: its shell (journal/index.html), its data
-    (journal/data/), and its scripts/styles (assets/app.js + assets/style.css,
-    copied with the rest of assets/). Its issue data under journal/data/ is
-    pushed there by the external ECLab-News pipeline, which we leave untouched.
-    app.js fetches from the absolute /journal/data/.
+    The journal is a standalone SPA: its shell is journal/index.html and its
+    scripts/styles (assets/app.js + assets/style.css) are copied with the rest
+    of assets/. app.js fetches issue data directly from CloudBase storage.
     """
     journal_src = ROOT / "journal"
     if not journal_src.exists():
         return
     shutil.copytree(journal_src, DIST / "journal")
     print("  built  /journal/  (weekly journal SPA)")
-    data_dir = DIST / "journal" / "data"
-    if data_dir.exists():
-        n = sum(1 for _ in data_dir.rglob("*.json"))
-        print(f"  copied /journal/data/  ({n} json files)")
 
 
 def write_page(rel_url: str, html: str) -> None:

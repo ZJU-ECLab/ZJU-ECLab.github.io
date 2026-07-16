@@ -71,7 +71,7 @@ assets/                  ← EDIT THIS for design / behavior changes
 
 journal/                 Weekly journal SPA (served at /journal/)
   index.html             SPA shell
-  data/                  Issue JSON (pushed by external ECLab-News pipeline)
+                         Issue JSON is served from CloudBase object storage
 
 .github/workflows/
   deploy.yml             Build with Nix + publish dist/ to Pages on push to main
@@ -94,7 +94,7 @@ dist/                    Generated output — never edit by hand, never commit
 5. `build_data_page(...)` ×4 — render People, Alumni, Publications, Courses.
 6. `build_news(env)` — render the news list + each post.
 7. `build_404(env)` — render `404.html`.
-8. `copy_journal()` — copy the entire `journal/` directory (SPA shell + data) to `dist/journal/`.
+8. `copy_journal()` — copy the `journal/` SPA shell to `dist/journal/`; issue JSON is read from CloudBase.
 9. `validate_assets()` — fail loudly on broken `/assets/...` references.
 
 ### Content model
