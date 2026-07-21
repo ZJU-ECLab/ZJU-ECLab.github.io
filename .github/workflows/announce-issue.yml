@@ -39,21 +39,27 @@ jobs:
           ISSUE_FILE="$RUNNER_TEMP/$LABEL.json"
           MANIFEST_FILE="$RUNNER_TEMP/manifest.json"
           APP_FILE="$RUNNER_TEMP/journal-app.js"
+          CACHE_BUSTER="${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           curl --fail --silent --show-error --retry 3 \
-            https://emotion.is-cool.dev/assets/app.js \
+            "https://emotion.is-cool.dev/assets/app.js?announce=$CACHE_BUSTER" \
             --output "$APP_FILE"
           if ! grep --fixed-strings --quiet "$JOURNAL_DATA_BASE/" "$APP_FILE"; then
             echo "::error::The production journal frontend is not using CloudBase yet."
             exit 1
           fi
-          curl --fail --silent --show-error --retry 3 \
-            "$JOURNAL_DATA_BASE/issues/$LABEL.json" \
-            --output "$ISSUE_FILE"
-          curl --fail --silent --show-error --retry 3 \
-            "$JOURNAL_DATA_BASE/manifest.json" \
-            --output "$MANIFEST_FILE"
 
-          python3 - "$ISSUE_FILE" "$MANIFEST_FILE" "$LABEL" <<'PY'
+          READY=false
+          for ATTEMPT in $(seq 1 6); do
+            CACHE_BUSTER="${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${ATTEMPT}"
+            if curl --fail --silent --show-error --retry 2 \
+                 -H "Cache-Control: no-cache" \
+                 "$JOURNAL_DATA_BASE/issues/$LABEL.json?announce=$CACHE_BUSTER" \
+                 --output "$ISSUE_FILE" && \
+               curl --fail --silent --show-error --retry 2 \
+                 -H "Cache-Control: no-cache" \
+                 "$JOURNAL_DATA_BASE/manifest.json?announce=$CACHE_BUSTER" \
+                 --output "$MANIFEST_FILE"; then
+              if python3 - "$ISSUE_FILE" "$MANIFEST_FILE" "$LABEL" <<'PY'
           import json
           import sys
 
@@ -67,8 +73,20 @@ jobs:
               raise SystemExit("Downloaded issue label does not match the dispatch payload")
           labels = {entry.get("label") for entry in manifest.get("issues", [])}
           if expected_label not in labels:
-              raise SystemExit("Published manifest does not contain the dispatched issue")
+              raise SystemExit(1)
           PY
+              then
+                READY=true
+                break
+              fi
+            fi
+            echo "Published issue is not visible yet (attempt $ATTEMPT/6)."
+            sleep 10
+          done
+          if [[ "$READY" != "true" ]]; then
+            echo "::error::Published manifest does not contain the dispatched issue."
+            exit 1
+          fi
 
           echo "file=$ISSUE_FILE" >> "$GITHUB_OUTPUT"
 
