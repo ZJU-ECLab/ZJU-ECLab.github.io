@@ -169,9 +169,11 @@ it exclusively from verified CloudBase identity.
 `created_at`, `updated_at`.
 
 **`projects`**: `id`, `name`, `status`, `start_date`, `end_date`, `created_by`,
-`created_at`, `updated_at`.
+`created_at`, `updated_at`. `created_by` is immutable audit metadata; it does
+not confer membership or access after the creator leaves a project.
 
 **`project_members`**: `project_id`, `member_id`, `added_by`, `created_at`.
+These rows are authoritative for project membership and editing access.
 
 **`progress_entries`**: `id`, `project_id`, `author_id`, `start_date`,
 `end_date`, `note`, `created_at`, optional `updated_at`.

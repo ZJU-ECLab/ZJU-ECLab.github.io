@@ -5,7 +5,7 @@
   var root = document.querySelector('[data-progress-app]');
   if (!root) return;
 
-  var STORAGE_KEY = 'eclab-progress-v2';
+  var STORAGE_KEY = 'eclab-progress-v3';
   var envId = root.getAttribute('data-cloudbase-env') || '';
   var region = root.getAttribute('data-cloudbase-region') || 'ap-shanghai';
   var functionName = root.getAttribute('data-cloudbase-function') || 'progress-api';
@@ -378,11 +378,9 @@
     if (!Array.isArray(list)) return [];
     return list.map(function (project) {
       var membersArr = Array.isArray(project.members) ? project.members.slice() : [];
-      // Ensure the leader is always represented locally.
+      // project.members comes from project_members. createdBy is audit metadata
+      // and must not restore access after the creator leaves the project.
       if (leaderId && membersArr.indexOf(leaderId) === -1) membersArr.push(leaderId);
-      if (project.createdBy && membersArr.indexOf(project.createdBy) === -1) {
-        membersArr.push(project.createdBy);
-      }
       return {
         id: project.id,
         name: project.name,
