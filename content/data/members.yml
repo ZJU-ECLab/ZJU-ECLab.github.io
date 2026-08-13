@@ -15,16 +15,17 @@
 #            this member to every project and the UI cannot remove them.
 #
 # The build derives `label` as "name_zh / name_en". The lab mascot is excluded.
-
 leader_id: xia-fang
-
 members:
   - id: xia-fang
     name_zh: 方霞
     name_en: Xia Fang
     group: Principal Investigator
     leader: true
-
+  - id: roujia-feng
+    name_zh: 冯柔佳
+    name_en: Roujia Feng
+    group: Postdoctoral Researcher
   - id: zhihe-pan
     name_zh: 潘之禾
     name_en: Zhihe Pan
@@ -45,7 +46,10 @@ members:
     name_zh: 庄湧
     name_en: Yong Zhuang
     group: PhD Candidates
-
+  - id: shuoan-li
+    name_zh: 李烁安
+    name_en: Shuoan Li
+    group: PhD Candidates
   - id: jiawen-zhu
     name_zh: 朱嘉雯
     name_en: Jiawen Zhu
@@ -70,11 +74,6 @@ members:
     name_zh: 彭欣
     name_en: Xin Peng
     group: Postgraduate Students
-
-  - id: shuoan-li
-    name_zh: 李烁安
-    name_en: Shuoan Li
-    group: Undergraduate Students
   - id: feiyu-zhang
     name_zh: 张斐煜
     name_en: Feiyu Zhang
@@ -110,4 +109,8 @@ members:
   - id: yilin-long
     name_zh: 龙奕霖
     name_en: Yilin Long
+    group: Undergraduate Students
+  - id: sihan-wang
+    name_zh: 王思涵
+    name_en: Sihan Wang
     group: Undergraduate Students
