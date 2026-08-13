@@ -5,7 +5,7 @@ lab pages (Home, News, People, Publications, Resources, Courses, Join Us,
 Contact) and the online edition of the weekly literature digest _《东西情报》_
 (ECLab News).
 
-Live at <https://emotion.is-cool.dev>.
+Live at <https://zju-eclab.github.io>.
 
 ## Architecture
 

@@ -40,8 +40,8 @@ jobs:
           MANIFEST_FILE="$RUNNER_TEMP/manifest.json"
           APP_FILE="$RUNNER_TEMP/journal-app.js"
           CACHE_BUSTER="${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
-          curl --fail --silent --show-error --retry 3 \
-            "https://emotion.is-cool.dev/assets/app.js?announce=$CACHE_BUSTER" \
+          curl --fail --silent --show-error --location --retry 3 \
+            "https://zju-eclab.github.io/assets/app.js?announce=$CACHE_BUSTER" \
             --output "$APP_FILE"
           if ! grep --fixed-strings --quiet "$JOURNAL_DATA_BASE/" "$APP_FILE"; then
             echo "::error::The production journal frontend is not using CloudBase yet."
@@ -164,7 +164,7 @@ jobs:
           if recommended:
               lines.append(f"- 推荐文献：{recommended} 篇")
           lines.extend([
-              f"- 在线阅读：https://emotion.is-cool.dev/journal/#/issue/{label}",
+              f"- 在线阅读：https://zju-eclab.github.io/journal/#/issue/{label}",
               "",
               "欢迎关注本仓库的 Discussions 以接收后续每期更新通知。",
           ])

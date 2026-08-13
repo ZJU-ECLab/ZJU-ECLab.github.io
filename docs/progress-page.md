@@ -65,12 +65,13 @@ use the CloudBase SMS quota.
 ### 2. Confirm Web safe domains
 
 Console → **环境配置 → 安全来源 / 安全域名** must include every origin that will
-load `/progress/`, such as the production custom domain and
-`zju-eclab.github.io`. Add `localhost:8000` when testing locally. Safe-domain
+load `/progress/`, including the production domain `zju-eclab.github.io`. Add
+`localhost:8000` when testing locally. Safe-domain
 changes can take about 10 minutes to apply.
 
-Current environment audit (2026-07-16): `emotion.is-cool.dev` and
-`zju-eclab.github.io` are already present. Add localhost only if needed.
+Current environment audit (2026-07-16): `zju-eclab.github.io` is already
+present and is the only required production origin. Add localhost only if
+needed.
 
 ### 3. Configure the private identity collection
 
