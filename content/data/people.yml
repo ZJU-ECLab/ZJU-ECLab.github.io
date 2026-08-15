@@ -144,6 +144,19 @@ groups:
         photo: /assets/img/people/yilin-long.jpg
         bio: >-
           I am Long Yilin, a 2024 undergraduate student at ECLAB. I am very interested in research on cross-culture and emotions, and I hope to learn from everyone at ECLAB. I like ball games, including table tennis and badminton, and I usually go jogging in my daily life. Besides, I love pets very much, especially dogs.
+      - name_en: Jingyi Li
+        name_zh: 李婧仪
+        role: Undergraduate, 2024
+        photo: /assets/img/people/jingyi-li.jpg
+        bio: >-
+          I am Jingyi Li, an undergraduate student majoring in Mathematics&Finance. I love literature, music, films, musicals, figure skating, philosophy and spirituality. I am planning to apply for a master program in psychology in the US to follow the instruction of my soul. I am eager to learn by doing in ECLAB as it is my beginning of the psychology journey.
+      - name_en: Sihan Wang
+        name_zh: 王思涵
+        role: Undergraduate, 2024
+        email: 3240102505@zju.edu.cn
+        photo: /assets/img/people/sihan-wang.jpg
+        bio: >-
+          Hi there～I am Sihan Wang, an undergraduate student majoring at Psychology. My academic interest lies particularly in how people interact with each other in their social lives. In life, I have a passion for classical music and playing the piano. As for sports, I enjoy playing badminton. Also, I like watching table tennis matches.
   - id: mascot
     label: Lab Mascot
     members:
