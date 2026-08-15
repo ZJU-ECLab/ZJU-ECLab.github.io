@@ -32,7 +32,7 @@ def build_message(issue_path: str) -> tuple[str, str]:
         lines.append(f"- 推荐文献：{rec} 篇")
     lines.append(f"- 在线阅读（建议在浏览器中打开）：{url}")
     lines.append(
-        "- 每周二请更新项目进度（建议在浏览器中打开）："
+        "- 不要忘了更新项目进度～（建议在浏览器中打开）："
         "https://zju-eclab.github.io/progress/"
     )
     return title, "\n".join(lines)
