@@ -14,7 +14,6 @@ on:
 
 permissions:
   contents: read
-  discussions: write
 
 env:
   JOURNAL_DATA_BASE: https://6563-eclab-progress-d9gm1x6ro276d951a-1341393791.tcb.qcloud.la/journal/v1
@@ -89,105 +88,6 @@ jobs:
           fi
 
           echo "file=$ISSUE_FILE" >> "$GITHUB_OUTPUT"
-
-      - name: Resolve discussion category
-        id: category
-        env:
-          GH_TOKEN: ${{ github.token }}
-          OWNER: ${{ github.repository_owner }}
-          REPO: ${{ github.event.repository.name }}
-        run: |
-          set -euo pipefail
-          # GraphQL variables must remain literal inside the query string.
-          # shellcheck disable=SC2016
-          RESP=$(gh api graphql -f query='
-            query($owner:String!,$name:String!){
-              repository(owner:$owner,name:$name){
-                id
-                discussionCategories(first:50){ nodes { id name } }
-              }
-            }' -F owner="$OWNER" -F name="$REPO")
-          REPO_ID=$(echo "$RESP" | jq -r '.data.repository.id')
-          CAT_ID=$(echo "$RESP" | jq -r '
-            (.data.repository.discussionCategories.nodes
-              | map(select(.name == "Announcements")) | .[0].id) // empty')
-          if [[ -z "$CAT_ID" || "$CAT_ID" == "null" ]]; then
-            CAT_ID=$(echo "$RESP" | jq -r '.data.repository.discussionCategories.nodes[0].id // empty')
-          fi
-          if [[ -z "$REPO_ID" || "$REPO_ID" == "null" ]]; then
-            echo "::error::Could not resolve repository id. Are Discussions enabled?"
-            exit 1
-          fi
-          if [[ -z "$CAT_ID" ]]; then
-            echo "::error::No discussion categories found."
-            exit 1
-          fi
-          echo "repo_id=$REPO_ID" >> "$GITHUB_OUTPUT"
-          echo "category_id=$CAT_ID" >> "$GITHUB_OUTPUT"
-
-      - name: Publish discussion
-        env:
-          GH_TOKEN: ${{ github.token }}
-          REPO_ID: ${{ steps.category.outputs.repo_id }}
-          CATEGORY_ID: ${{ steps.category.outputs.category_id }}
-          ISSUE_FILE: ${{ steps.issue.outputs.file }}
-        run: |
-          set -euo pipefail
-          TITLE=$(python3 - "$ISSUE_FILE" <<'PY'
-          import json
-          import sys
-
-          with open(sys.argv[1], encoding="utf-8") as f:
-              issue = json.load(f)
-          title = issue.get("title") or issue.get("label") or "新一期已发布"
-          print(f"{title} 已发布")
-          PY
-          )
-
-          BODY=$(python3 - "$ISSUE_FILE" <<'PY'
-          import json
-          import sys
-
-          with open(sys.argv[1], encoding="utf-8") as f:
-              issue = json.load(f)
-          label = issue.get("label", "")
-          title = issue.get("title") or label
-          start = issue.get("start", "")
-          end = issue.get("end", "")
-          articles = issue.get("articles", []) or []
-          count = issue.get("count", len(articles))
-          recommended = sum(1 for article in articles if article.get("recommended"))
-          lines = [f"**{title}** 已发布到在线版《东西情报》。", ""]
-          if start and end:
-              lines.append(f"- 时间范围：{start} – {end}")
-          lines.append(f"- 收录文献：{count} 篇")
-          if recommended:
-              lines.append(f"- 推荐文献：{recommended} 篇")
-          lines.extend([
-              f"- 在线阅读：https://zju-eclab.github.io/journal/#/issue/{label}",
-              "",
-              "欢迎关注本仓库的 Discussions 以接收后续每期更新通知。",
-          ])
-          print("\n".join(lines))
-          PY
-          )
-
-          # GraphQL variables must remain literal inside the query string.
-          # shellcheck disable=SC2016
-          gh api graphql -f query='
-            mutation($repoId:ID!,$categoryId:ID!,$title:String!,$body:String!){
-              createDiscussion(input:{
-                repositoryId:$repoId,
-                categoryId:$categoryId,
-                title:$title,
-                body:$body
-              }){ discussion { url } }
-            }' \
-            -F repoId="$REPO_ID" \
-            -F categoryId="$CATEGORY_ID" \
-            -F title="$TITLE" \
-            -F body="$BODY" \
-            --jq '.data.createDiscussion.discussion.url'
 
       - name: Notify DingTalk group
         env:

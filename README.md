@@ -95,5 +95,5 @@ unavailable. See `docs/progress-page.md` for Auth setup and the data model.
 repo's **Settings → Pages → Source** must be set to **GitHub Actions**.
 
 `.github/workflows/announce-issue.yml` receives a dispatch from the journal
-pipeline after the new issue is publicly readable, then posts a Discussion and
-a DingTalk notification.
+pipeline after the new issue is publicly readable, then posts a DingTalk
+notification.
