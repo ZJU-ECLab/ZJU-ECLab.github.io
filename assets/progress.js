@@ -28,6 +28,32 @@
   ];
   var DEFAULT_STATUS = STATUSES[0];
   var ENDED_STATUS = STATUSES[STATUSES.length - 1];
+  var STATUS_ICONS = {
+    '文献调研中': 'reading_article',
+    '实验设计中': 'experiment_design',
+    '数据收集中': 'collect_data',
+    '数据分析中': 'analysis',
+    '文章写作中': 'writing',
+    '投稿中': 'submit',
+    '已结束': 'done'
+  };
+  var CATPPUCCIN_MEMBER_COLORS = [
+    '#8839ef', // Latte mauve
+    '#40a02b', // Latte green
+    '#fe640b', // Latte peach
+    '#1e66f5', // Latte blue
+    '#ea76cb', // Latte pink
+    '#179299', // Latte teal
+    '#d20f39', // Latte red
+    '#04a5e5', // Latte sky
+    '#df8e1d', // Latte yellow
+    '#7287fd', // Latte lavender
+    '#e64553', // Latte maroon
+    '#209fb5', // Latte sapphire
+    '#dd7878', // Latte flamingo
+    '#dc8a78'  // Latte rosewater
+  ];
+  var CATPPUCCIN_MOCHA_BASE = '#1e1e2e';
 
   // Below this span (in days) a bar is too narrow to fit both the author name
   // chip and the note, so the chip is dropped and only the note is shown.
@@ -35,12 +61,11 @@
 
   var gate = root.querySelector('[data-progress-gate]');
   var workspace = root.querySelector('[data-workspace]');
-  var storageStatus = root.querySelector('[data-storage-status]');
   var phoneLoginForm = root.querySelector('[data-phone-login]');
   var sendCodeBtn = root.querySelector('[data-send-code]');
   var loginStatus = root.querySelector('[data-login-status]');
   var memberSelect = root.querySelector('[data-member-select]');
-  var viewAllBtn = root.querySelector('[data-view-all]');
+  var viewMineBtn = root.querySelector('[data-view-mine]');
   var signOutBtn = root.querySelector('[data-sign-out]');
   var currentUserTitle = root.querySelector('[data-current-user]');
   var editorName = root.querySelector('[data-editor-name]');
@@ -52,8 +77,17 @@
   var board = root.querySelector('[data-progress-board]');
   var emptyState = root.querySelector('[data-empty-state]');
   var projectCount = root.querySelector('[data-project-count]');
+  var projectLayout = root.querySelector('[data-progress-layout]');
+  var projectRail = root.querySelector('[data-project-rail]');
+  var projectNav = root.querySelector('[data-project-nav]');
+  var projectNavToggle = root.querySelector('[data-project-nav-toggle]');
+  var projectNavClose = root.querySelector('[data-project-nav-close]');
+  var projectNavScrim = root.querySelector('[data-project-nav-scrim]');
   var toast = root.querySelector('[data-progress-toast]');
   var membersJson = root.querySelector('[data-progress-members]');
+  var projectNavObserver = null;
+  var projectNavVisibility = {};
+  var projectRailPositionFrame = null;
 
   var members = [];
   try {
@@ -66,9 +100,9 @@
     activeMemberId: '',
     selectedMemberId: 'all',
     projects: [],
-    sharedStorage: false,
     toastTimer: null,
     boardDayCount: 1,
+    activeProjectId: '',
     openPanels: {} // projectId -> 'progress' | 'plan' | 'members' | null
   };
 
@@ -94,27 +128,23 @@
     return member ? (member.label || member.name_zh || member.name_en) : String(id);
   }
 
-  // Stable per-member hue so each person's progress bars share one color.
-  // Derived from the member's index in the roster (falls back to a hash).
-  function memberHue(id) {
+  function memberColor(id) {
     var key = String(id);
     var index = -1;
     for (var i = 0; i < members.length; i++) {
       if (String(members[i].id) === key) { index = i; break; }
     }
-    if (index === -1) {
-      var hash = 0;
+    if (index < 0) {
+      index = 0;
       for (var j = 0; j < key.length; j++) {
-        hash = (hash * 31 + key.charCodeAt(j)) % 360;
+        index = (index * 31 + key.charCodeAt(j)) % (CATPPUCCIN_MEMBER_COLORS.length * 2);
       }
-      return hash;
     }
-    // Golden-angle spacing spreads adjacent members far apart on the wheel.
-    return Math.round((index * 137.508) % 360);
-  }
-
-  function memberColor(id) {
-    return 'hsl(' + memberHue(id) + ' 62% 45%)';
+    var color = CATPPUCCIN_MEMBER_COLORS[index % CATPPUCCIN_MEMBER_COLORS.length];
+    if (index >= CATPPUCCIN_MEMBER_COLORS.length) {
+      return 'color-mix(in srgb, ' + color + ' 72%, ' + CATPPUCCIN_MOCHA_BASE + ')';
+    }
+    return color;
   }
 
   // First glyph for the identity avatar: a CJK char, or the first Latin letter.
@@ -143,13 +173,6 @@
         selectedMemberId: state.selectedMemberId
       }));
     } catch (_) {}
-  }
-
-  function setStorageStatus(message, shared) {
-    state.sharedStorage = !!shared;
-    if (!storageStatus) return;
-    storageStatus.textContent = message;
-    storageStatus.classList.toggle('progress-status-pill--ok', !!shared);
   }
 
   /* ---------- api ---------- */
@@ -335,6 +358,7 @@
       state.activeMemberId = '';
       state.selectedMemberId = 'all';
       state.openPanels = {};
+      setProjectNavOpen(false, false);
       showWorkspace(false);
       verificationInfo = null;
       if (countdownTimer) {
@@ -355,14 +379,11 @@
   }
 
   function loadSharedProjects() {
-    setStorageStatus('正在连接共享存储', false);
     return api('GET', '/projects').then(function (data) {
       state.projects = normalizeProjects(data.projects);
-      setStorageStatus('共享存储已连接', true);
       saveStore();
       renderBoard();
     }).catch(function () {
-      setStorageStatus('本机缓存（只读）', false);
       state.projects = normalizeProjects(state.projects);
       showToast('暂时无法连接共享存储，当前仅显示本机缓存。', true);
       renderBoard();
@@ -370,7 +391,6 @@
   }
 
   function handleWriteError(error, fallbackMessage) {
-    setStorageStatus('共享存储连接失败', false);
     showToast((error && error.message) || fallbackMessage, true);
   }
 
@@ -531,16 +551,226 @@
     }
     if (!currentUserTitle) return;
     if (state.selectedMemberId === 'all') {
-      currentUserTitle.textContent = '全部成员的课题进展';
-      return;
+      currentUserTitle.textContent = '全部成员';
+    } else if (String(state.selectedMemberId) === String(state.activeMemberId)) {
+      currentUserTitle.textContent = '我的课题';
+    } else {
+      currentUserTitle.textContent = memberName(state.selectedMemberId) + '的课题';
     }
-    currentUserTitle.textContent = memberName(state.selectedMemberId) + '参与的课题进展';
+    if (viewMineBtn) {
+      var showingMine = String(state.selectedMemberId) === String(state.activeMemberId);
+      viewMineBtn.classList.toggle('is-selected', showingMine);
+      viewMineBtn.setAttribute('aria-pressed', showingMine ? 'true' : 'false');
+    }
   }
 
   function visibleProjects() {
     if (state.selectedMemberId === 'all') return state.projects.slice();
     return state.projects.filter(function (project) {
       return isProjectMember(project, state.selectedMemberId);
+    });
+  }
+
+  function selectMemberView(memberId, scroll) {
+    state.selectedMemberId = memberId || 'all';
+    if (memberSelect) memberSelect.value = state.selectedMemberId;
+    setProjectNavOpen(false, false);
+    saveStore();
+    updateHeading();
+    renderBoard();
+
+    if (scroll && projectLayout) {
+      projectLayout.scrollIntoView({
+        behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+        block: 'start'
+      });
+    }
+  }
+
+  function projectRowById(projectId) {
+    if (!board) return null;
+    var rows = board.querySelectorAll('[data-project-id]');
+    for (var i = 0; i < rows.length; i++) {
+      if (rows[i].getAttribute('data-project-id') === String(projectId)) return rows[i];
+    }
+    return null;
+  }
+
+  function usesProjectNavDrawer() {
+    return !!(window.matchMedia && window.matchMedia('(max-width: 1040px)').matches);
+  }
+
+  function syncFixedProjectRail() {
+    projectRailPositionFrame = null;
+    if (!projectRail || !projectLayout) return;
+    if (usesProjectNavDrawer() || projectRail.hidden) {
+      projectRail.style.removeProperty('--project-rail-left');
+      projectRail.style.removeProperty('--project-rail-top');
+      return;
+    }
+    var layoutRect = projectLayout.getBoundingClientRect();
+    if (!layoutRect.width) return;
+    var rootStyle = window.getComputedStyle(root);
+    var appbarHeight = parseFloat(rootStyle.getPropertyValue('--appbar-h')) || 68;
+    projectRail.style.setProperty('--project-rail-left', layoutRect.left + 'px');
+    projectRail.style.setProperty('--project-rail-top',
+      Math.max(appbarHeight + 16, layoutRect.top) + 'px');
+  }
+
+  function scheduleProjectRailPosition() {
+    if (projectRailPositionFrame) return;
+    if (window.requestAnimationFrame) {
+      projectRailPositionFrame = window.requestAnimationFrame(syncFixedProjectRail);
+    } else {
+      syncFixedProjectRail();
+    }
+  }
+
+  function setProjectNavOpen(open, returnFocus) {
+    open = !!open && usesProjectNavDrawer();
+    if (projectRail) projectRail.classList.toggle('is-open', open);
+    if (projectNavToggle) {
+      projectNavToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      projectNavToggle.setAttribute('aria-label', open ? '关闭课题导航' : '打开课题导航');
+    }
+    if (projectNavScrim) projectNavScrim.hidden = !open;
+    if (!open && returnFocus && projectNavToggle) {
+      try { projectNavToggle.focus({ preventScroll: true }); }
+      catch (_) { projectNavToggle.focus(); }
+    }
+  }
+
+  function keepProjectNavItemVisible(item) {
+    if (!projectNav || !item) return;
+    if (usesProjectNavDrawer() && (!projectRail || !projectRail.classList.contains('is-open'))) {
+      return;
+    }
+    var navRect = projectNav.getBoundingClientRect();
+    var itemRect = item.getBoundingClientRect();
+    var reducedMotion = window.matchMedia &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var options = { behavior: reducedMotion ? 'auto' : 'smooth' };
+
+    if (itemRect.top >= navRect.top && itemRect.bottom <= navRect.bottom) return;
+    options.top = projectNav.scrollTop + itemRect.top - navRect.top -
+      (projectNav.clientHeight - itemRect.height) / 2;
+
+    if (typeof projectNav.scrollTo === 'function') projectNav.scrollTo(options);
+    else projectNav.scrollTop = options.top;
+  }
+
+  function setActiveProjectNavigation(projectId, reveal) {
+    if (!projectNav) return;
+    var key = String(projectId || '');
+    state.activeProjectId = key;
+    var currentItem = null;
+    var items = projectNav.querySelectorAll('[data-project-nav-id]');
+    Array.prototype.forEach.call(items, function (item) {
+      var current = item.getAttribute('data-project-nav-id') === key;
+      item.classList.toggle('is-current', current);
+      if (current) {
+        item.setAttribute('aria-current', 'location');
+        currentItem = item;
+      } else {
+        item.removeAttribute('aria-current');
+      }
+    });
+    if (reveal) keepProjectNavItemVisible(currentItem);
+  }
+
+  function renderProjectNavigation(projects) {
+    var hasProjects = projects.length > 0;
+    if (projectLayout) projectLayout.classList.toggle('has-no-projects', !hasProjects);
+    if (projectRail) projectRail.hidden = !hasProjects;
+    if (projectNavToggle) projectNavToggle.hidden = !hasProjects;
+    scheduleProjectRailPosition();
+    if (!projectNav) return;
+    projectNav.innerHTML = '';
+
+    if (!hasProjects) {
+      setProjectNavOpen(false, false);
+      state.activeProjectId = '';
+      if (projectNavObserver) projectNavObserver.disconnect();
+      projectNavObserver = null;
+      return;
+    }
+
+    var activeExists = projects.some(function (project) {
+      return String(project.id) === String(state.activeProjectId);
+    });
+    if (!activeExists) state.activeProjectId = String(projects[0].id);
+
+    projects.forEach(function (project) {
+      var status = statusValue(project);
+      var item = el('button', 'progress-project-nav-item');
+      item.type = 'button';
+      item.setAttribute('data-project-nav-id', String(project.id));
+
+      var marker = svgIcon(statusIconName(status));
+      marker.classList.add('progress-project-nav-marker');
+      item.appendChild(marker);
+      var copy = el('span', 'progress-project-nav-copy');
+      copy.appendChild(el('span', 'progress-project-nav-name', project.name));
+      copy.appendChild(el('span', 'progress-project-nav-status', status));
+      item.appendChild(copy);
+
+      item.addEventListener('click', function () {
+        var row = projectRowById(project.id);
+        if (!row) return;
+        var reducedMotion = window.matchMedia &&
+          window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        setActiveProjectNavigation(project.id, false);
+        if (usesProjectNavDrawer()) {
+          row.setAttribute('tabindex', '-1');
+          try { row.focus({ preventScroll: true }); }
+          catch (_) { row.focus(); }
+          setProjectNavOpen(false, false);
+        }
+        row.scrollIntoView({
+          behavior: reducedMotion ? 'auto' : 'smooth',
+          block: 'start'
+        });
+      });
+      projectNav.appendChild(item);
+    });
+
+    setActiveProjectNavigation(state.activeProjectId, false);
+  }
+
+  function observeProjectNavigation() {
+    if (projectNavObserver) projectNavObserver.disconnect();
+    projectNavObserver = null;
+    projectNavVisibility = {};
+    if (!board || !projectNav || !window.IntersectionObserver) return;
+
+    var rows = board.querySelectorAll('[data-project-id]');
+    if (!rows.length) return;
+    projectNavObserver = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        var id = entry.target.getAttribute('data-project-id');
+        projectNavVisibility['project:' + id] = entry.isIntersecting;
+      });
+
+      var target = null;
+      var targetDistance = Infinity;
+      Array.prototype.forEach.call(rows, function (row) {
+        var id = row.getAttribute('data-project-id');
+        if (!projectNavVisibility['project:' + id]) return;
+        var distance = Math.abs(row.getBoundingClientRect().top - window.innerHeight * 0.18);
+        if (distance < targetDistance) {
+          target = id;
+          targetDistance = distance;
+        }
+      });
+      if (target !== null) setActiveProjectNavigation(target, true);
+    }, {
+      root: null,
+      rootMargin: '-18% 0px -62% 0px',
+      threshold: 0
+    });
+
+    Array.prototype.forEach.call(rows, function (row) {
+      projectNavObserver.observe(row);
     });
   }
 
@@ -594,10 +824,10 @@
     return ticks;
   }
 
-  // Weekday abbreviations, indexed by Date#getDay() (0 = Sunday).
-  var WEEKDAY_SHORT = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  // Compact Chinese weekday labels, indexed by Date#getDay() (0 = Sunday).
+  var WEEKDAY_SHORT = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
 
-  /* Short weekday name (Mon, Tue, …) for a day cell's top line. */
+  /* Short weekday label for a day cell's top line. */
   function weekdayShort(date) {
     return WEEKDAY_SHORT[date.getDay()];
   }
@@ -663,40 +893,68 @@
 
   var SVG_NS = 'http://www.w3.org/2000/svg';
 
-  // Build a small inline SVG icon. Using SVG guarantees perfect centering
-  // (no font-metric drift like text glyphs).
+  // Google Material Icons path data, kept inline so the page remains self-contained.
   function svgIcon(name) {
     var svg = document.createElementNS(SVG_NS, 'svg');
-    svg.setAttribute('viewBox', '0 0 24 24');
     svg.setAttribute('width', '14');
     svg.setAttribute('height', '14');
-    svg.setAttribute('fill', 'none');
-    svg.setAttribute('stroke', 'currentColor');
-    svg.setAttribute('stroke-width', '2.4');
-    svg.setAttribute('stroke-linecap', 'round');
+    svg.setAttribute('class', 'progress-material-icon');
+    svg.setAttribute('fill', 'currentColor');
     svg.setAttribute('aria-hidden', 'true');
-    var d = {
-      close: [['5', '5', '19', '19'], ['19', '5', '5', '19']],
-      plus: [['12', '5', '12', '19'], ['5', '12', '19', '12']]
-    }[name] || [];
-    d.forEach(function (coords) {
-      var line = document.createElementNS(SVG_NS, 'line');
-      line.setAttribute('x1', coords[0]);
-      line.setAttribute('y1', coords[1]);
-      line.setAttribute('x2', coords[2]);
-      line.setAttribute('y2', coords[3]);
-      svg.appendChild(line);
-    });
+    svg.setAttribute('focusable', 'false');
+    var icons = {
+      add: ['0 0 24 24', 'M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z'],
+      close: ['0 0 24 24', 'm18.3 5.71-1.41-1.42L12 9.17 7.11 4.29 5.7 5.71l4.89 4.88-4.89 4.89 1.41 1.41L12 12l4.89 4.89 1.41-1.41-4.89-4.89z'],
+      analysis: ['0 -960 960 960', 'M291.5-468.5Q280-457 280-440v120q0 17 11.5 28.5T320-280q17 0 28.5-11.5T360-320v-120q0-17-11.5-28.5T320-480q-17 0-28.5 11.5Zm320-200Q600-657 600-640v320q0 17 11.5 28.5T640-280q17 0 28.5-11.5T680-320v-320q0-17-11.5-28.5T640-680q-17 0-28.5 11.5Zm-160 280Q440-377 440-360v40q0 17 11.5 28.5T480-280q17 0 28.5-11.5T520-320v-40q0-17-11.5-28.5T480-400q-17 0-28.5 11.5ZM200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-560H200v560Zm308.5-292Q520-503 520-520t-11.5-28.5Q497-560 480-560t-28.5 11.5Q440-537 440-520t11.5 28.5Q463-480 480-480t28.5-12Z'],
+      arrow_drop_down: ['0 -960 960 960', 'M459-381 314-526q-3-3-4.5-6.5T308-540q0-8 5.5-14t14.5-6h304q9 0 14.5 6t5.5 14q0 2-6 14L501-381q-5 5-10 7t-11 2q-6 0-11-2t-10-7Z'],
+      calendar: ['0 -960 960 960', 'M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-40q0-17 11.5-28.5T280-880q17 0 28.5 11.5T320-840v40h320v-40q0-17 11.5-28.5T680-880q17 0 28.5 11.5T720-840v40h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Zm0-480h560v-80H200v80Z'],
+      chart: ['0 -960 960 960', 'M97-280q0-17 13-30l213-213q23-23 57-23t57 23l103 103 256-289q11-13 28.5-13t29.5 12q11 11 11.5 26.5T855-656L596-364q-23 26-57 27.5T480-360L380-460 170-250q-13 13-30 13t-30-13q-13-13-13-30Z'],
+      checklist: ['0 -960 960 960', 'm221-313 142-142q12-12 28-11.5t28 12.5q11 12 11 28t-11 28L250-228q-12 12-28 12t-28-12l-86-86q-11-11-11-28t11-28q11-11 28-11t28 11l57 57Zm0-320 142-142q12-12 28-11.5t28 12.5q11 12 11 28t-11 28L250-548q-12 12-28 12t-28-12l-86-86q-11-11-11-28t11-28q11-11 28-11t28 11l57 57Zm339 353q-17 0-28.5-11.5T520-320q0-17 11.5-28.5T560-360h280q17 0 28.5 11.5T880-320q0 17-11.5 28.5T840-280H560Zm0-320q-17 0-28.5-11.5T520-640q0-17 11.5-28.5T560-680h280q17 0 28.5 11.5T880-640q0 17-11.5 28.5T840-600H560Z'],
+      collect_data: ['0 -960 960 960', 'M200-120q-51 0-72.5-45.5T138-250l222-270v-240h-40q-17 0-28.5-11.5T280-800q0-17 11.5-28.5T320-840h320q17 0 28.5 11.5T680-800q0 17-11.5 28.5T640-760h-40v240l222 270q32 39 10.5 84.5T760-120H200Zm80-120h400L544-400H416L280-240Z'],
+      delete: ['0 -960 960 960', 'M280-120q-33 0-56.5-23.5T200-200v-520q-17 0-28.5-11.5T160-760q0-17 11.5-28.5T200-800h160q0-17 11.5-28.5T400-840h160q17 0 28.5 11.5T600-800h160q17 0 28.5 11.5T800-760q0 17-11.5 28.5T760-720v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM428.5-291.5Q440-303 440-320v-280q0-17-11.5-28.5T400-640q-17 0-28.5 11.5T360-600v280q0 17 11.5 28.5T400-280q17 0 28.5-11.5Zm160 0Q600-303 600-320v-280q0-17-11.5-28.5T560-640q-17 0-28.5 11.5T520-600v280q0 17 11.5 28.5T560-280q17 0 28.5-11.5Z'],
+      done: ['0 -960 960 960', 'M70-438q-12-12-11.5-28T71-494q12-11 28-11.5t28 11.5l142 142 14 14 14 14q12 12 11.5 28T296-268q-12 11-28 11.5T240-268L70-438Zm424 85 340-340q12-12 28-11.5t28 12.5q11 12 11.5 28T890-636L522-268q-12 12-28 12t-28-12L296-438q-11-11-11-27.5t11-28.5q12-12 28.5-12t28.5 12l141 141Zm169-282L522-494q-11 11-27.5 11T466-494q-12-12-12-28.5t12-28.5l141-141q11-11 27.5-11t28.5 11q12 12 12 28.5T663-635Z'],
+      edit: ['0 -960 960 960', 'M200-200h57l391-391-57-57-391 391v57Zm-40 80q-17 0-28.5-11.5T120-160v-97q0-16 6-30.5t17-25.5l505-504q12-11 26.5-17t30.5-6q16 0 31 6t26 18l55 56q12 11 17.5 26t5.5 30q0 16-5.5 30.5T817-647L313-143q-11 11-25.5 17t-30.5 6h-97Z'],
+      experiment_design: ['0 -960 960 960', 'm352-522 86-87-56-57-16 16q-11 11-27.5 11.5T310-650q-12-12-12-28.5t12-28.5l15-15-45-45-87 87 159 158Zm328 329 87-87-45-45-16 15q-12 12-28 12t-28-12q-12-12-12-28t12-28l15-16-57-56-86 86 158 159ZM160-120q-17 0-28.5-11.5T120-160v-113q0-8 3-15.5t9-13.5l163-163-173-173q-17-17-17-42t17-42l116-116q17-17 42-16.5t42 17.5l174 173 151-152q12-12 27-18t31-6q16 0 31 6t27 18l53 54q12 12 18 27t6 31q0 16-6 30.5T816-647L665-495l173 173q17 17 17 42t-17 42L722-122q-17 17-42 17t-42-17L465-295 302-132q-6 6-13.5 9t-15.5 3H160Zm40-80h56l392-391-57-57-391 392v56Z'],
+      members: ['0 -960 960 960', 'M40-272q0-34 17.5-62.5T104-378q62-31 126-46.5T360-440q66 0 130 15.5T616-378q29 15 46.5 43.5T680-272v32q0 33-23.5 56.5T600-160H120q-33 0-56.5-23.5T40-240v-32Zm800 112H738q11-18 16.5-38.5T760-240v-40q0-44-24.5-84.5T666-434q51 6 96 20.5t84 35.5q36 20 55 44.5t19 53.5v40q0 33-23.5 56.5T840-160ZM247-527q-47-47-47-113t47-113q47-47 113-47t113 47q47 47 47 113t-47 113q-47 47-113 47t-113-47Zm466 0q-47 47-113 47-11 0-28-2.5t-28-5.5q27-32 41.5-71t14.5-81q0-42-14.5-81T544-792q14-5 28-6.5t28-1.5q66 0 113 47t47 113q0 66-47 113ZM120-240h480v-32q0-11-5.5-20T580-306q-54-27-109-40.5T360-360q-56 0-111 13.5T140-306q-9 5-14.5 14t-5.5 20v32Zm296.5-343.5Q440-607 440-640t-23.5-56.5Q393-720 360-720t-56.5 23.5Q280-673 280-640t23.5 56.5Q327-560 360-560t56.5-23.5Z'],
+      reading_article: ['0 -960 960 960', 'M270-80q-45 0-77.5-30.5T160-186v-558q0-38 23.5-68t61.5-38l300-59q37-8 66 16t29 62v477q0 29-18 51.5T576-275l-315 63q-9 2-15 9.5t-6 16.5q0 11 9 18.5t21 7.5h450v-600q0-17 11.5-28.5T760-800q17 0 28.5 11.5T800-760v600q0 33-23.5 56.5T720-80H270Zm90-233 200-39v-478l-200 39v478Zm-80 16v-478l-15 3q-11 2-18 9.5t-7 18.5v457q5-2 10.5-3.5T261-293l19-4Z'],
+      submit: ['0 -960 960 960', 'M240-160q-33 0-56.5-23.5T160-240v-80q0-17 11.5-28.5T200-360q17 0 28.5 11.5T240-320v80h480v-80q0-17 11.5-28.5T760-360q17 0 28.5 11.5T800-320v80q0 33-23.5 56.5T720-160H240Zm200-486-75 75q-12 12-28.5 11.5T308-572q-11-12-11.5-28t11.5-28l144-144q6-6 13-8.5t15-2.5q8 0 15 2.5t13 8.5l144 144q12 12 11.5 28T652-572q-12 12-28.5 12.5T595-571l-75-75v286q0 17-11.5 28.5T480-320q-17 0-28.5-11.5T440-360v-286Z'],
+      writing: ['0 -960 960 960', 'M160 0q-33 0-56.5-23.5T80-80q0-33 23.5-56.5T160-160h640q33 0 56.5 23.5T880-80q0 33-23.5 56.5T800 0H160Zm80-320h56l312-311-29-29-28-28-311 312v56Zm-80 40v-113q0-8 3-15.5t9-13.5l436-435q11-11 25.5-17t30.5-6q16 0 31 6t27 18l55 56q12 11 17.5 26t5.5 31q0 15-5.5 29.5T777-687L342-252q-6 6-13.5 9t-15.5 3H200q-17 0-28.5-11.5T160-280Z']
+    };
+    var icon = icons[name] || icons.chart;
+    svg.setAttribute('viewBox', icon[0]);
+    var path = document.createElementNS(SVG_NS, 'path');
+    path.setAttribute('d', icon[1]);
+    svg.appendChild(path);
     return svg;
   }
 
-  function renderMemberChips(project) {
+  function renderMemberChips(project, removable) {
     var wrap = el('div', 'project-member-chips');
-    (project.members || []).forEach(function (id) {
+    if (!removable) wrap.classList.add('project-member-chips--summary');
+    var projectMembers = project.members || [];
+    var memberIds = projectMembers.filter(function (id) {
+      return String(id) !== String(leaderId);
+    });
+    if (projectMembers.some(function (id) { return String(id) === String(leaderId); })) {
+      memberIds.push(leaderId);
+    }
+    memberIds.forEach(function (id) {
       var chip = el('span', 'member-chip');
       if (String(id) === leaderId) chip.classList.add('member-chip--leader');
-      chip.appendChild(el('span', 'member-chip-name', memberName(id)));
-      if (String(id) !== leaderId && canEdit(project)) {
+      var target = el('button', 'member-chip-target');
+      target.type = 'button';
+      target.setAttribute('aria-label', '查看' + memberName(id) + '的课题');
+      var avatar = el('span', 'member-chip-avatar', avatarGlyph(memberName(id)));
+      avatar.style.setProperty('--member-color', memberColor(id));
+      avatar.setAttribute('aria-hidden', 'true');
+      target.appendChild(avatar);
+      target.appendChild(el('span', 'member-chip-name', memberName(id)));
+      target.addEventListener('click', function () { selectMemberView(id, true); });
+      if (String(id) === leaderId) {
+        target.title = '课题负责人，查看方霞的课题';
+      }
+      chip.appendChild(target);
+      if (removable && String(id) !== leaderId && canEdit(project)) {
         var remove = el('button', 'member-chip-remove');
         remove.type = 'button';
         remove.title = '移除成员';
@@ -713,7 +971,7 @@
   function renderMembersPanel(project) {
     var panel = el('div', 'project-panel project-panel--members');
     panel.appendChild(el('h4', 'project-panel-title', '课题成员'));
-    panel.appendChild(renderMemberChips(project));
+    panel.appendChild(renderMemberChips(project, true));
 
     var form = el('form', 'project-invite');
     var field = el('label', 'progress-field');
@@ -776,7 +1034,7 @@
     note.rows = 4;
     note.required = true;
     note.maxLength = 2000;
-    note.placeholder = '例如：完成实验材料修改、收集 12 名被试、下周计划……';
+    note.placeholder = '例如：收数据，编写实验程序……';
     noteField.appendChild(note);
     form.appendChild(noteField);
 
@@ -845,7 +1103,7 @@
   function renderPlanList(project) {
     var plans = sortedPlans(project);
     var editable = canEdit(project);
-    if (!plans.length && !editable) return null;
+    if (!plans.length) return null;
 
     var section = el('section', 'project-plans');
     var head = el('div', 'project-plans-head');
@@ -854,11 +1112,6 @@
     head.appendChild(el('span', 'project-plans-summary',
       completedCount + ' / ' + plans.length + ' 已完成'));
     section.appendChild(head);
-
-    if (!plans.length) {
-      section.appendChild(el('p', 'project-plans-empty', '还没有计划。'));
-      return section;
-    }
 
     var list = el('ul', 'project-plan-list');
     plans.forEach(function (plan) {
@@ -1015,6 +1268,7 @@
       bar.title = (who ? who + ' · ' : '') +
         formatDateRange(entry.startDate, entry.endDate || entry.startDate) +
         '：' + (entry.note || '');
+      bar.setAttribute('aria-label', (editable ? '查看或编辑进展：' : '查看进展：') + bar.title);
       // Narrow bars (short spans) can't fit both a name chip and the note, and
       // the chip would eat all the width — drop the chip and show only the note.
       if (who && len >= NARROW_BAR_DAYS) {
@@ -1104,16 +1358,22 @@
     return normalizeStatus(project.status, project.endDate);
   }
 
+  function statusIconName(status) {
+    return STATUS_ICONS[status] || STATUS_ICONS[DEFAULT_STATUS];
+  }
+
   /* Editable project title. For members it renders as a button that swaps to an
      inline text field on click; for others it's a plain heading. */
   function renderProjectTitle(project) {
     if (!canEdit(project)) {
       return el('h3', 'project-title', project.name);
     }
-    var btn = el('button', 'project-title project-title--editable', project.name);
+    var btn = el('button', 'project-title project-title--editable');
     btn.type = 'button';
     btn.title = '点击重命名课题';
     btn.setAttribute('aria-label', '重命名课题：' + project.name);
+    btn.appendChild(el('span', 'project-title-text', project.name));
+    btn.appendChild(svgIcon('edit'));
     btn.addEventListener('click', function () {
       beginRenameProject(project, btn);
     });
@@ -1157,9 +1417,16 @@
     if (canEdit(project)) {
       var wrap = el('span', 'project-status project-status--editable');
       wrap.setAttribute('data-ended', ended ? 'true' : 'false');
+      var statusIcon = svgIcon(statusIconName(current));
+      statusIcon.classList.add('project-status-icon');
+      wrap.appendChild(statusIcon);
+      wrap.appendChild(el('span', 'project-status-label', current));
+      var caret = svgIcon('arrow_drop_down');
+      caret.classList.add('project-status-caret');
+      wrap.appendChild(caret);
       var select = document.createElement('select');
       select.className = 'project-status-select';
-      select.setAttribute('aria-label', '课题状态');
+      select.setAttribute('aria-label', '设置「' + project.name + '」的课题状态');
       STATUSES.forEach(function (status) {
         var option = document.createElement('option');
         option.value = status;
@@ -1171,18 +1438,38 @@
         setStatus(project.id, select.value);
       });
       wrap.appendChild(select);
-      wrap.appendChild(el('span', 'project-status-caret', '▾'));
       return wrap;
     }
 
-    var pill = el('span', 'project-status', current);
+    var pill = el('span', 'project-status');
     pill.setAttribute('data-ended', ended ? 'true' : 'false');
+    var pillIcon = svgIcon(statusIconName(current));
+    pillIcon.classList.add('project-status-icon');
+    pill.appendChild(pillIcon);
+    pill.appendChild(el('span', 'project-status-label', current));
     return pill;
+  }
+
+  function renderProjectFacts(project) {
+    var facts = el('div', 'project-facts');
+    var entries = projectEntries(project);
+    var openPlans = projectPlans(project).filter(function (plan) { return !plan.completed; });
+    facts.appendChild(el('span', 'project-fact', entries.length + ' 条进展'));
+    facts.appendChild(el('span', 'project-fact', openPlans.length + ' 项待办'));
+
+    var latest = '';
+    entries.forEach(function (entry) {
+      var date = entry.endDate || entry.startDate || '';
+      if (date > latest) latest = date;
+    });
+    if (latest) facts.appendChild(el('span', 'project-fact', '最近更新 ' + formatDate(latest)));
+    return facts;
   }
 
   function renderProjectRow(project, ticks, gridStart, dayCount) {
     var row = el('article', 'project-row');
-    if (project.endDate) row.classList.add('project-row--ended');
+    row.setAttribute('data-project-id', String(project.id));
+    if (isEnded(project)) row.classList.add('project-row--ended');
 
     var head = el('div', 'project-row-head');
     var info = el('div', 'project-row-info');
@@ -1193,8 +1480,11 @@
 
     var dates = el('p', 'project-dates', '开始于 ' + formatDate(project.startDate));
     if (project.endDate) dates.textContent += ' · 结束于 ' + formatDate(project.endDate);
-    info.appendChild(dates);
-    info.appendChild(renderMemberChips(project));
+    var meta = el('div', 'project-meta');
+    meta.appendChild(dates);
+    meta.appendChild(renderProjectFacts(project));
+    info.appendChild(meta);
+    info.appendChild(renderMemberChips(project, false));
     head.appendChild(info);
 
     // Per-row action buttons.
@@ -1204,18 +1494,22 @@
     var ended = isEnded(project);
 
     if (editable && !ended) {
-      actions.appendChild(makeActionBtn('添加计划', openPanel === 'plan', function () {
-        togglePanel(project.id, 'plan');
-      }));
-      actions.appendChild(makeActionBtn('添加进展', openPanel === 'progress', function () {
+      var progressAction = makeActionBtn('添加进展', 'chart', openPanel === 'progress', function () {
         togglePanel(project.id, 'progress');
+      });
+      progressAction.classList.add('project-action--primary');
+      actions.appendChild(progressAction);
+      actions.appendChild(makeActionBtn('添加计划', 'checklist', openPanel === 'plan', function () {
+        togglePanel(project.id, 'plan');
       }));
     }
     if (editable) {
-      actions.appendChild(makeActionBtn('成员', openPanel === 'members', function () {
+      actions.appendChild(makeActionBtn('成员', 'members', openPanel === 'members', function () {
         togglePanel(project.id, 'members');
       }));
-      var del = makeActionBtn('删除', false, function () { deleteProject(project.id); });
+      var del = makeActionBtn('删除课题', 'delete', false, function () {
+        deleteProject(project.id);
+      }, true);
       del.classList.add('project-action--danger');
       actions.appendChild(del);
     }
@@ -1236,15 +1530,54 @@
       row.appendChild(planList);
     }
 
+    var timeline = el('section', 'project-timeline');
+    var timelineHead = el('div', 'project-timeline-head');
+    var timelineTitle = el('span', 'project-timeline-title');
+    timelineTitle.appendChild(el('span', 'project-timeline-title-text', '进展时间线'));
+    timelineTitle.appendChild(el('span', 'project-timeline-count',
+      projectEntries(project).length + ' 条记录'));
+    timelineHead.appendChild(timelineTitle);
+
+    var timelineTools = el('div', 'project-timeline-tools');
+    var legend = el('div', 'project-timeline-legend');
+    var todayLegend = el('span', 'project-legend-item');
+    todayLegend.appendChild(el('span', 'project-legend-today', ''));
+    todayLegend.appendChild(el('span', null, '今天'));
+    legend.appendChild(todayLegend);
+    var deadlineLegend = el('span', 'project-legend-item');
+    deadlineLegend.appendChild(el('span', 'project-legend-deadline', ''));
+    deadlineLegend.appendChild(el('span', null, '计划截止'));
+    legend.appendChild(deadlineLegend);
+    timelineTools.appendChild(legend);
+
+    var todayButton = el('button', 'project-today-button');
+    todayButton.type = 'button';
+    todayButton.appendChild(svgIcon('calendar'));
+    todayButton.appendChild(el('span', null, '回到今天'));
+    timelineTools.appendChild(todayButton);
+    timelineHead.appendChild(timelineTools);
+    timeline.appendChild(timelineHead);
+
     var scroller = el('div', 'project-calendar-scroll');
     scroller.appendChild(renderCalendar(project, ticks, gridStart, dayCount));
-    row.appendChild(scroller);
+    todayButton.addEventListener('click', function () {
+      scrollScrollerToToday(scroller, true);
+    });
+    timeline.appendChild(scroller);
+    row.appendChild(timeline);
     return row;
   }
 
-  function makeActionBtn(label, active, handler) {
-    var btn = el('button', 'project-action', label);
+  function makeActionBtn(label, iconName, active, handler, iconOnly) {
+    var btn = el('button', 'project-action');
     btn.type = 'button';
+    if (iconName) btn.appendChild(svgIcon(iconName));
+    if (!iconOnly) btn.appendChild(el('span', null, label));
+    if (iconOnly) {
+      btn.classList.add('project-action--icon');
+      btn.title = label;
+      btn.setAttribute('aria-label', label);
+    }
     if (active) btn.classList.add('is-active');
     btn.addEventListener('click', handler);
     return btn;
@@ -1295,13 +1628,14 @@
         emptyState.hidden = true;
       } else if (ownView) {
         emptyState.hidden = false;
-        emptyState.textContent = '暂时还没有课题。点击上方"新建课题"创建第一个。';
+        emptyState.textContent = '暂时还没有课题。';
       } else {
         emptyState.hidden = false;
         emptyState.textContent = memberName(state.selectedMemberId) + '还没有参与任何课题。';
       }
     }
 
+    renderProjectNavigation(projects);
     if (!projects.length) return;
 
     var range = boardWindow(projects);
@@ -1312,6 +1646,7 @@
     projects.forEach(function (project) {
       board.appendChild(renderProjectRow(project, ticks, range.start, dayCount));
     });
+    observeProjectNavigation();
     // Re-pack bars using their real rendered size (variable width + height).
     // Deferred a frame so layout/fonts have settled before measuring.
     restackBoard();
@@ -1334,18 +1669,25 @@
 
   // Fixed day width (no time scaling): the timeline keeps a constant scale and
   // scrolls horizontally. On (re)render, bring today into view by default.
+  function scrollScrollerToToday(scroller, smooth) {
+    var todayOffset = state.boardTodayOffset;
+    if (!scroller || typeof todayOffset !== 'number' || todayOffset < 0) return;
+    var calendar = scroller.querySelector('.project-calendar');
+    if (!calendar) return;
+    var dayW = parseFloat(window.getComputedStyle(calendar).getPropertyValue('--day-w')) || 44;
+    var target = Math.max(0, todayOffset * dayW - scroller.clientWidth / 2);
+    if (smooth && typeof scroller.scrollTo === 'function') {
+      scroller.scrollTo({ left: target, behavior: 'smooth' });
+    } else {
+      scroller.scrollLeft = target;
+    }
+  }
+
   function scrollToToday() {
     if (!board) return;
-    var todayOffset = state.boardTodayOffset;
-    if (typeof todayOffset !== 'number' || todayOffset < 0) return;
     var scrollers = board.querySelectorAll('.project-calendar-scroll');
     Array.prototype.forEach.call(scrollers, function (scroller) {
-      var calendar = scroller.querySelector('.project-calendar');
-      if (!calendar) return;
-      var dayW = parseFloat(window.getComputedStyle(calendar).getPropertyValue('--day-w')) || 44;
-      var todayX = todayOffset * dayW;
-      // Center today in the visible strip (clamped by the browser).
-      scroller.scrollLeft = Math.max(0, todayX - scroller.clientWidth / 2);
+      scrollScrollerToToday(scroller, false);
     });
   }
 
@@ -1386,7 +1728,7 @@
     var who = entry.authorId ? memberName(entry.authorId) : '未署名';
     var avatar = el('span', 'entry-dialog-avatar', (who || '·').slice(0, 1));
     if (entry.authorId) {
-      avatar.style.background = memberColor(entry.authorId);
+      avatar.style.setProperty('--member-color', memberColor(entry.authorId));
     }
     head.appendChild(avatar);
     var meta = el('div', 'entry-dialog-meta');
@@ -1584,7 +1926,6 @@
       name: name,
       startDate: startDate
     }).then(function (data) {
-      setStorageStatus('共享存储已连接', true);
       finish(data.project);
     }).catch(function (error) {
       handleWriteError(error, '课题创建失败。');
@@ -1617,7 +1958,6 @@
       endDate: payload.endDate,
       note: payload.note
     }).then(function (data) {
-      setStorageStatus('共享存储已连接', true);
       finish(data.entry);
     }).catch(function (error) {
       handleWriteError(error, '进展添加失败。');
@@ -1638,7 +1978,6 @@
     }
 
     api('DELETE', '/entries/' + encodeURIComponent(entryId)).then(function () {
-      setStorageStatus('共享存储已连接', true);
       finish();
     }).catch(function (error) {
       handleWriteError(error, '进展删除失败。');
@@ -1671,7 +2010,6 @@
       endDate: payload.endDate,
       note: payload.note
     }).then(function () {
-      setStorageStatus('共享存储已连接', true);
       finish();
     }).catch(function (error) {
       handleWriteError(error, '进展更新失败。');
@@ -1699,7 +2037,6 @@
       deadline: payload.deadline,
       text: payload.text
     }).then(function (data) {
-      setStorageStatus('共享存储已连接', true);
       finish(data.plan);
     }).catch(function (error) {
       handleWriteError(error, '计划添加失败。');
@@ -1728,7 +2065,6 @@
     api('PATCH', '/plans/' + encodeURIComponent(planId), {
       completed: !!completed
     }).then(function (data) {
-      setStorageStatus('共享存储已连接', true);
       finish(data.plan);
     }).catch(function (error) {
       renderBoard();
@@ -1751,7 +2087,6 @@
     }
 
     api('DELETE', '/plans/' + encodeURIComponent(planId)).then(function () {
-      setStorageStatus('共享存储已连接', true);
       finish();
     }).catch(function (error) {
       handleWriteError(error, '计划删除失败。');
@@ -1775,7 +2110,6 @@
     api('POST', '/projects/' + encodeURIComponent(projectId) + '/members', {
       inviteId: inviteId
     }).then(function () {
-      setStorageStatus('共享存储已连接', true);
       finish();
     }).catch(function (error) {
       handleWriteError(error, '成员添加失败。');
@@ -1802,7 +2136,6 @@
 
     api('DELETE', '/projects/' + encodeURIComponent(projectId) +
       '/members/' + encodeURIComponent(targetId)).then(function () {
-      setStorageStatus('共享存储已连接', true);
       finish();
     }).catch(function (error) {
       handleWriteError(error, '成员移除失败。');
@@ -1826,7 +2159,6 @@
     api('PATCH', '/projects/' + encodeURIComponent(projectId) + '/name', {
       name: name
     }).then(function () {
-      setStorageStatus('共享存储已连接', true);
       finish();
     }).catch(function (error) {
       handleWriteError(error, '课题名称更新失败。');
@@ -1856,7 +2188,6 @@
     api('PATCH', '/projects/' + encodeURIComponent(projectId) + '/status', {
       status: status
     }).then(function () {
-      setStorageStatus('共享存储已连接', true);
       finish();
     }).catch(function (error) {
       handleWriteError(error, '课题状态更新失败。');
@@ -1882,7 +2213,6 @@
     }
 
     api('DELETE', '/projects/' + encodeURIComponent(projectId)).then(function () {
-      setStorageStatus('共享存储已连接', true);
       finish();
     }).catch(function (error) {
       handleWriteError(error, '课题删除失败。');
@@ -1897,19 +2227,12 @@
     if (signOutBtn) signOutBtn.addEventListener('click', signOut);
     if (memberSelect) {
       memberSelect.addEventListener('change', function () {
-        state.selectedMemberId = memberSelect.value || 'all';
-        saveStore();
-        updateHeading();
-        renderBoard();
+        selectMemberView(memberSelect.value || 'all', false);
       });
     }
-    if (viewAllBtn) {
-      viewAllBtn.addEventListener('click', function () {
-        state.selectedMemberId = 'all';
-        if (memberSelect) memberSelect.value = 'all';
-        saveStore();
-        updateHeading();
-        renderBoard();
+    if (viewMineBtn) {
+      viewMineBtn.addEventListener('click', function () {
+        selectMemberView(state.activeMemberId || 'all', false);
       });
     }
     if (projectToggle) {
@@ -1919,14 +2242,48 @@
       projectCancel.addEventListener('click', function () { toggleCreatePanel(false); });
     }
     if (projectForm) projectForm.addEventListener('submit', createProject);
+    if (projectNavToggle) {
+      projectNavToggle.addEventListener('click', function () {
+        var open = projectRail && projectRail.classList.contains('is-open');
+        setProjectNavOpen(!open, false);
+        if (!open && projectNav) {
+          window.requestAnimationFrame(function () {
+            keepProjectNavItemVisible(
+              projectNav.querySelector('[data-project-nav-id].is-current') ||
+              projectNav.querySelector('[data-project-nav-id]')
+            );
+          });
+        }
+      });
+    }
+    if (projectNavClose) {
+      projectNavClose.addEventListener('click', function () {
+        setProjectNavOpen(false, true);
+      });
+    }
+    if (projectNavScrim) {
+      projectNavScrim.addEventListener('click', function () {
+        setProjectNavOpen(false, true);
+      });
+    }
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape' && projectRail && projectRail.classList.contains('is-open')) {
+        setProjectNavOpen(false, true);
+      }
+    });
 
     // Bar widths (rem-based min-width) and wrap points change with viewport
     // width, so re-measure and re-stack on resize.
     var resizeTimer = null;
     window.addEventListener('resize', function () {
       if (resizeTimer) window.clearTimeout(resizeTimer);
-      resizeTimer = window.setTimeout(restackBoard, 150);
+      resizeTimer = window.setTimeout(function () {
+        if (!usesProjectNavDrawer()) setProjectNavOpen(false, false);
+        scheduleProjectRailPosition();
+        restackBoard();
+      }, 150);
     });
+    window.addEventListener('scroll', scheduleProjectRailPosition, { passive: true });
   }
 
   function bootAuthentication() {

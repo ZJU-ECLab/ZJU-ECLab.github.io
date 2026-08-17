@@ -1,19 +1,26 @@
 {% extends "base.html" %}
 {% block content %}
-<section class="page-head progress-head reveal">
-  <p class="progress-kicker">实验室内部</p>
-  <h1 class="page-title">{{ page.title }}</h1>
-  {% if page.subtitle %}<p class="page-subtitle">{{ page.subtitle }}</p>{% endif %}
+<section class="page-head progress-head" aria-labelledby="progress-page-title" lang="zh-CN">
+  <h1 class="page-title" id="progress-page-title">{{ page.title }}</h1>
 </section>
 
-<section class="progress-shell" data-progress-app
+<section class="progress-shell" data-progress-app lang="zh-CN"
          data-cloudbase-env="{{ page.cloudbase_env }}"
          data-cloudbase-region="{{ page.cloudbase_region | default('ap-shanghai', true) }}"
          data-cloudbase-function="{{ page.cloudbase_function | default('progress-api', true) }}"
          data-leader-id="{{ leader_id }}">
-  <div class="progress-gate reveal" data-progress-gate>
+  <div class="progress-gate" data-progress-gate>
     <div class="progress-login-card">
-      <h2 class="progress-login-title">手机号登录</h2>
+      <div class="progress-login-mark" aria-hidden="true">
+        <svg class="progress-material-icon" viewBox="0 -960 960 960" width="26" height="26"
+             fill="currentColor" aria-hidden="true" focusable="false">
+          <path d="M234-276q51-39 114-61.5T480-360q69 0 132 22.5T726-276q35-41 54.5-93T800-480q0-133-93.5-226.5T480-800q-133 0-226.5 93.5T160-480q0 59 19.5 111t54.5 93Zm146.5-204.5Q340-521 340-580t40.5-99.5Q421-720 480-720t99.5 40.5Q620-639 620-580t-40.5 99.5Q539-440 480-440t-99.5-40.5ZM480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm100-95.5q47-15.5 86-44.5-39-29-86-44.5T480-280q-53 0-100 15.5T294-220q39 29 86 44.5T480-160q53 0 100-15.5ZM523-537q17-17 17-43t-17-43q-17-17-43-17t-43 17q-17 17-17 43t17 43q17 17 43 17t43-17Z" />
+        </svg>
+      </div>
+      <div class="progress-login-heading">
+        <p>成员验证</p>
+        <h2 class="progress-login-title">登录课题进展</h2>
+      </div>
       <form class="progress-login-form" data-phone-login>
         <label class="progress-field">
           <span>手机号</span>
@@ -35,7 +42,7 @@
           手机号登录
         </button>
       </form>
-      <p class="progress-login-note">验证码仅用于登录和自动匹配实验室成员。</p>
+      <p class="progress-login-note">验证码仅用于身份验证，手机号不会显示在页面中。</p>
 
       <p class="progress-login-status" data-login-status role="status" aria-live="polite"></p>
     </div>
@@ -44,20 +51,25 @@
   <div class="progress-workspace" data-workspace hidden>
     <script type="application/json" data-progress-members>{{ members | tojson }}</script>
 
-    <header class="progress-toolbar reveal">
+    <header class="progress-toolbar">
       <div class="progress-toolbar-lead">
-        <h2 data-current-user>课题进展</h2>
+        <p class="progress-toolbar-eyebrow">当前视图</p>
+        <h2 data-current-user>我的课题</h2>
       </div>
 
       <div class="progress-toolbar-controls">
         <div class="progress-viewer" role="group" aria-label="查看范围">
-          <span class="progress-viewer-label">查看</span>
+          <span class="progress-viewer-label">成员</span>
           <label class="progress-viewer-select">
             <span class="sr-only">查看某位成员的进展</span>
             <select data-member-select aria-label="查看某位成员的进展"></select>
-            <span class="progress-viewer-caret" aria-hidden="true">▾</span>
+            <svg class="progress-viewer-caret progress-material-icon" viewBox="0 -960 960 960"
+                 width="18" height="18" fill="currentColor" aria-hidden="true"
+                 focusable="false">
+              <path d="M459-381 314-526q-3-3-4.5-6.5T308-540q0-8 5.5-14t14.5-6h304q9 0 14.5 6t5.5 14q0 2-6 14L501-381q-5 5-10 7t-11 2q-6 0-11-2t-10-7Z" />
+            </svg>
           </label>
-          <button class="progress-viewer-all" type="button" data-view-all>全部</button>
+          <button class="progress-viewer-mine" type="button" data-view-mine>我的课题</button>
         </div>
 
         <div class="progress-editor">
@@ -66,32 +78,69 @@
             <span class="progress-editor-label">当前身份</span>
             <span class="progress-editor-name" data-editor-name>—</span>
           </span>
-          <button class="progress-editor-switch" type="button" data-sign-out>退出登录</button>
+          <button class="progress-editor-switch" type="button" data-sign-out title="退出登录">
+            <svg class="progress-material-icon" viewBox="0 -960 960 960" width="16" height="16"
+                 fill="currentColor" aria-hidden="true" focusable="false">
+              <path d="M200-120q-33 0-56.5-23.5T120-200v-120q0-17 11.5-28.5T160-360q17 0 28.5 11.5T200-320v120h560v-560H200v120q0 17-11.5 28.5T160-600q-17 0-28.5-11.5T120-640v-120q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm266-320H160q-17 0-28.5-11.5T120-480q0-17 11.5-28.5T160-520h306l-74-74q-12-12-11.5-28t11.5-28q12-12 28.5-12.5T449-651l143 143q6 6 8.5 13t2.5 15q0 8-2.5 15t-8.5 13L449-309q-12 12-28.5 11.5T392-310q-11-12-11.5-28t11.5-28l74-74Z" />
+            </svg>
+            <span>退出</span>
+          </button>
         </div>
       </div>
     </header>
 
-    <section class="progress-panel progress-panel--board reveal" aria-live="polite">
-      <div class="progress-board-head">
-        <div>
-          <h2>进展看板</h2>
-        </div>
-        <span class="progress-status-pill" data-project-count>0 个课题</span>
-      </div>
-
-      <div class="progress-create" data-project-create>
-        <button class="progress-create-toggle" type="button" data-project-toggle
-                aria-expanded="false">
-          <span class="progress-create-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none"
-                 stroke="currentColor" stroke-width="2.4" stroke-linecap="round">
-              <line x1="12" y1="5" x2="12" y2="19" />
-              <line x1="5" y1="12" x2="19" y2="12" />
+    <div class="progress-board-layout" data-progress-layout>
+      <aside class="progress-project-rail" id="progress-project-rail" data-project-rail
+             aria-labelledby="progress-project-nav-title">
+        <div class="progress-project-rail-head">
+          <h2 id="progress-project-nav-title">课题导航</h2>
+          <button class="progress-project-rail-close" type="button" data-project-nav-close
+                  aria-label="关闭课题导航" title="关闭课题导航">
+            <svg class="progress-material-icon" viewBox="0 0 24 24" width="20" height="20"
+                 fill="currentColor" aria-hidden="true" focusable="false">
+              <path d="m18.3 5.71-1.41-1.42L12 9.17 7.11 4.29 5.7 5.71l4.89 4.88-4.89 4.89 1.41 1.41L12 12l4.89 4.89 1.41-1.41-4.89-4.89z" />
             </svg>
-          </span>
-          <span>新建课题</span>
-        </button>
-        <form class="progress-create-panel" data-project-form hidden>
+          </button>
+        </div>
+        <nav class="progress-project-nav" data-project-nav aria-label="课题导航"></nav>
+      </aside>
+
+      <button class="progress-project-nav-scrim" type="button" data-project-nav-scrim
+              aria-label="关闭课题导航" hidden></button>
+
+      <button class="progress-project-nav-fab" type="button" data-project-nav-toggle
+              aria-label="打开课题导航" aria-controls="progress-project-rail"
+              aria-expanded="false" title="课题导航" hidden>
+        <svg class="progress-material-icon" viewBox="0 -960 960 960" width="24" height="24"
+             fill="currentColor" aria-hidden="true" focusable="false">
+          <path d="M460.5-413.5Q451-416 442-421L104-605q-11-6-15.5-15T84-640q0-11 4.5-20t15.5-15l338-184q9-5 18.5-7.5T480-869q10 0 19.5 2.5T518-859l338 184q11 6 15.5 15t4.5 20q0 11-4.5 20T856-605L518-421q-9 5-18.5 7.5T480-411q-10 0-19.5-2.5ZM480-491l273-149-273-149-273 149 273 149Zm0 160 314-171q2-1 19-5 17 0 28.5 11.5T853-467q0 11-5 20t-16 15L518-261q-9 5-18.5 7.5T480-251q-10 0-19.5-2.5T442-261L128-432q-11-6-16-15t-5-20q0-17 11.5-28.5T147-507q5 0 9.5 1.5t9.5 3.5l314 171Zm0 160 314-171q2-1 19-5 17 0 28.5 11.5T853-307q0 11-5 20t-16 15L518-101q-9 5-18.5 7.5T480-91q-10 0-19.5-2.5T442-101L128-272q-11-6-16-15t-5-20q0-17 11.5-28.5T147-347q5 0 9.5 1.5t9.5 3.5l314 171Z" />
+        </svg>
+      </button>
+
+      <section class="progress-panel progress-panel--board" aria-live="polite"
+               aria-labelledby="progress-board-title">
+        <div class="progress-board-head">
+          <div class="progress-board-title">
+            <h2 id="progress-board-title">课题</h2>
+            <span class="progress-board-count" data-project-count>0 个课题</span>
+          </div>
+          <div class="progress-board-actions">
+            <div class="progress-create" data-project-create>
+              <button class="progress-create-toggle" type="button" data-project-toggle
+                      aria-expanded="false" aria-controls="progress-create-form">
+              <span class="progress-create-icon" aria-hidden="true">
+                <svg class="progress-material-icon" viewBox="0 0 24 24" width="17" height="17"
+                     fill="currentColor" aria-hidden="true" focusable="false">
+                  <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
+                </svg>
+                </span>
+                <span>新建课题</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <form class="progress-create-panel" id="progress-create-form" data-project-form hidden>
           <div class="progress-create-fields">
             <label class="progress-field">
               <span>课题名称</span>
@@ -104,17 +153,17 @@
             </label>
           </div>
           <div class="progress-create-actions">
-            <button class="btn btn-filled" type="submit">创建</button>
+            <button class="btn btn-filled" type="submit">创建课题</button>
             <button class="btn btn-text" type="button" data-project-cancel>取消</button>
           </div>
         </form>
-      </div>
 
-      <div class="progress-empty" data-empty-state hidden>
-        暂时还没有课题。登录后可以先新建一个课题。
-      </div>
-      <div class="progress-board" data-progress-board></div>
-    </section>
+        <div class="progress-empty" data-empty-state hidden>
+          暂时还没有课题。登录后可以先新建一个课题。
+        </div>
+        <div class="progress-board" data-progress-board></div>
+      </section>
+    </div>
   </div>
 
   <div class="progress-toast" data-progress-toast role="status" aria-live="polite" hidden></div>

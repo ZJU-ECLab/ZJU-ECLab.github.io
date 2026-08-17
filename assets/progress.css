@@ -1,47 +1,41 @@
-/* Private lab progress workspace. Loaded only by /progress/. */
+/* Lab project progress page. Loaded only by /progress/. */
 
-/* Override global section max-width for progress sections to use full
-   available width up to a generous cap, and center properly. */
+/* The project board uses a wider, denser canvas than editorial pages. */
 .progress-head,
 .progress-shell {
-  max-width: min(var(--w), 100%);
+  max-width: min(1440px, 100%);
   width: 100%;
   margin-left: auto;
   margin-right: auto;
-  padding-left: clamp(1rem, 4vw, 1.5rem);
-  padding-right: clamp(1rem, 4vw, 1.5rem);
+  padding-left: clamp(1rem, 3vw, 2rem);
+  padding-right: clamp(1rem, 3vw, 2rem);
   box-sizing: border-box;
 }
 
 .progress-head {
-  padding-bottom: 1rem;
+  padding-top: clamp(1.5rem, 4vw, 2.5rem);
+  padding-bottom: clamp(1rem, 2vw, 1.4rem);
 }
 
-.progress-kicker {
-  display: inline-flex;
-  margin-bottom: 0.55rem;
-  padding: 0.25rem 0.75rem;
+.progress-head .page-title::after {
+  width: 3.2rem;
+  height: 0.28rem;
   border-radius: var(--shape-full);
-  background: var(--secondary-container);
-  color: var(--on-secondary-container);
-  font-size: 0.74rem;
-  font-weight: 780;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+}
+
+.progress-head .page-title {
+  font-size: 1.9rem;
+  letter-spacing: 0;
 }
 
 .progress-shell {
-  padding-bottom: 4rem;
+  padding-bottom: clamp(3rem, 6vw, 5rem);
   --plan-accent: var(--accent);
-  /* Site-wide --radius-l is 52px, which is too rounded for these dense
-     dashboard cards. Use a more comfortable radius across the workspace. */
-  --radius-progress-card: 20px;
+  --radius-progress-card: 8px;
 }
 
 .progress-panel {
-  background: color-mix(in srgb, var(--accent) 6%, var(--surface-1));
-  border: 1px solid var(--outline-soft);
-  box-shadow: var(--shadow-soft);
+  background: transparent;
 }
 
 /* Text/secondary button (used in the create form + entry dialog). The base
@@ -58,45 +52,64 @@
   background: color-mix(in srgb, var(--accent) 14%, var(--surface-2));
 }
 
-/* ---------- gate ---------- */
+/* ---------- login gate ---------- */
 
 .progress-gate {
   display: grid;
   place-items: center;
-  padding: clamp(1.5rem, 5vw, 3rem);
+  min-height: clamp(28rem, 62vh, 38rem);
+  padding: clamp(1.25rem, 5vw, 3.5rem) 0;
 }
 
 .progress-gate h2,
 .progress-board-head h2 {
   color: var(--ink);
   line-height: 1.2;
-  letter-spacing: -0.02em;
+  letter-spacing: 0;
 }
 
 .progress-gate h2 {
   margin: 0;
-  font-size: clamp(1.35rem, 3vw, 2rem);
-}
-
-.progress-board-head p {
-  color: var(--ink-soft);
+  font-size: 1.45rem;
 }
 
 .progress-login-card {
-  width: min(100%, 420px);
+  width: min(100%, 440px);
   min-width: 0;
-  padding: clamp(1.15rem, 3vw, 1.5rem);
-  border-radius: calc(var(--radius-m) + 0.15rem);
-  background: color-mix(in srgb, var(--surface-1) 84%, white);
-  border: 1px solid color-mix(in srgb, var(--outline-soft) 88%, var(--accent));
-  box-shadow: var(--elev-1);
+  padding: clamp(1.4rem, 4vw, 2rem);
+  border-radius: var(--radius-progress-card);
+  background: var(--surface-1);
+  border: 1px solid var(--outline-soft);
+  box-shadow: var(--elev-2);
   position: relative;
   z-index: 1;
 }
 
-.progress-gate .progress-login-title {
-  margin-bottom: 1.1rem;
-  text-align: center;
+.progress-login-mark {
+  display: grid;
+  place-items: center;
+  width: 3.25rem;
+  height: 3.25rem;
+  margin-bottom: 1rem;
+  border-radius: var(--shape-md);
+  background: var(--primary-container);
+  color: var(--on-primary-container);
+}
+
+.progress-material-icon {
+  display: block;
+  flex: 0 0 auto;
+}
+
+.progress-login-heading {
+  margin-bottom: 1.35rem;
+}
+
+.progress-login-heading p {
+  margin: 0 0 0.25rem;
+  color: var(--muted);
+  font-size: 0.74rem;
+  font-weight: 720;
 }
 
 [data-theme="dark"] .progress-login-card {
@@ -116,15 +129,13 @@
 }
 
 .progress-login-note {
-  margin: 0.75rem 0 0;
-  text-align: center;
+  margin: 0.85rem 0 0;
 }
 
 .progress-login-status {
   min-height: 1.2em;
-  margin: 0.7rem 0 0;
+  margin: 0.55rem 0 0;
   color: var(--on-secondary-container);
-  text-align: center;
 }
 
 .progress-login-status.is-error {
@@ -138,7 +149,7 @@
 .progress-login-form {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.9rem;
 }
 
 .progress-code-row {
@@ -149,8 +160,8 @@
 }
 
 .progress-send-code {
-  min-height: 42px;
-  padding: 0.55rem 0.85rem;
+  min-height: 46px;
+  padding: 0.55rem 1rem;
   white-space: nowrap;
 }
 
@@ -161,74 +172,46 @@
   transform: none;
 }
 
-/* ---------- status pills ----------
-   Pill shapes are fully rounded (border-radius: 999px). A pill's curvature
-   is height/2, so a pill nested inside another rounded/pill container stays
-   concentric as long as it also uses the full-pill radius — no shrinking
-   needed. Keep every nested chip/button at --shape-full. */
-
-.progress-status-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  align-self: flex-start;
-  padding: 0.22rem 0.65rem;
-  border-radius: var(--shape-full);
-  background: var(--surface-2);
-  color: var(--ink-soft);
-  border: 1px solid var(--outline-soft);
-  font-size: 0.74rem;
-  font-weight: 720;
-  transition: background-color 0.2s var(--ease-standard);
-}
-
-.progress-status-pill--ok {
-  background: color-mix(in srgb, var(--accent) 16%, var(--surface-2));
-  color: var(--on-secondary-container);
-}
-
 /* ---------- workspace ---------- */
 
 .progress-workspace {
   display: flex;
   flex-direction: column;
-  gap: clamp(1rem, 2.5vw, 1.5rem);
+  gap: clamp(1rem, 2vw, 1.25rem);
 }
 
-/* ---------- toolbar ("banner") ----------
-   A single balanced control bar: a titled lead on the left, and on the right a
-   viewer segment (scope select + "all") paired with a distinct identity pill
-   (avatar · label/name · switch). Both control groups are fully-rounded pill
-   surfaces so nested chips stay concentric. */
-
 .progress-toolbar {
-  --pill-h: 2.6rem;
+  --pill-h: 2.7rem;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: clamp(0.85rem, 2vw, 1.25rem);
-  padding: clamp(0.85rem, 2vw, 1.1rem) clamp(1rem, 2.4vw, 1.35rem);
-  border-radius: var(--shape-xl);
-  background:
-    radial-gradient(circle at 0% 0%, color-mix(in srgb, var(--accent) 12%, transparent), transparent 50%),
-    color-mix(in srgb, var(--accent) 6%, var(--surface-1));
-  border: 1px solid color-mix(in srgb, var(--accent) 12%, var(--outline-soft));
-  box-shadow: var(--elev-1);
+  padding: clamp(1rem, 2vw, 1.25rem);
+  border-radius: var(--radius-progress-card);
+  background: color-mix(in srgb, var(--accent) 7%, var(--surface-1));
+  border: 1px solid color-mix(in srgb, var(--accent) 15%, var(--outline-soft));
 }
 
 .progress-toolbar-lead {
   display: flex;
   flex-direction: column;
-  gap: 0.15rem;
+  gap: 0.1rem;
   min-width: 0;
 }
 
+.progress-toolbar-eyebrow {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.7rem;
+  font-weight: 720;
+}
+
 .progress-toolbar h2 {
-  font-size: clamp(1.05rem, 2.4vw, 1.3rem);
+  font-size: 1.25rem;
   color: var(--ink);
   line-height: 1.2;
-  letter-spacing: -0.02em;
+  letter-spacing: 0;
 }
 
 .progress-toolbar-controls {
@@ -238,7 +221,7 @@
   gap: clamp(0.55rem, 1.6vw, 0.85rem);
 }
 
-/* --- viewer segment: [ 查看 | ▾ select ] [ 全部 ] --- */
+/* Member scope and signed-in identity are separate control groups. */
 
 .progress-viewer {
   display: inline-flex;
@@ -248,21 +231,19 @@
   box-sizing: border-box;
   padding: 0.3rem 0.3rem 0.3rem 0.85rem;
   border-radius: var(--shape-full);
-  background: color-mix(in srgb, var(--surface) 82%, white);
+  background: var(--surface-1);
   border: 1px solid var(--outline-soft);
-  box-shadow: inset 0 1px 0 color-mix(in srgb, white 40%, transparent);
 }
 
 [data-theme="dark"] .progress-viewer {
   background: color-mix(in srgb, var(--surface-2) 88%, black);
-  box-shadow: none;
 }
 
 .progress-viewer-label {
   color: var(--muted);
   font-size: 0.74rem;
   font-weight: 720;
-  letter-spacing: 0.02em;
+  letter-spacing: 0;
   white-space: nowrap;
 }
 
@@ -304,19 +285,18 @@
   right: 0.6rem;
   top: 50%;
   transform: translateY(-50%);
-  font-size: 0.6rem;
   color: var(--on-secondary-container);
   pointer-events: none;
 }
 
-.progress-viewer-all {
+.progress-viewer-mine {
   display: inline-flex;
   align-items: center;
   height: 100%;
   padding: 0 0.9rem;
   border: none;
   border-radius: var(--shape-full);
-  background: color-mix(in srgb, var(--accent) 10%, var(--surface-2));
+  background: transparent;
   color: var(--ink-soft);
   font: inherit;
   font-size: 0.8rem;
@@ -325,7 +305,10 @@
   transition: background-color 0.18s var(--ease-standard), color 0.18s var(--ease-standard);
 }
 
-/* --- identity pill: [ (avatar) | 当前身份 / name | 切换 ] --- */
+.progress-viewer-mine.is-selected {
+  background: var(--primary-container);
+  color: var(--on-primary-container);
+}
 
 .progress-editor {
   display: inline-flex;
@@ -335,8 +318,8 @@
   box-sizing: border-box;
   padding: 0.3rem;
   border-radius: var(--shape-full);
-  background: color-mix(in srgb, var(--accent) 14%, var(--surface-2));
-  border: 1px solid color-mix(in srgb, var(--accent) 22%, var(--outline-soft));
+  background: var(--surface-1);
+  border: 1px solid var(--outline-soft);
 }
 
 .progress-editor-avatar {
@@ -347,7 +330,7 @@
   aspect-ratio: 1;
   height: 100%;
   border-radius: var(--shape-full);
-  background: var(--avatar-color, color-mix(in srgb, var(--accent) 40%, var(--surface)));
+  background: color-mix(in srgb, var(--avatar-color, var(--accent)) 65%, #1e1e2e);
   color: #fff;
   font-size: 0.82rem;
   font-weight: 780;
@@ -372,8 +355,7 @@
   color: var(--muted);
   font-size: 0.66rem;
   font-weight: 720;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  letter-spacing: 0;
   white-space: nowrap;
 }
 
@@ -388,12 +370,13 @@
 .progress-editor-switch {
   display: inline-flex;
   align-items: center;
+  gap: 0.35rem;
   height: 100%;
   padding: 0 0.85rem;
   border: none;
   border-radius: var(--shape-full);
-  background: color-mix(in srgb, var(--surface) 70%, white);
-  color: var(--on-secondary-container);
+  background: var(--surface-2);
+  color: var(--ink-soft);
   font: inherit;
   font-size: 0.78rem;
   font-weight: 740;
@@ -402,8 +385,12 @@
 }
 
 [data-theme="dark"] .progress-editor-switch {
-  background: color-mix(in srgb, var(--surface-2) 60%, black);
+  background: var(--surface-3);
   color: var(--ink);
+}
+
+.progress-editor-switch svg {
+  flex: 0 0 auto;
 }
 
 .sr-only {
@@ -418,36 +405,208 @@
   border: 0;
 }
 
-/* ---------- board panel ---------- */
+/* ---------- project navigation ---------- */
 
-.progress-panel--board {
+.progress-board-layout {
+  display: grid;
+  grid-template-columns: 15rem minmax(0, 1fr);
+  gap: clamp(1.1rem, 2.5vw, 2rem);
+  align-items: start;
   min-width: 0;
-  width: 100%;
-  padding: clamp(1.25rem, 3vw, 2rem);
-  border-radius: var(--radius-progress-card);
+}
+
+.progress-board-layout.has-no-projects {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.progress-project-rail {
+  position: fixed;
+  top: var(--project-rail-top, calc(var(--appbar-h) + 1rem));
+  left: var(--project-rail-left, max(2rem, calc((100vw - 1440px) / 2 + 2rem)));
   display: flex;
   flex-direction: column;
-  gap: clamp(1rem, 2.5vw, 1.5rem);
+  gap: 0.65rem;
+  width: 15rem;
+  min-width: 0;
+  max-height: calc(100vh - var(--project-rail-top, var(--appbar-h)) - 1rem);
+  padding: 0.25rem 1rem 0.5rem 0.15rem;
+  border-right: 1px solid var(--outline-soft);
   box-sizing: border-box;
+}
+
+.progress-project-rail[hidden] {
+  display: none;
+}
+
+.progress-project-rail-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.progress-project-rail h2 {
+  margin: 0;
+  padding: 0 0.55rem;
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 760;
+  line-height: 1.4;
+  letter-spacing: 0;
+}
+
+.progress-project-rail-close {
+  display: none;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  border: 0;
+  border-radius: var(--shape-full);
+  background: transparent;
+  color: var(--ink-soft);
+  cursor: pointer;
+}
+
+.progress-project-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  min-width: 0;
+  padding: 0.1rem 0.25rem 0.35rem 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+
+.progress-project-nav-item {
+  display: grid;
+  grid-template-columns: 1rem minmax(0, 1fr);
+  align-items: center;
+  gap: 0.7rem;
+  width: 100%;
+  min-height: 3.6rem;
+  padding: 0.62rem 0.75rem;
+  border: 0;
+  border-radius: var(--shape-sm);
+  background: transparent;
+  color: var(--ink-soft);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.2s var(--ease-standard), color 0.2s var(--ease-standard), transform 0.2s var(--ease-standard);
+}
+
+.progress-project-nav-item.is-current {
+  background: var(--primary-container);
+  color: var(--on-primary-container);
+}
+
+.progress-project-nav-marker {
+  display: block;
+  width: 1rem;
+  height: 1rem;
+  color: color-mix(in srgb, var(--accent) 74%, var(--ink));
+  opacity: 0.78;
+  transition: opacity 0.2s var(--ease-standard), transform 0.3s var(--ease-spring-gentle);
+}
+
+.progress-project-nav-item.is-current .progress-project-nav-marker {
+  color: var(--on-primary-container);
+  opacity: 1;
+  transform: scale(1.08);
+}
+
+.progress-project-nav-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.16rem;
+  min-width: 0;
+}
+
+.progress-project-nav-name {
+  color: inherit;
+  font-size: 0.82rem;
+  font-weight: 740;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.progress-project-nav-status {
+  color: var(--muted);
+  font-size: 0.68rem;
+  font-weight: 650;
+  line-height: 1.25;
+}
+
+.progress-project-nav-item.is-current .progress-project-nav-status {
+  color: color-mix(in srgb, var(--on-primary-container) 72%, transparent);
+}
+
+.progress-project-nav-fab,
+.progress-project-nav-scrim {
+  display: none;
+}
+
+/* ---------- board ---------- */
+
+.progress-panel--board {
+  grid-column: 2;
+  min-width: 0;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: clamp(0.25rem, 1vw, 0.5rem) 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1rem, 2vw, 1.25rem);
+  box-sizing: border-box;
+  border: 0;
+  box-shadow: none;
+}
+
+.progress-board-layout.has-no-projects .progress-panel--board {
+  grid-column: 1;
 }
 
 .progress-board-head {
   display: flex;
   justify-content: space-between;
   gap: clamp(0.75rem, 2vw, 1rem);
-  align-items: flex-start;
+  align-items: center;
 }
 
 .progress-board-head h2 {
-  font-size: 1.2rem;
+  margin: 0;
+  font-size: 1.18rem;
 }
 
-/* ---------- expandable "new project" ---------- */
+.progress-board-title {
+  display: flex;
+  align-items: baseline;
+  gap: 0.65rem;
+}
+
+.progress-board-count {
+  color: var(--muted);
+  font-size: 0.74rem;
+  font-weight: 680;
+  white-space: nowrap;
+}
+
+.progress-board-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+/* ---------- expandable new project ---------- */
 
 .progress-create {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
+  display: inline-flex;
 }
 
 .progress-create-toggle {
@@ -455,11 +614,12 @@
   align-items: center;
   gap: 0.5rem;
   align-self: flex-start;
-  padding: 0.58rem 1.1rem 0.58rem 0.58rem;
-  border: 1px solid color-mix(in srgb, var(--accent) 40%, var(--outline-soft));
+  min-height: 2.75rem;
+  padding: 0.55rem 1rem 0.55rem 0.65rem;
+  border: 1px solid var(--accent);
   border-radius: var(--shape-full);
-  background: color-mix(in srgb, var(--accent) 12%, var(--surface-1));
-  color: var(--ink);
+  background: var(--accent);
+  color: var(--on-primary);
   font: inherit;
   font-size: 0.9rem;
   font-weight: 740;
@@ -468,8 +628,8 @@
 }
 
 .progress-create-toggle.is-open {
-  border-radius: var(--shape-md) var(--shape-md) 0 0;
-  border-bottom-color: transparent;
+  background: var(--on-primary-container);
+  border-color: var(--on-primary-container);
 }
 
 .progress-create-icon {
@@ -479,8 +639,8 @@
   width: 1.22rem;
   height: 1.22rem;
   border-radius: var(--shape-full);
-  background: color-mix(in srgb, var(--accent) 26%, var(--surface));
-  color: var(--on-secondary-container);
+  background: color-mix(in srgb, white 18%, transparent);
+  color: inherit;
   transition: transform 0.2s var(--ease-standard);
 }
 
@@ -497,10 +657,9 @@
   flex-direction: column;
   gap: 1rem;
   padding: clamp(1rem, 3vw, 1.4rem);
-  border: 1px solid color-mix(in srgb, var(--accent) 40%, var(--outline-soft));
-  border-radius: 0 var(--shape-md) var(--shape-md) var(--shape-md);
-  background: var(--surface-1);
-  box-shadow: var(--elev-1);
+  border: 1px solid color-mix(in srgb, var(--accent) 24%, var(--outline-soft));
+  border-radius: var(--radius-progress-card);
+  background: color-mix(in srgb, var(--accent) 5%, var(--surface-1));
   animation: panel-enter 0.25s var(--ease-standard) both;
 }
 
@@ -531,9 +690,9 @@
 .progress-field select,
 .progress-field textarea {
   width: 100%;
-  min-height: 42px;
+  min-height: 46px;
   border: 1px solid var(--outline-soft);
-  border-radius: var(--shape-md);
+  border-radius: var(--shape-xs);
   background: color-mix(in srgb, var(--surface) 88%, white);
   color: var(--ink);
   font: inherit;
@@ -570,8 +729,8 @@
 
 .progress-empty {
   padding: clamp(1.5rem, 4vw, 2.5rem);
-  border: 2px dashed color-mix(in srgb, var(--accent) 25%, var(--outline));
-  border-radius: var(--radius-m);
+  border: 1px dashed color-mix(in srgb, var(--accent) 30%, var(--outline));
+  border-radius: var(--radius-progress-card);
   color: var(--muted);
   text-align: center;
   font-size: 0.92rem;
@@ -584,21 +743,18 @@
 .progress-board {
   display: flex;
   flex-direction: column;
-  gap: clamp(1.5rem, 3.5vw, 2.25rem);
+  gap: clamp(1rem, 2.5vw, 1.5rem);
 }
 
 .project-row {
   position: relative;
   border: 1px solid var(--outline-soft);
   border-radius: var(--radius-progress-card);
-  background:
-    linear-gradient(180deg,
-      color-mix(in srgb, var(--surface) 88%, white),
-      var(--surface-1)
-    );
-  box-shadow: var(--elev-1);
+  background: var(--surface-1);
+  box-shadow: none;
   overflow: hidden;
-  transition: box-shadow 0.2s var(--ease-standard), border-color 0.2s var(--ease-standard), transform 0.2s var(--ease-standard);
+  scroll-margin-top: calc(var(--appbar-h) + 1rem);
+  transition: box-shadow 0.2s var(--ease-standard), border-color 0.2s var(--ease-standard);
 }
 
 [data-theme="dark"] .project-row {
@@ -606,28 +762,28 @@
 }
 
 .project-row--ended {
-  opacity: 0.82;
+  background: color-mix(in srgb, var(--ink) 2%, var(--surface-1));
 }
 
 .project-row-head {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   justify-content: space-between;
-  gap: clamp(0.6rem, 2vw, 1rem);
-  align-items: center;
-  padding: 0.7rem clamp(0.85rem, 2.2vw, 1.15rem);
-  border-bottom: 1px solid color-mix(in srgb, var(--outline-soft) 70%, transparent);
+  gap: clamp(0.85rem, 2vw, 1.25rem);
+  align-items: start;
+  padding: clamp(0.85rem, 2vw, 1rem) clamp(1rem, 2.5vw, 1.25rem);
+  border-bottom: 1px solid var(--outline-soft);
 }
 
 .project-row--has-plans > .project-row-head {
-  border-bottom: none;
+  border-bottom-color: var(--outline-soft);
 }
 
 .project-row-info {
   display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.4rem 0.7rem;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.4rem;
   min-width: 0;
 }
 
@@ -641,25 +797,37 @@
 
 .project-title {
   color: var(--ink);
-  font-size: 0.94rem;
+  font-size: 1rem;
   font-weight: 770;
-  line-height: 1.2;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
 }
 
 /* Editable title: looks like the heading but hints at interactivity. */
 .project-title--editable {
-  border: 1px solid transparent;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.42rem;
+  min-height: 2.25rem;
+  border: 1px solid color-mix(in srgb, var(--accent) 36%, var(--outline-soft));
   border-radius: var(--shape-sm, 8px);
-  background: none;
-  padding: 0.08rem 0.32rem;
-  margin: -0.08rem -0.32rem;
+  background: color-mix(in srgb, var(--accent) 8%, var(--surface-1));
+  padding: 0.28rem 0.58rem;
+  margin: 0;
   font: inherit;
-  font-size: 0.94rem;
+  font-size: 1rem;
   font-weight: 770;
   line-height: 1.2;
+  color: var(--on-primary-container);
   text-align: left;
-  cursor: text;
-  transition: background-color 0.16s var(--ease-standard), border-color 0.16s var(--ease-standard);
+  cursor: pointer;
+  transition: background-color 0.16s var(--ease-standard), border-color 0.16s var(--ease-standard), box-shadow 0.16s var(--ease-standard);
+}
+
+.project-title--editable svg {
+  width: 1rem;
+  height: 1rem;
+  opacity: 0.82;
 }
 
 .project-title-input {
@@ -682,10 +850,37 @@
 }
 
 .project-dates {
+  margin: 0;
   color: var(--muted);
   font-size: 0.72rem;
   line-height: 1.3;
   white-space: nowrap;
+}
+
+.project-meta,
+.project-facts {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.7rem;
+}
+
+.project-fact {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--muted);
+  font-size: 0.72rem;
+  line-height: 1.3;
+  white-space: nowrap;
+}
+
+.project-fact::before {
+  content: "";
+  width: 0.22rem;
+  height: 0.22rem;
+  border-radius: var(--shape-full);
+  background: var(--outline);
 }
 
 /* ---------- project status tag ---------- */
@@ -693,13 +888,13 @@
 .project-status {
   display: inline-flex;
   align-items: center;
-  gap: 0.2rem;
+  gap: 0.35rem;
   position: relative;
-  padding: 0.18rem 0.55rem 0.18rem 0.5rem;
+  padding: 0.28rem 0.55rem;
   border-radius: var(--shape-full);
-  background: color-mix(in srgb, var(--accent) 16%, var(--surface-2));
-  color: var(--on-secondary-container);
-  border: 1px solid color-mix(in srgb, var(--accent) 26%, var(--outline-soft));
+  background: color-mix(in srgb, var(--accent) 11%, var(--surface-2));
+  color: var(--on-primary-container);
+  border: 1px solid color-mix(in srgb, var(--accent) 34%, var(--outline-soft));
   font-size: 0.72rem;
   font-weight: 740;
   white-space: nowrap;
@@ -711,39 +906,44 @@
   border-color: var(--outline-soft);
 }
 
-/* Editable variant: a select styled as a pill, with a caret glyph. */
+.project-status-icon {
+  width: 0.95rem;
+  height: 0.95rem;
+  flex: 0 0 auto;
+}
+
+/* The native select covers the whole visible chip, including its caret. */
 .project-status--editable {
-  padding: 0;
+  min-height: 2.25rem;
+  padding: 0.1rem 0.25rem 0.1rem 0.5rem;
   cursor: pointer;
 }
 
 .project-status-select {
-  appearance: none;
-  -webkit-appearance: none;
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
   margin: 0;
-  padding: 0.2rem 1.4rem 0.2rem 0.6rem;
+  padding: 0;
   border: none;
   border-radius: var(--shape-full);
   background: transparent;
-  color: inherit;
-  font: inherit;
-  font-size: 0.72rem;
-  font-weight: 740;
-  line-height: 1.2;
+  opacity: 0;
   cursor: pointer;
   outline: none;
 }
 
-.project-status-select:focus-visible {
+.project-status--editable:focus-within {
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 45%, transparent);
 }
 
 .project-status-caret {
-  position: absolute;
-  right: 0.5rem;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 0.6rem;
+  position: static;
+  width: 1rem;
+  height: 1rem;
+  margin-right: 0.1rem;
   pointer-events: none;
   opacity: 0.7;
 }
@@ -765,8 +965,9 @@
 .member-chip {
   display: inline-flex;
   align-items: center;
-  gap: 0.24rem;
-  padding: 0.12rem 0.45rem 0.12rem 0.42rem;
+  gap: 0.05rem;
+  min-height: 1.55rem;
+  padding: 0.08rem;
   border-radius: var(--shape-full);
   background: var(--surface-2);
   border: 1px solid var(--outline-soft);
@@ -776,10 +977,39 @@
   transition: background-color 0.18s var(--ease-standard), border-color 0.18s var(--ease-standard);
 }
 
+.member-chip-target {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 1.55rem;
+  padding: 0.08rem 0.44rem 0.08rem 0.18rem;
+  border: 0;
+  border-radius: var(--shape-full);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  transition: background-color 0.18s var(--ease-standard), color 0.18s var(--ease-standard);
+}
+
+.member-chip-avatar {
+  display: grid;
+  place-items: center;
+  width: 1.2rem;
+  height: 1.2rem;
+  flex: 0 0 auto;
+  border-radius: var(--shape-full);
+  background: color-mix(in srgb, var(--member-color, var(--accent)) 65%, #1e1e2e);
+  color: #fff;
+  font-size: 0.58rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
 .member-chip--leader {
-  background: color-mix(in srgb, var(--accent) 18%, var(--surface-2));
-  color: var(--on-secondary-container);
-  border-color: color-mix(in srgb, var(--accent) 30%, var(--outline-soft));
+  background: color-mix(in srgb, var(--accent) 9%, var(--surface-2));
+  color: var(--on-primary-container);
+  border-color: color-mix(in srgb, var(--accent) 24%, var(--outline-soft));
 }
 
 .member-chip-remove {
@@ -808,13 +1038,18 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
-  gap: 0.35rem;
+  gap: 0.4rem;
   flex-shrink: 0;
 }
 
 .project-action {
-  padding: 0.24rem 0.65rem;
-  border: 1px solid var(--outline-soft);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  min-height: 2.5rem;
+  padding: 0.42rem 0.78rem;
+  border: 1px solid var(--outline);
   border-radius: var(--shape-full);
   background: var(--surface-1);
   color: var(--ink);
@@ -826,15 +1061,39 @@
   transition: background-color 0.18s var(--ease-standard), border-color 0.18s var(--ease-standard), color 0.18s var(--ease-standard);
 }
 
+.project-action svg {
+  width: 1rem;
+  height: 1rem;
+  flex: 0 0 auto;
+}
+
 .project-action.is-active {
   background: color-mix(in srgb, var(--accent) 18%, var(--surface-1));
   border-color: color-mix(in srgb, var(--accent) 40%, var(--outline-soft));
-  color: var(--on-secondary-container);
+  color: var(--on-primary-container);
+}
+
+.project-action--primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-primary);
+}
+
+.project-action--primary.is-active {
+  background: var(--on-primary-container);
+  border-color: var(--on-primary-container);
+  color: var(--on-primary);
+}
+
+.project-action--icon {
+  width: 2.5rem;
+  padding: 0;
 }
 
 .project-action--danger {
   color: #b3261e;
-  border-color: color-mix(in srgb, #b3261e 34%, var(--outline-soft));
+  border-color: transparent;
+  background: transparent;
 }
 
 [data-theme="dark"] .project-action--danger {
@@ -847,12 +1106,11 @@
   display: flex;
   flex-direction: column;
   gap: 1.15rem;
-  margin: 0 clamp(1rem, 3vw, 1.75rem) clamp(1.25rem, 3vw, 1.75rem);
+  margin: 1rem clamp(1rem, 3vw, 1.75rem) clamp(1.25rem, 3vw, 1.75rem);
   padding: clamp(1.15rem, 3vw, 1.5rem);
   border: 1px solid var(--outline-soft);
-  border-radius: var(--shape-md);
+  border-radius: var(--radius-progress-card);
   background: color-mix(in srgb, var(--accent) 5%, var(--surface-1));
-  box-shadow: var(--elev-1);
   animation: panel-enter 0.25s var(--ease-standard) both;
 }
 
@@ -860,8 +1118,7 @@
   color: var(--ink-soft);
   font-size: 0.78rem;
   font-weight: 760;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  letter-spacing: 0;
 }
 
 .project-progress-form,
@@ -883,11 +1140,13 @@
 /* ---------- project plans ---------- */
 
 .project-plans {
-  margin: 0 clamp(0.85rem, 2.2vw, 1.15rem) 0.25rem;
-  padding: 0.85rem 1rem;
-  border: 1px solid var(--outline-soft);
-  border-radius: var(--shape-md);
-  background: var(--surface-1);
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0.72rem clamp(1rem, 2.5vw, 1.25rem) 0.8rem;
+  border: 0;
+  border-bottom: 1px solid var(--outline-soft);
+  background: color-mix(in srgb, var(--accent) 3%, var(--surface-1));
 }
 
 .project-plans-head {
@@ -911,15 +1170,10 @@
   white-space: nowrap;
 }
 
-.project-plans-empty {
-  color: var(--muted);
-  font-size: 0.78rem;
-}
-
 .project-plan-list {
   display: flex;
   flex-direction: column;
-  gap: 0.42rem;
+  gap: 0;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -931,14 +1185,15 @@
   align-items: center;
   gap: 0.65rem;
   min-width: 0;
-  padding: 0.55rem 0.62rem;
-  border: 1px solid color-mix(in srgb, var(--plan-accent) 18%, var(--outline-soft));
-  border-radius: var(--shape-sm);
-  background: var(--surface);
+  padding: 0.65rem 0;
+  border: 0;
+  border-top: 1px solid color-mix(in srgb, var(--outline-soft) 72%, transparent);
+  border-radius: 0;
+  background: transparent;
 }
 
 .project-plan-item.is-overdue {
-  border-color: color-mix(in srgb, #b3261e 42%, var(--outline-soft));
+  background: color-mix(in srgb, #b3261e 5%, transparent);
 }
 
 .project-plan-toggle {
@@ -946,6 +1201,7 @@
   align-items: flex-start;
   gap: 0.62rem;
   min-width: 0;
+  min-height: 2.4rem;
   cursor: pointer;
 }
 
@@ -980,7 +1236,7 @@
   top: 0.08rem;
   width: 0.3rem;
   height: 0.58rem;
-  border: solid var(--surface);
+  border: solid var(--on-primary);
   border-width: 0 2px 2px 0;
   transform: rotate(45deg);
 }
@@ -1035,8 +1291,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 1.85rem;
-  height: 1.85rem;
+  width: 2.25rem;
+  height: 2.25rem;
   padding: 0;
   border: none;
   border-radius: var(--shape-full);
@@ -1050,6 +1306,108 @@
   height: 0.82rem;
 }
 
+/* ---------- timeline ---------- */
+
+.project-timeline {
+  min-width: 0;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  background: color-mix(in srgb, var(--ink) 1.5%, var(--surface-1));
+}
+
+.project-timeline-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+  min-height: 3rem;
+  padding: 0.65rem clamp(1rem, 2.5vw, 1.25rem) 0.35rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--outline-soft) 72%, transparent);
+}
+
+.project-timeline-title {
+  display: flex;
+  align-items: baseline;
+  gap: 0.55rem;
+  min-width: 0;
+}
+
+.project-timeline-title-text {
+  color: var(--ink);
+  font-size: 0.82rem;
+  font-weight: 780;
+}
+
+.project-timeline-count {
+  color: var(--muted);
+  font-size: 0.68rem;
+  font-weight: 680;
+  white-space: nowrap;
+}
+
+.project-timeline-tools,
+.project-timeline-legend,
+.project-legend-item {
+  display: flex;
+  align-items: center;
+}
+
+.project-timeline-tools {
+  gap: 0.8rem;
+}
+
+.project-timeline-legend {
+  gap: 0.65rem;
+}
+
+.project-legend-item {
+  gap: 0.28rem;
+  color: var(--muted);
+  font-size: 0.66rem;
+  font-weight: 660;
+  white-space: nowrap;
+}
+
+.project-legend-today {
+  width: 2px;
+  height: 0.85rem;
+  border-radius: var(--shape-full);
+  background: var(--accent);
+}
+
+.project-legend-deadline {
+  width: 0.48rem;
+  height: 0.48rem;
+  border-radius: 0.1rem;
+  background: var(--plan-accent);
+  transform: rotate(45deg);
+}
+
+.project-today-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.32rem;
+  min-height: 2rem;
+  padding: 0.3rem 0.6rem;
+  border: 1px solid var(--outline-soft);
+  border-radius: var(--shape-full);
+  background: var(--surface-1);
+  color: var(--ink-soft);
+  font: inherit;
+  font-size: 0.68rem;
+  font-weight: 720;
+  cursor: pointer;
+}
+
+.project-today-button svg {
+  width: 0.82rem;
+  height: 0.82rem;
+}
+
 /* ---------- calendar ----------
    Header (week labels) sits above the bars. The body's height adapts to the
    number of stacked tracks — no forced vertical scrolling. Only the row's
@@ -1058,7 +1416,7 @@
 .project-calendar-scroll {
   overflow-x: auto;
   overflow-y: hidden;
-  padding: 0.85rem clamp(0.85rem, 2.2vw, 1.15rem) 1rem;
+  padding: 0.6rem clamp(1rem, 2.5vw, 1.4rem) 0.95rem;
   max-width: 100%;
   scrollbar-gutter: stable;
   -webkit-overflow-scrolling: touch;
@@ -1098,13 +1456,12 @@
   text-align: center;
 }
 
-/* Weekday name (Mon/Tue/…) — the top line of each cell. */
+/* Compact weekday label on the top line of each cell. */
 .calendar-tick-day {
   font-size: 0.58rem;
   font-weight: 800;
-  letter-spacing: 0.03em;
+  letter-spacing: 0;
   line-height: 1;
-  text-transform: uppercase;
   color: color-mix(in srgb, var(--muted) 88%, transparent);
 }
 
@@ -1305,8 +1662,8 @@
   transition: box-shadow 0.16s var(--ease-standard);
 }
 
-/* Per-member color: --bar-color set from the author's stable hue. The bar
-   stays a light surface tinted by the member color, with dark text. */
+/* Per-member categorical color: --bar-color is stable for each roster member.
+   The bar remains a light tonal surface with dark text. */
 .calendar-bar--colored {
   background: color-mix(in srgb, var(--bar-color) 14%, var(--surface));
   border-color: color-mix(in srgb, var(--bar-color) 45%, var(--outline-soft));
@@ -1321,7 +1678,7 @@
   min-height: calc(var(--bar-h) - 2 * var(--bar-pad));
   padding: 0 0.46rem;
   border-radius: calc(var(--bar-radius) - var(--bar-pad));
-  background: var(--bar-color, color-mix(in srgb, var(--accent) 55%, var(--surface)));
+  background: color-mix(in srgb, var(--bar-color, var(--accent)) 65%, #1e1e2e);
   color: #fff;
   font-weight: 760;
   white-space: nowrap;
@@ -1395,7 +1752,7 @@
   margin: auto;
   padding: 0;
   border: 1px solid var(--outline-soft);
-  border-radius: var(--radius-progress-card, 20px);
+  border-radius: 8px;
   background: var(--surface);
   color: var(--ink);
   box-shadow: var(--elev-3);
@@ -1429,7 +1786,7 @@
   height: 2.15rem;
   flex: 0 0 auto;
   border-radius: var(--shape-full);
-  background: color-mix(in srgb, var(--accent) 55%, var(--surface));
+  background: color-mix(in srgb, var(--member-color, var(--accent)) 65%, #1e1e2e);
   color: #fff;
   font-size: 0.9rem;
   font-weight: 780;
@@ -1582,29 +1939,6 @@
   }
 }
 
-@keyframes row-enter {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* ---------- project row entrance ---------- */
-
-.project-row {
-  animation: row-enter 0.3s var(--ease-standard) both;
-}
-
-.project-row:nth-child(1) { animation-delay: 0s; }
-.project-row:nth-child(2) { animation-delay: 0.04s; }
-.project-row:nth-child(3) { animation-delay: 0.08s; }
-.project-row:nth-child(4) { animation-delay: 0.12s; }
-.project-row:nth-child(5) { animation-delay: 0.16s; }
-
 /* ---------- focus-visible ring ---------- */
 
 .progress-field input:focus-visible,
@@ -1616,7 +1950,15 @@
 }
 
 .project-action:focus-visible,
+.project-title--editable:focus-visible,
 .progress-create-toggle:focus-visible,
+.progress-project-nav-item:focus-visible,
+.progress-project-nav-fab:focus-visible,
+.progress-project-rail-close:focus-visible,
+.progress-viewer-mine:focus-visible,
+.progress-editor-switch:focus-visible,
+.project-today-button:focus-visible,
+.member-chip-target:focus-visible,
 .btn:focus-visible {
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 40%, transparent);
   outline: none;
@@ -1627,7 +1969,111 @@
   outline: none;
 }
 
+.project-row:focus-visible {
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--outline-soft));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
+  outline: none;
+}
+
 /* ---------- responsive ---------- */
+
+@media (max-width: 1040px) {
+  .progress-board-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .progress-panel--board {
+    grid-column: 1;
+  }
+
+  .progress-project-rail {
+    position: fixed;
+    top: calc(var(--appbar-h) + 0.75rem);
+    bottom: 0.75rem;
+    left: 0.75rem;
+    z-index: 975;
+    width: min(20rem, calc(100vw - 4.75rem));
+    max-height: none;
+    gap: 0.8rem;
+    padding: 0.85rem;
+    border: 1px solid color-mix(in srgb, var(--accent) 22%, var(--outline-soft));
+    border-radius: 8px;
+    background: var(--surface-1);
+    box-shadow: var(--elev-3);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateX(calc(-100% - 1rem));
+    transition: transform 0.28s var(--ease-emphasized), opacity 0.2s var(--ease-standard), visibility 0.2s;
+  }
+
+  .progress-project-rail.is-open {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateX(0);
+  }
+
+  .progress-project-rail h2 {
+    padding: 0 0.25rem;
+    color: var(--ink);
+    font-size: 0.9rem;
+  }
+
+  .progress-project-rail-close {
+    display: grid;
+  }
+
+  .progress-project-nav {
+    flex: 1 1 auto;
+    flex-direction: column;
+    padding: 0.1rem 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .progress-project-nav-item {
+    flex: 0 0 auto;
+    width: 100%;
+  }
+
+  .progress-project-nav-scrim {
+    position: fixed;
+    inset: 0;
+    z-index: 960;
+    display: block;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    background: color-mix(in srgb, var(--ink) 32%, transparent);
+    cursor: default;
+  }
+
+  .progress-project-nav-fab {
+    position: fixed;
+    left: max(1rem, env(safe-area-inset-left));
+    bottom: max(1rem, env(safe-area-inset-bottom));
+    z-index: 970;
+    display: grid;
+    place-items: center;
+    width: 3.5rem;
+    height: 3.5rem;
+    padding: 0;
+    border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--outline-soft));
+    border-radius: var(--shape-md);
+    background: var(--primary-container);
+    color: var(--on-primary-container);
+    box-shadow: var(--elev-3);
+    cursor: pointer;
+    transition: background-color 0.18s var(--ease-standard), transform 0.18s var(--ease-standard), box-shadow 0.18s var(--ease-standard);
+  }
+
+  .progress-project-nav-fab[aria-expanded="true"] {
+    background: var(--accent);
+    color: var(--on-primary);
+  }
+}
 
 @media (max-width: 840px) {
   .progress-toolbar {
@@ -1639,9 +2085,16 @@
     justify-content: space-between;
   }
 
-  .project-row-head {
-    flex-direction: column;
+  .progress-board-head {
     align-items: flex-start;
+  }
+
+  .progress-board-actions {
+    flex-wrap: wrap;
+  }
+
+  .project-row-head {
+    grid-template-columns: 1fr;
   }
 
   .project-row-actions {
@@ -1650,13 +2103,29 @@
 }
 
 @media (max-width: 620px) {
-  .progress-gate,
-  .progress-panel--board {
-    padding: clamp(1rem, 4vw, 1.25rem);
+  .progress-head {
+    padding-top: 1.35rem;
   }
 
-  .progress-panel--board {
-    border-radius: var(--radius-m);
+  .progress-gate {
+    min-height: 31rem;
+    padding: 1rem 0 2rem;
+  }
+
+  .progress-board-head,
+  .progress-board-actions {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+  }
+
+  .progress-create,
+  .progress-create-toggle {
+    width: 100%;
+  }
+
+  .progress-create-toggle {
+    justify-content: center;
   }
 
   .progress-create-fields {
@@ -1709,22 +2178,97 @@
     padding-left: 1rem;
     padding-right: 1rem;
   }
+
+  .project-timeline-head {
+    align-items: flex-start;
+    justify-content: flex-start;
+  }
+
+  .project-timeline-tools {
+    align-items: center;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    width: 100%;
+  }
+
+  .project-meta {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .project-facts {
+    gap: 0.3rem 0.55rem;
+  }
+}
+
+@media (max-width: 430px) {
+  .progress-viewer-label {
+    display: none;
+  }
+
+  .progress-viewer-mine,
+  .progress-editor-switch {
+    padding-left: 0.65rem;
+    padding-right: 0.65rem;
+  }
+
+  .project-row-actions {
+    width: 100%;
+  }
+
+  .project-action:not(.project-action--icon) {
+    flex: 1 1 auto;
+    padding-left: 0.45rem;
+    padding-right: 0.45rem;
+  }
+
+  .project-timeline-legend {
+    display: none;
+  }
 }
 
 @media (hover: hover) and (pointer: fine) {
   .progress-create-toggle:hover {
-    background: color-mix(in srgb, var(--accent) 18%, var(--surface-1));
-    border-color: color-mix(in srgb, var(--accent) 55%, var(--outline-soft));
+    background: color-mix(in srgb, var(--accent) 88%, black);
+    border-color: color-mix(in srgb, var(--accent) 88%, black);
   }
 
   .project-title--editable:hover {
-    background: color-mix(in srgb, var(--accent) 10%, var(--surface-1));
-    border-color: color-mix(in srgb, var(--accent) 30%, var(--outline-soft));
+    background: color-mix(in srgb, var(--accent) 15%, var(--surface-1));
+    border-color: color-mix(in srgb, var(--accent) 52%, var(--outline-soft));
   }
 
-  .progress-viewer-all:hover {
+  .progress-viewer-mine:hover {
     background: color-mix(in srgb, var(--accent) 20%, var(--surface-2));
     color: var(--on-secondary-container);
+  }
+
+  .project-today-button:hover {
+    background: color-mix(in srgb, var(--accent) 10%, var(--surface-2));
+    color: var(--ink);
+  }
+
+  .progress-project-nav-item:hover {
+    background: color-mix(in srgb, var(--accent) 9%, var(--surface-2));
+    color: var(--ink);
+    transform: translateX(2px);
+  }
+
+  .progress-project-nav-item.is-current:hover {
+    background: var(--primary-container);
+    color: var(--on-primary-container);
+  }
+
+  .progress-project-rail-close:hover {
+    background: color-mix(in srgb, var(--accent) 10%, var(--surface-2));
+    color: var(--ink);
+  }
+
+  .progress-project-nav-fab:hover {
+    background: color-mix(in srgb, var(--accent) 28%, var(--surface-1));
+    box-shadow: var(--elev-4);
+    transform: translateY(-2px);
   }
 
   .progress-viewer-select select:hover {
@@ -1745,13 +2289,35 @@
     border-color: color-mix(in srgb, var(--accent) 30%, var(--outline-soft));
   }
 
+  .project-action--primary:hover {
+    background: color-mix(in srgb, var(--accent) 88%, black);
+    border-color: color-mix(in srgb, var(--accent) 88%, black);
+    color: var(--on-primary);
+  }
+
+  .project-action--danger:hover {
+    background: color-mix(in srgb, #b3261e 10%, var(--surface-1));
+    border-color: transparent;
+    color: #b3261e;
+  }
+
   .project-status--editable:hover {
-    background: color-mix(in srgb, var(--accent) 24%, var(--surface-2));
+    background: color-mix(in srgb, var(--accent) 18%, var(--surface-2));
+    border-color: color-mix(in srgb, var(--accent) 52%, var(--outline-soft));
+  }
+
+  .project-plan-toggle:hover {
+    color: var(--on-primary-container);
   }
 
   .member-chip-remove:hover {
     background: color-mix(in srgb, #b3261e 22%, transparent);
     color: #b3261e;
+  }
+
+  .member-chip-target:hover {
+    background: color-mix(in srgb, var(--accent) 12%, transparent);
+    color: var(--ink);
   }
 
   .project-plan-toggle:hover .project-plan-text {
@@ -1773,7 +2339,7 @@
   }
 
   .project-row:hover {
-    box-shadow: var(--elev-2);
+    box-shadow: var(--elev-1);
     border-color: color-mix(in srgb, var(--accent) 25%, var(--outline-soft));
   }
 

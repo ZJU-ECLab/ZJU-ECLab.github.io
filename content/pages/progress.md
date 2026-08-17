@@ -2,7 +2,7 @@
 title: 课题进展
 slug: progress
 template: progress.html
-description: 情绪与文化实验室课题进展工作台。
+description: 情绪与文化实验室课题进展。
 robots: noindex, nofollow, noarchive
 # Authenticated CloudBase Web SDK configuration. Calling the function through
 # the SDK lets CloudBase inject the verified phone user's UUID.

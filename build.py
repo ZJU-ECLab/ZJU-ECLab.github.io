@@ -61,7 +61,7 @@ ACCENTS = {
     "resources": "hsl(185, 60%, 44%)",   # Cyan
     "courses": "hsl(220, 70%, 56%)",     # Blue
     "join-us": "hsl(250, 55%, 60%)",     # Indigo
-    "progress": "hsl(265, 56%, 58%)",    # Internal lab page
+    "progress": "hsl(265, 56%, 58%)",    # Project progress page
     "contact": "hsl(280, 50%, 56%)",     # Purple
 }
 
