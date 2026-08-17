@@ -564,7 +564,12 @@
     {
       target: 'timeline',
       title: '查看进展时间线',
-      description: '进展会按日期排列，不同记录者使用不同颜色。点击一条进展可查看或修改内容；点击“回到今天”可快速定位当前日期。'
+      description: '进展会按日期排列，不同记录者使用不同颜色。点击“回到今天”可快速定位当前日期。'
+    },
+    {
+      target: 'entry',
+      title: '打开一条进展',
+      description: '点击时间线中的任一进展，可以查看具体日期和内容。课题成员还可以在详情窗口中编辑或删除这条记录。'
     },
     {
       target: 'guide',
@@ -654,6 +659,7 @@
     if (step.target === 'actions') return demo.querySelector('.project-row-actions');
     if (step.target === 'plans') return demo.querySelector('.project-plans');
     if (step.target === 'timeline') return demo.querySelector('.project-timeline');
+    if (step.target === 'entry') return demo.querySelector('.calendar-bar');
     return demo;
   }
 
@@ -692,7 +698,10 @@
     if (guideStepLabel) guideStepLabel.textContent = '第 ' + (guide.step + 1) + ' 步，共 ' + GUIDE_STEPS.length + ' 步';
     if (guideTitle) guideTitle.textContent = step.title;
     if (guideDescription) guideDescription.textContent = step.description;
-    if (guideMeter) guideMeter.setAttribute('aria-valuenow', String(guide.step + 1));
+    if (guideMeter) {
+      guideMeter.setAttribute('aria-valuenow', String(guide.step + 1));
+      guideMeter.setAttribute('aria-valuemax', String(GUIDE_STEPS.length));
+    }
     if (guideMeterBar) guideMeterBar.style.width = ((guide.step + 1) / GUIDE_STEPS.length * 100) + '%';
     if (guideBack) guideBack.disabled = guide.step === 0;
     if (guideNext) guideNext.textContent = guide.step === GUIDE_STEPS.length - 1 ? '完成' : '下一步';
