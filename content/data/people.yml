@@ -61,6 +61,13 @@ groups:
         photo: /assets/img/people/yong-zhuang.png
         bio: >-
           I'm Zhuang Yong, a part-time Ph.D. student. I graduated from Zhejiang University in 2003 with a degree in Computer Science. Having spent more than 20 years at Kingsoft Office, I'm now combining my software background with psychology to build a more versatile system for recognizing human emotions and behaviors.
+      - name_en: Ruihuan Ye
+        name_zh: 叶睿欢
+        role: Ph.D candidate, 2026
+        email: yerayhuan@zju.edu.cn
+        photo: /assets/img/people/ruihuan-ye.jpg
+        bio: >-
+          Try more, fear less.
       - name_en: Shuoan Li
         name_zh: 李烁安
         role: Ph.D candidate, 2026
