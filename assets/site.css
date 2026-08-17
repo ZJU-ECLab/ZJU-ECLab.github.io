@@ -915,6 +915,9 @@ section { max-width: var(--w); margin: 0 auto; padding: 0 1.5rem; }
   .hero-figure { order: -1; max-width: 340px; }
 }
 @media (max-width: 480px) {
+  .site-appbar { gap: 0.5rem; padding-left: 16px; padding-right: 10px; }
+  .appbar-titles { display: none; }
+  .appbar-actions { flex-shrink: 0; }
   .hero { padding: 1.5rem 1rem 2rem; }
   .hero-figure { max-width: 270px; }
 }

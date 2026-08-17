@@ -58,6 +58,14 @@
       </div>
 
       <div class="progress-toolbar-controls">
+        <button class="progress-guide-launch" type="button" data-guide-launch
+                aria-label="打开使用指南" title="使用指南">
+          <svg class="progress-material-icon" viewBox="0 -960 960 960" width="20" height="20"
+               fill="currentColor" aria-hidden="true" focusable="false">
+            <path d="M513.5-254.5Q528-269 528-290t-14.5-35.5Q499-340 478-340t-35.5 14.5Q428-311 428-290t14.5 35.5Q457-240 478-240t35.5-14.5ZM480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Zm4-172q25 0 43.5 16t18.5 40q0 22-13.5 39T502-525q-23 20-40.5 44T444-427q0 14 10.5 23.5T479-394q15 0 25.5-10t13.5-25q4-21 18-37.5t30-31.5q23-22 39.5-48t16.5-58q0-51-41.5-83.5T484-720q-38 0-72.5 16T359-655q-7 12-4.5 25.5T368-609q14 8 29 5t25-17q11-15 27.5-23t34.5-8Z" />
+          </svg>
+        </button>
+
         <div class="progress-viewer" role="group" aria-label="查看范围">
           <span class="progress-viewer-label">成员</span>
           <label class="progress-viewer-select">
@@ -66,7 +74,7 @@
             <svg class="progress-viewer-caret progress-material-icon" viewBox="0 -960 960 960"
                  width="18" height="18" fill="currentColor" aria-hidden="true"
                  focusable="false">
-              <path d="M459-381 314-526q-3-3-4.5-6.5T308-540q0-8 5.5-14t14.5-6h304q9 0 14.5 6t5.5 14q0 2-6 14L501-381q-5 5-10 7t-11 2q-6 0-11-2t-10-7Z" />
+              <path d="M480-344 240-584l56-56 184 184 184-184 56 56-240 240Z" />
             </svg>
           </label>
           <button class="progress-viewer-mine" type="button" data-view-mine>我的课题</button>
@@ -115,6 +123,7 @@
              fill="currentColor" aria-hidden="true" focusable="false">
           <path d="M460.5-413.5Q451-416 442-421L104-605q-11-6-15.5-15T84-640q0-11 4.5-20t15.5-15l338-184q9-5 18.5-7.5T480-869q10 0 19.5 2.5T518-859l338 184q11 6 15.5 15t4.5 20q0 11-4.5 20T856-605L518-421q-9 5-18.5 7.5T480-411q-10 0-19.5-2.5ZM480-491l273-149-273-149-273 149 273 149Zm0 160 314-171q2-1 19-5 17 0 28.5 11.5T853-467q0 11-5 20t-16 15L518-261q-9 5-18.5 7.5T480-251q-10 0-19.5-2.5T442-261L128-432q-11-6-16-15t-5-20q0-17 11.5-28.5T147-507q5 0 9.5 1.5t9.5 3.5l314 171Zm0 160 314-171q2-1 19-5 17 0 28.5 11.5T853-307q0 11-5 20t-16 15L518-101q-9 5-18.5 7.5T480-91q-10 0-19.5-2.5T442-101L128-272q-11-6-16-15t-5-20q0-17 11.5-28.5T147-347q5 0 9.5 1.5t9.5 3.5l314 171Z" />
         </svg>
+        <span class="progress-project-nav-fab-label" data-project-nav-toggle-label>课题导航</span>
       </button>
 
       <section class="progress-panel progress-panel--board" aria-live="polite"
@@ -164,6 +173,48 @@
         <div class="progress-board" data-progress-board></div>
       </section>
     </div>
+  </div>
+
+  <div class="progress-guide-layer" data-guide-layer hidden>
+    <div class="progress-guide-scrim" aria-hidden="true"></div>
+    <section class="progress-guide-card" data-guide-card role="dialog" aria-modal="true"
+             aria-labelledby="progress-guide-title" aria-describedby="progress-guide-description">
+      <div class="progress-guide-card-head">
+        <span class="progress-guide-mark" aria-hidden="true">
+          <svg class="progress-material-icon" viewBox="0 -960 960 960" width="22" height="22"
+               fill="currentColor" aria-hidden="true" focusable="false">
+            <path d="M840-120v-480L520-760 200-600v240h-80v-280l400-200 400 200v520h-80ZM520-320 280-440v160l240 120 240-120v-160L520-320Z" />
+          </svg>
+        </span>
+        <div class="progress-guide-heading">
+          <span class="progress-guide-kicker" data-guide-step-label>第 1 步</span>
+          <h2 id="progress-guide-title" data-guide-title>欢迎使用课题进展</h2>
+        </div>
+      </div>
+
+      <div class="progress-guide-meter" data-guide-meter role="progressbar"
+           aria-label="指南进度" aria-valuemin="1" aria-valuemax="7" aria-valuenow="1">
+        <span data-guide-meter-bar></span>
+      </div>
+
+      <p class="progress-guide-description" id="progress-guide-description"
+         data-guide-description></p>
+      <p class="progress-guide-local-note">
+        <svg class="progress-material-icon" viewBox="0 -960 960 960" width="17" height="17"
+             fill="currentColor" aria-hidden="true" focusable="false">
+          <path d="M440-280h80v-240h-80v240Zm40-320q17 0 28.5-11.5T520-640q0-17-11.5-28.5T480-680q-17 0-28.5 11.5T440-640q0 17 11.5 28.5T480-600Zm0 520q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Z" />
+        </svg>
+        <span>指南中的示例课题仅供演示，不会保存或上传。</span>
+      </p>
+
+      <div class="progress-guide-actions">
+        <button class="btn btn-text progress-guide-skip" type="button" data-guide-skip>跳过</button>
+        <div class="progress-guide-actions-main">
+          <button class="btn btn-text" type="button" data-guide-back>上一步</button>
+          <button class="btn btn-filled" type="button" data-guide-next>下一步</button>
+        </div>
+      </div>
+    </section>
   </div>
 
   <div class="progress-toast" data-progress-toast role="status" aria-live="polite" hidden></div>

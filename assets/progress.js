@@ -54,6 +54,9 @@
     '#dc8a78'  // Latte rosewater
   ];
   var CATPPUCCIN_MOCHA_BASE = '#1e1e2e';
+  var GUIDE_STORAGE_KEY = 'eclab-progress-guide-v1-complete';
+  var GUIDE_PROJECT_ID = '__progress-guide-project__';
+  var GUIDE_ID_PREFIX = '__progress-guide-';
 
   // Below this span (in days) a bar is too narrow to fit both the author name
   // chip and the note, so the chip is dropped and only the note is shown.
@@ -81,8 +84,20 @@
   var projectRail = root.querySelector('[data-project-rail]');
   var projectNav = root.querySelector('[data-project-nav]');
   var projectNavToggle = root.querySelector('[data-project-nav-toggle]');
+  var projectNavToggleLabel = root.querySelector('[data-project-nav-toggle-label]');
   var projectNavClose = root.querySelector('[data-project-nav-close]');
   var projectNavScrim = root.querySelector('[data-project-nav-scrim]');
+  var guideLaunch = root.querySelector('[data-guide-launch]');
+  var guideLayer = root.querySelector('[data-guide-layer]');
+  var guideCard = root.querySelector('[data-guide-card]');
+  var guideStepLabel = root.querySelector('[data-guide-step-label]');
+  var guideTitle = root.querySelector('[data-guide-title]');
+  var guideDescription = root.querySelector('[data-guide-description]');
+  var guideMeter = root.querySelector('[data-guide-meter]');
+  var guideMeterBar = root.querySelector('[data-guide-meter-bar]');
+  var guideSkip = root.querySelector('[data-guide-skip]');
+  var guideBack = root.querySelector('[data-guide-back]');
+  var guideNext = root.querySelector('[data-guide-next]');
   var toast = root.querySelector('[data-progress-toast]');
   var membersJson = root.querySelector('[data-progress-members]');
   var projectNavObserver = null;
@@ -104,6 +119,15 @@
     boardDayCount: 1,
     activeProjectId: '',
     openPanels: {} // projectId -> 'progress' | 'plan' | 'members' | null
+  };
+
+  var guide = {
+    active: false,
+    step: 0,
+    project: null,
+    highlight: null,
+    lastFocus: null,
+    previousProjectId: ''
   };
 
   /* ---------- members ---------- */
@@ -177,7 +201,17 @@
 
   /* ---------- api ---------- */
 
+  function isGuideIdentifier(value) {
+    return String(value || '').indexOf(GUIDE_ID_PREFIX) === 0 ||
+      String(value || '') === GUIDE_PROJECT_ID;
+  }
+
   function api(method, path, body) {
+    if (String(path || '').indexOf(GUIDE_ID_PREFIX) !== -1 ||
+        isGuideIdentifier(path) ||
+        (body && (isGuideIdentifier(body.projectId) || isGuideIdentifier(body.id)))) {
+      return Promise.reject(new Error('演示课题不会上传到共享存储。'));
+    }
     if (!cloudApp) return Promise.reject(new Error('CloudBase SDK 尚未初始化。'));
     return cloudApp.callFunction({
       name: functionName,
@@ -254,7 +288,9 @@
   function openMemberSession(data) {
     setActiveMember(data.memberId);
     setLoginStatus('');
-    return loadSharedProjects();
+    return loadSharedProjects().then(function () {
+      maybeStartGuide();
+    });
   }
 
   function sendPhoneCode() {
@@ -355,6 +391,7 @@
   function signOut() {
     if (!auth) return;
     auth.signOut().catch(function () {}).then(function () {
+      if (guide.active) endGuide(false, false);
       state.activeMemberId = '';
       state.selectedMemberId = 'all';
       state.openPanels = {};
@@ -496,6 +533,250 @@
     return formatDate(startDate) + ' 至 ' + formatDate(endDate);
   }
 
+  /* ---------- first-use guide ---------- */
+
+  var GUIDE_STEPS = [
+    {
+      target: 'toolbar',
+      title: '选择查看范围',
+      description: '这里显示当前查看范围。你可以选择一位成员，查看这位成员参与的课题；点击“我的课题”可随时返回自己的课题列表。'
+    },
+    {
+      target: 'navigation',
+      title: '快速找到课题',
+      description: '左侧目录列出当前范围内的课题，点击课题名称即可跳转。屏幕较窄时，点击右下角的“课题导航”按钮打开目录。'
+    },
+    {
+      target: 'overview',
+      title: '查看和修改基本信息',
+      description: '这里集中显示课题名称、当前阶段和参与成员。点击课题名称或当前阶段可进行修改；点击任一成员姓名，可查看这位成员参与的课题。'
+    },
+    {
+      target: 'actions',
+      title: '更新课题内容',
+      description: '点击“添加进展”记录已经完成的工作，点击“添加计划”安排下一步任务；需要调整参与人员时，点击“成员”。'
+    },
+    {
+      target: 'plans',
+      title: '管理计划',
+      description: '每项计划都会显示截止日期。任务完成后，勾选左侧方框，完成情况会立即更新。'
+    },
+    {
+      target: 'timeline',
+      title: '查看进展时间线',
+      description: '进展会按日期排列，不同记录者使用不同颜色。点击一条进展可查看或修改内容；点击“回到今天”可快速定位当前日期。'
+    },
+    {
+      target: 'guide',
+      title: '指南到这里结束',
+      description: '点击“完成”即可关闭指南，示例课题也会随之移除。以后需要再次查看时，点击页面上方的问号按钮。'
+    }
+  ];
+
+  function isGuideProject(project) {
+    return !!project && String(project.id) === GUIDE_PROJECT_ID;
+  }
+
+  function guideMembers() {
+    var ids = [];
+    var viewingMemberId = state.selectedMemberId && state.selectedMemberId !== 'all' ?
+      state.selectedMemberId : state.activeMemberId;
+    function append(id) {
+      if (id && ids.indexOf(String(id)) === -1) ids.push(String(id));
+    }
+
+    append(viewingMemberId);
+    if (leaderId) append(leaderId);
+    if (!ids.length && state.activeMemberId) append(state.activeMemberId);
+    return ids;
+  }
+
+  function makeGuideProject() {
+    var membersForGuide = guideMembers();
+    var authorA = membersForGuide[0] || state.activeMemberId || leaderId;
+    var authorB = membersForGuide[1] || authorA;
+    var today = new Date();
+
+    return {
+      id: GUIDE_PROJECT_ID,
+      name: '示例课题：界面导览',
+      status: '数据收集中',
+      startDate: dateToISO(addDays(today, -20)),
+      endDate: null,
+      createdBy: state.activeMemberId || '',
+      members: membersForGuide,
+      progress: [
+        {
+          id: GUIDE_ID_PREFIX + 'entry-1',
+          authorId: authorA,
+          startDate: dateToISO(addDays(today, -16)),
+          endDate: dateToISO(addDays(today, -12)),
+          note: '确认研究问题与样本范围'
+        },
+        {
+          id: GUIDE_ID_PREFIX + 'entry-2',
+          authorId: authorB,
+          startDate: dateToISO(addDays(today, -9)),
+          endDate: dateToISO(addDays(today, -4)),
+          note: '完成第一轮数据整理'
+        }
+      ],
+      plans: [
+        {
+          id: GUIDE_ID_PREFIX + 'plan-1',
+          projectId: GUIDE_PROJECT_ID,
+          authorId: authorA,
+          deadline: dateToISO(addDays(today, 6)),
+          text: '安排本周的讨论与任务分工',
+          completed: false,
+          completedAt: null
+        },
+        {
+          id: GUIDE_ID_PREFIX + 'plan-2',
+          projectId: GUIDE_PROJECT_ID,
+          authorId: authorB,
+          deadline: dateToISO(addDays(today, 12)),
+          text: '整理本轮进展为简短汇报',
+          completed: false,
+          completedAt: null
+        }
+      ]
+    };
+  }
+
+  function guideTarget(step) {
+    if (step.target === 'toolbar') return root.querySelector('.progress-toolbar');
+    if (step.target === 'navigation') return projectRail;
+    if (step.target === 'guide') return guideLaunch;
+    var demo = projectRowById(GUIDE_PROJECT_ID);
+    if (!demo) return null;
+    if (step.target === 'overview') return demo.querySelector('.project-row-head');
+    if (step.target === 'actions') return demo.querySelector('.project-row-actions');
+    if (step.target === 'plans') return demo.querySelector('.project-plans');
+    if (step.target === 'timeline') return demo.querySelector('.project-timeline');
+    return demo;
+  }
+
+  function clearGuideHighlight() {
+    if (!guide.highlight) return;
+    guide.highlight.classList.remove('progress-guide-highlight');
+    guide.highlight.classList.remove('progress-guide-highlight--static');
+    guide.highlight = null;
+  }
+
+  function scrollGuideTargetIntoView(target) {
+    if (!target || target === projectRail) return;
+    target.scrollIntoView({ block: 'center', behavior: 'auto' });
+  }
+
+  function positionGuideCard(target) {
+    if (!guideCard) return;
+    var useTop = false;
+    if (target && target !== projectRail && target !== guideLaunch) {
+      var rect = target.getBoundingClientRect();
+      useTop = rect.top > window.innerHeight * 0.48;
+    }
+    guideCard.classList.toggle('is-top', useTop);
+  }
+
+  function renderGuideStep(stepIndex) {
+    if (!guide.active || !guideLayer) return;
+    guide.step = Math.max(0, Math.min(stepIndex, GUIDE_STEPS.length - 1));
+    var step = GUIDE_STEPS[guide.step];
+    var navigationStep = step.target === 'navigation';
+
+    clearGuideHighlight();
+    if (navigationStep && usesProjectNavDrawer()) setProjectNavOpen(true, false);
+    else setProjectNavOpen(false, false);
+
+    if (guideStepLabel) guideStepLabel.textContent = '第 ' + (guide.step + 1) + ' 步，共 ' + GUIDE_STEPS.length + ' 步';
+    if (guideTitle) guideTitle.textContent = step.title;
+    if (guideDescription) guideDescription.textContent = step.description;
+    if (guideMeter) guideMeter.setAttribute('aria-valuenow', String(guide.step + 1));
+    if (guideMeterBar) guideMeterBar.style.width = ((guide.step + 1) / GUIDE_STEPS.length * 100) + '%';
+    if (guideBack) guideBack.disabled = guide.step === 0;
+    if (guideNext) guideNext.textContent = guide.step === GUIDE_STEPS.length - 1 ? '完成' : '下一步';
+
+    window.requestAnimationFrame(function () {
+      if (!guide.active) return;
+      var target = guideTarget(step);
+      scrollGuideTargetIntoView(target);
+      window.requestAnimationFrame(function () {
+        if (!guide.active || target !== guideTarget(step)) return;
+        if (target) {
+          target.classList.add('progress-guide-highlight');
+          if (window.getComputedStyle(target).position === 'static') {
+            target.classList.add('progress-guide-highlight--static');
+          }
+          guide.highlight = target;
+        }
+        positionGuideCard(target);
+        if (guideNext) guideNext.focus();
+      });
+    });
+  }
+
+  function rememberGuideCompletion() {
+    try { localStorage.setItem(GUIDE_STORAGE_KEY, '1'); } catch (_) {}
+  }
+
+  function endGuide(remember, returnFocus) {
+    if (!guide.active) return;
+    var focusTarget = guide.lastFocus || guideLaunch;
+    clearGuideHighlight();
+    guide.active = false;
+    guide.project = null;
+    delete state.openPanels[GUIDE_PROJECT_ID];
+    state.activeProjectId = guide.previousProjectId;
+    guide.previousProjectId = '';
+    if (guideLayer) guideLayer.hidden = true;
+    setProjectNavOpen(false, false);
+    if (remember) rememberGuideCompletion();
+    renderBoard();
+
+    if (returnFocus && focusTarget && document.contains(focusTarget)) {
+      window.requestAnimationFrame(function () { focusTarget.focus(); });
+    }
+  }
+
+  function startGuide() {
+    if (!state.activeMemberId || guide.active || !guideLayer || !guideCard) return;
+    guide.active = true;
+    guide.step = 0;
+    guide.project = makeGuideProject();
+    guide.lastFocus = document.activeElement;
+    guide.previousProjectId = state.activeProjectId;
+    state.activeProjectId = GUIDE_PROJECT_ID;
+    guideLayer.hidden = false;
+    renderBoard();
+    renderGuideStep(0);
+  }
+
+  function maybeStartGuide() {
+    try {
+      if (localStorage.getItem(GUIDE_STORAGE_KEY) === '1') return;
+    } catch (_) {}
+    window.setTimeout(startGuide, 450);
+  }
+
+  function trapGuideFocus(event) {
+    if (!guideCard || event.key !== 'Tab') return;
+    var controls = guideCard.querySelectorAll('button:not([disabled]), [href], input, select, textarea');
+    var focusable = Array.prototype.filter.call(controls, function (node) {
+      return !node.hidden && node.offsetParent !== null;
+    });
+    if (!focusable.length) return;
+    var first = focusable[0];
+    var last = focusable[focusable.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  }
+
   /* ---------- membership helpers ---------- */
 
   function isProjectMember(project, memberId) {
@@ -504,6 +785,7 @@
   }
 
   function canEdit(project) {
+    if (isGuideProject(project)) return guide.active;
     return isProjectMember(project, state.activeMemberId);
   }
 
@@ -565,10 +847,11 @@
   }
 
   function visibleProjects() {
-    if (state.selectedMemberId === 'all') return state.projects.slice();
-    return state.projects.filter(function (project) {
+    var projects = state.selectedMemberId === 'all' ? state.projects.slice() : state.projects.filter(function (project) {
       return isProjectMember(project, state.selectedMemberId);
     });
+    if (guide.active && guide.project) projects.unshift(guide.project);
+    return projects;
   }
 
   function selectMemberView(memberId, scroll) {
@@ -632,7 +915,9 @@
     if (projectNavToggle) {
       projectNavToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
       projectNavToggle.setAttribute('aria-label', open ? '关闭课题导航' : '打开课题导航');
+      projectNavToggle.title = open ? '关闭课题导航' : '打开课题导航';
     }
+    if (projectNavToggleLabel) projectNavToggleLabel.textContent = open ? '关闭导航' : '课题导航';
     if (projectNavScrim) projectNavScrim.hidden = !open;
     if (!open && returnFocus && projectNavToggle) {
       try { projectNavToggle.focus({ preventScroll: true }); }
@@ -705,6 +990,7 @@
       var item = el('button', 'progress-project-nav-item');
       item.type = 'button';
       item.setAttribute('data-project-nav-id', String(project.id));
+      if (isGuideProject(project)) item.classList.add('progress-project-nav-item--guide');
 
       var marker = svgIcon(statusIconName(status));
       marker.classList.add('progress-project-nav-marker');
@@ -904,9 +1190,10 @@
     svg.setAttribute('focusable', 'false');
     var icons = {
       add: ['0 0 24 24', 'M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z'],
+      school: ['0 -960 960 960', 'M840-120v-480L520-760 200-600v240h-80v-280l400-200 400 200v520h-80ZM520-320 280-440v160l240 120 240-120v-160L520-320Z'],
       close: ['0 0 24 24', 'm18.3 5.71-1.41-1.42L12 9.17 7.11 4.29 5.7 5.71l4.89 4.88-4.89 4.89 1.41 1.41L12 12l4.89 4.89 1.41-1.41-4.89-4.89z'],
       analysis: ['0 -960 960 960', 'M291.5-468.5Q280-457 280-440v120q0 17 11.5 28.5T320-280q17 0 28.5-11.5T360-320v-120q0-17-11.5-28.5T320-480q-17 0-28.5 11.5Zm320-200Q600-657 600-640v320q0 17 11.5 28.5T640-280q17 0 28.5-11.5T680-320v-320q0-17-11.5-28.5T640-680q-17 0-28.5 11.5Zm-160 280Q440-377 440-360v40q0 17 11.5 28.5T480-280q17 0 28.5-11.5T520-320v-40q0-17-11.5-28.5T480-400q-17 0-28.5 11.5ZM200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-560H200v560Zm308.5-292Q520-503 520-520t-11.5-28.5Q497-560 480-560t-28.5 11.5Q440-537 440-520t11.5 28.5Q463-480 480-480t28.5-12Z'],
-      arrow_drop_down: ['0 -960 960 960', 'M459-381 314-526q-3-3-4.5-6.5T308-540q0-8 5.5-14t14.5-6h304q9 0 14.5 6t5.5 14q0 2-6 14L501-381q-5 5-10 7t-11 2q-6 0-11-2t-10-7Z'],
+      arrow_drop_down: ['0 -960 960 960', 'M480-344 240-584l56-56 184 184 184-184 56 56-240 240Z'],
       calendar: ['0 -960 960 960', 'M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-40q0-17 11.5-28.5T280-880q17 0 28.5 11.5T320-840v40h320v-40q0-17 11.5-28.5T680-880q17 0 28.5 11.5T720-840v40h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Zm0-480h560v-80H200v80Z'],
       chart: ['0 -960 960 960', 'M97-280q0-17 13-30l213-213q23-23 57-23t57 23l103 103 256-289q11-13 28.5-13t29.5 12q11 11 11.5 26.5T855-656L596-364q-23 26-57 27.5T480-360L380-460 170-250q-13 13-30 13t-30-13q-13-13-13-30Z'],
       checklist: ['0 -960 960 960', 'm221-313 142-142q12-12 28-11.5t28 12.5q11 12 11 28t-11 28L250-228q-12 12-28 12t-28-12l-86-86q-11-11-11-28t11-28q11-11 28-11t28 11l57 57Zm0-320 142-142q12-12 28-11.5t28 12.5q11 12 11 28t-11 28L250-548q-12 12-28 12t-28-12l-86-86q-11-11-11-28t11-28q11-11 28-11t28 11l57 57Zm339 353q-17 0-28.5-11.5T520-320q0-17 11.5-28.5T560-360h280q17 0 28.5 11.5T880-320q0 17-11.5 28.5T840-280H560Zm0-320q-17 0-28.5-11.5T520-640q0-17 11.5-28.5T560-680h280q17 0 28.5 11.5T880-640q0 17-11.5 28.5T840-600H560Z'],
@@ -930,7 +1217,7 @@
 
   function renderMemberChips(project, removable) {
     var wrap = el('div', 'project-member-chips');
-    if (!removable) wrap.classList.add('project-member-chips--summary');
+    wrap.classList.add(removable ? 'project-member-chips--editable' : 'project-member-chips--summary');
     var projectMembers = project.members || [];
     var memberIds = projectMembers.filter(function (id) {
       return String(id) !== String(leaderId);
@@ -961,7 +1248,9 @@
         remove.setAttribute('aria-label', '移除 ' + memberName(id));
         remove.appendChild(svgIcon('close'));
         remove.addEventListener('click', function () { removeMember(project.id, id); });
-        chip.appendChild(remove);
+        var removeSlot = el('span', 'member-chip-remove-slot');
+        removeSlot.appendChild(remove);
+        chip.appendChild(removeSlot);
       }
       wrap.appendChild(chip);
     });
@@ -985,7 +1274,13 @@
       option.textContent = member.label || member.name_zh || member.name_en;
       select.appendChild(option);
     });
-    field.appendChild(select);
+    var selectControl = el('span', 'project-member-select');
+    select.className = 'project-member-select-input';
+    selectControl.appendChild(select);
+    var selectCaret = svgIcon('arrow_drop_down');
+    selectCaret.classList.add('project-member-select-caret');
+    selectControl.appendChild(selectCaret);
+    field.appendChild(selectControl);
     form.appendChild(field);
 
     var submit = el('button', 'btn btn-filled', '邀请加入');
@@ -1470,12 +1765,19 @@
     var row = el('article', 'project-row');
     row.setAttribute('data-project-id', String(project.id));
     if (isEnded(project)) row.classList.add('project-row--ended');
+    if (isGuideProject(project)) row.classList.add('project-row--guide-demo');
 
     var head = el('div', 'project-row-head');
     var info = el('div', 'project-row-info');
     var titleRow = el('div', 'project-title-row');
     titleRow.appendChild(renderProjectTitle(project));
     titleRow.appendChild(renderStatusControl(project));
+    if (isGuideProject(project)) {
+      var demoBadge = el('span', 'project-demo-badge');
+      demoBadge.appendChild(svgIcon('school'));
+      demoBadge.appendChild(el('span', null, '演示'));
+      titleRow.appendChild(demoBadge);
+    }
     info.appendChild(titleRow);
 
     var dates = el('p', 'project-dates', '开始于 ' + formatDate(project.startDate));
@@ -1620,7 +1922,11 @@
     if (projectCreate) projectCreate.hidden = !ownView;
     if (!ownView) toggleCreatePanel(false);
 
-    if (projectCount) projectCount.textContent = projects.length + ' 个课题';
+    if (projectCount) {
+      projectCount.textContent = guide.active ?
+        Math.max(0, projects.length - 1) + ' 个课题 · 1 个演示' :
+        projects.length + ' 个课题';
+    }
 
     // Only prompt to create a project when it's actionable (own/all view).
     if (emptyState) {
@@ -2235,6 +2541,19 @@
         selectMemberView(state.activeMemberId || 'all', false);
       });
     }
+    if (guideLaunch) guideLaunch.addEventListener('click', startGuide);
+    if (guideSkip) {
+      guideSkip.addEventListener('click', function () { endGuide(true, true); });
+    }
+    if (guideBack) {
+      guideBack.addEventListener('click', function () { renderGuideStep(guide.step - 1); });
+    }
+    if (guideNext) {
+      guideNext.addEventListener('click', function () {
+        if (guide.step >= GUIDE_STEPS.length - 1) endGuide(true, true);
+        else renderGuideStep(guide.step + 1);
+      });
+    }
     if (projectToggle) {
       projectToggle.addEventListener('click', function () { toggleCreatePanel(); });
     }
@@ -2267,6 +2586,15 @@
       });
     }
     document.addEventListener('keydown', function (event) {
+      if (guide.active) {
+        if (event.key === 'Escape') {
+          event.preventDefault();
+          endGuide(true, true);
+        } else {
+          trapGuideFocus(event);
+        }
+        return;
+      }
       if (event.key === 'Escape' && projectRail && projectRail.classList.contains('is-open')) {
         setProjectNavOpen(false, true);
       }
