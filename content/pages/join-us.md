@@ -10,7 +10,3 @@ Application Form**, which can be downloaded below.
 
 - [Application Form — Undergraduate](/assets/files/forms/application-undergraduate.docx)
 - [Application Form — Graduate](/assets/files/forms/application-graduate.docx)
-
-Our lab is currently recruiting one **Postdoctoral Fellow**. For detailed
-information about the position, please see the
-[full announcement](/news/2026-03-30-postdoc-recruitment/).
