@@ -131,7 +131,13 @@ QUICK_NAV = [
      "desc": "Weekly literature digest"},
 ]
 
+# Canonical origin for the published site. Every page emits a rel=canonical
+# pointing here so search engines consolidate ranking signals onto this host
+# and drop stale duplicates from domains we no longer control.
+SITE_URL = "https://zju-eclab.github.io"
+
 SITE = {
+    "url": SITE_URL,
     "name": "Emotion & Culture Lab",
     "subtitle": "Emotion & Culture Lab · Zhejiang University",
     "wechat": "emotionculturelab",
@@ -143,6 +149,12 @@ SITE = {
 
 # ── front-matter parsing ───────────────────────────────────────────────────────
 _FM_RE = re.compile(r"^---\s*\n(.*?)\n---\s*\n?(.*)$", re.DOTALL)
+
+# Pages carrying a noindex robots directive are kept out of sitemap.xml.
+_NOINDEX_RE = re.compile(r'<meta name="robots" content="[^"]*noindex', re.I)
+
+# Clean URLs of every indexable page written this build; feeds sitemap.xml.
+SITEMAP_URLS: list[str] = []
 
 
 @dataclass
@@ -261,11 +273,17 @@ def copy_journal() -> None:
 
 
 def write_page(rel_url: str, html: str) -> None:
-    """Write `html` to a clean-URL location: '/about/' -> dist/about/index.html."""
+    """Write `html` to a clean-URL location: '/about/' -> dist/about/index.html.
+
+    Also records the URL for sitemap.xml, unless the page opted out of indexing
+    with a `robots: noindex` front-matter directive.
+    """
     rel = rel_url.strip("/")
     out = DIST / "index.html" if rel == "" else DIST / rel / "index.html"
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(html, encoding="utf-8")
+    if not _NOINDEX_RE.search(html):
+        SITEMAP_URLS.append(rel_url)
 
 
 def page_url(rel: Path) -> str:
@@ -313,6 +331,7 @@ def build_pages(env: Environment) -> None:
         slug = doc.meta.get("slug", rel.with_suffix("").as_posix())
         template = env.get_template(doc.meta.get("template", "page.html"))
         url = page_url(rel)
+        doc.meta["url"] = url
         ctx = dict(
             site=SITE,
             page=doc.meta,
@@ -341,7 +360,7 @@ def build_data_page(env: Environment, *, template: str, data_file: str,
     tmpl = env.get_template(template)
     html = tmpl.render(
         site=SITE,
-        page={"title": title, "slug": slug},
+        page={"title": title, "slug": slug, "url": url},
         data=data,
         accent=ACCENTS.get(slug, DEFAULT_ACCENT),
         complement=COMPLEMENTS.get(slug, ACCENTS.get(slug, DEFAULT_ACCENT)),
@@ -429,7 +448,7 @@ def build_news(env: Environment) -> None:
     list_tmpl = env.get_template("news-list.html")
     write_page("/news/", list_tmpl.render(
         site=SITE,
-        page={"title": "News", "slug": "news"},
+        page={"title": "News", "slug": "news", "url": "/news/"},
         posts=posts,
         accent=ACCENTS["news"],
         complement=COMPLEMENTS["news"],
@@ -439,6 +458,7 @@ def build_news(env: Environment) -> None:
     # individual posts
     post_tmpl = env.get_template("news-post.html")
     for p in posts:
+        p["meta"]["url"] = p["url"]
         write_page(p["url"], post_tmpl.render(
             site=SITE,
             page=p["meta"],
@@ -480,11 +500,40 @@ def build() -> None:
     build_news(env)
     build_404(env)
     copy_journal()
+    build_sitemap_and_robots()
     missing = validate_assets()
     if missing:
         print(f"Done — but {missing} asset reference(s) are broken (see above).")
     else:
         print("Done.")
+
+
+def build_sitemap_and_robots() -> None:
+    """Write sitemap.xml + robots.txt for the canonical host.
+
+    Both are needed to retire the old CNAME domain: the sitemap gives Google an
+    explicit, canonical URL list to recrawl, and robots.txt advertises it.
+    """
+    today = dt.date.today().isoformat()
+    lines = ['<?xml version="1.0" encoding="UTF-8"?>',
+             '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
+    for url in sorted(set(SITEMAP_URLS)):
+        lines.append("  <url>")
+        lines.append(f"    <loc>{SITE_URL}{url}</loc>")
+        lines.append(f"    <lastmod>{today}</lastmod>")
+        lines.append("  </url>")
+    lines.append("</urlset>")
+    (DIST / "sitemap.xml").write_text("\n".join(lines) + "\n", encoding="utf-8")
+    print(f"  built  /sitemap.xml  ({len(set(SITEMAP_URLS))} urls)")
+
+    robots = (
+        "User-agent: *\n"
+        "Allow: /\n"
+        "Disallow: /progress/\n"
+        f"\nSitemap: {SITE_URL}/sitemap.xml\n"
+    )
+    (DIST / "robots.txt").write_text(robots, encoding="utf-8")
+    print("  built  /robots.txt")
 
 
 def validate_assets() -> int:
