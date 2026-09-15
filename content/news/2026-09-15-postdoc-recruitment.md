@@ -5,32 +5,32 @@ category: Recruitment
 thumbnail: /assets/logo.svg
 slug: 2026-09-15-postdoc-recruitment
 excerpt: >-
-  The Emotion and Culture Lab at Zhejiang University invites applications from China and abroad for one Postdoctoral Fellow to study emotion, culture, and related psychological processes.
+  The Emotion and Culture Lab at Zhejiang University invites applications for one Postdoctoral Fellow to study emotion and culture.
 ---
 
 The Emotion and Culture Lab in the Department of Psychology and Behavioral
-Sciences at Zhejiang University invites applications from China and abroad for
-one **Postdoctoral Fellow**.
+Sciences at Zhejiang University invites applications for one **Postdoctoral
+Fellow**.
 
-The lab studies emotion and culture, focusing on how people express, perceive,
-and understand emotions, and how culture shapes emotional communication and
-social cognition. Our main research areas include emotion expression and
-perception, cross-cultural psychology, face perception, social cognition, and
-art and emotion.
+Our research examines how people express, perceive, and understand emotions,
+and how these processes are shaped by culture. Current work spans emotion
+expression and perception, cross-cultural psychology, face perception, social
+cognition, and emotion in the arts.
 
-We welcome early-career scholars with backgrounds in psychology or related
-disciplines who are interested in emotion and culture research. In addition to
-applicants with experience in emotion science or cross-cultural psychology, we
-welcome those from other related fields who wish to connect their expertise
-with the lab's research interests.
+We are looking for an early-career researcher who is interested in developing
+innovative research on emotion and culture. Applicants with backgrounds in
+emotion science or cross-cultural psychology are especially encouraged to
+apply. Candidates from other areas of psychology and related disciplines are
+also welcome.
 
-## Postdoctoral Supervisor
+## Supervisor
 
 **Dr. Xia Fang**  
-Researcher and Doctoral Supervisor  
 Department of Psychology and Behavioral Sciences, Zhejiang University
 
 ## Research Areas
+
+The lab's current research interests include:
 
 - Emotion expression and perception
 - Cross-cultural psychology
@@ -39,39 +39,46 @@ Department of Psychology and Behavioral Sciences, Zhejiang University
 - Art and emotion
 - Emotional communication and cultural differences
 
-## Job Description
+Research projects may examine emotional processes across multiple channels,
+including facial expressions, vocalizations, body movements, music, film, and
+visual art, as well as cultural similarities and differences in these processes.
 
-Drawing on their research background and interests, the postdoctoral fellow will
-conduct independent research aligned with the lab's research areas, with
-guidance from the supervisor. Main responsibilities include:
+## Position Description
 
-1. Formulate research questions about emotion, culture, and related psychological
-   processes, and design and conduct innovative studies.
-2. Carry out experimental design, data collection, statistical analysis, and
-   interpretation of research findings.
-3. Write high-quality academic papers and actively participate in academic
-   exchange in China and abroad.
-4. Actively apply for funding from the China Postdoctoral Science Foundation,
+The successful candidate will work with Dr. Xia Fang and members of the Emotion
+and Culture Lab while developing an independent research program that connects
+with the lab's broader interests.
+
+Responsibilities include:
+
+1. Developing research questions related to emotion, culture, and associated
+   psychological processes.
+2. Designing and conducting empirical studies, including experimental design,
+   data collection, statistical analysis, and interpretation of findings.
+3. Preparing manuscripts for publication in peer-reviewed journals and
+   presenting research at national and international conferences.
+4. Contributing to ongoing projects in the lab and collaborating with lab
+   members and external research partners.
+5. Developing new projects that integrate the fellow's own expertise with the
+   lab's research on emotion and culture.
+6. Actively applying for funding from the China Postdoctoral Science Foundation,
    the National Natural Science Foundation of China (NSFC), and other relevant
    research funding programs.
-5. Contribute to the lab's research projects and collaborate with team members.
-6. Explore new research topics that connect the fellow's interests and expertise
-   with the lab's existing research areas.
 
 The lab encourages postdoctoral fellows to develop their own distinctive
 research directions and supports cross-cultural, interdisciplinary, and
 international collaborative research.
 
-## Qualifications and Requirements
+## Qualifications
 
 Applicants should meet Zhejiang University's requirements for postdoctoral
 appointments and have the following qualifications:
 
-1. Completion of, or near completion of, a Ph.D. in Psychology or a related
+1. Completion of, or near completion of, a Ph.D. in psychology or a related
    discipline, with solid research training and research achievements relevant
    to psychology.
 2. Strong ability to conduct research independently, including study design,
-   data analysis, and academic paper writing.
+   data analysis, and academic writing.
 3. Sound scientific literacy, professional commitment, and a strong sense of
    responsibility; a proactive approach to work and a strong team spirit.
 4. Familiarity with statistical analysis methods and data analysis tools used
@@ -79,30 +86,30 @@ appointments and have the following qualifications:
 5. Strong English reading and academic writing skills, as well as effective
    communication skills in English.
 
-Preference will be given to applicants with research experience in emotion
-science, cross-cultural psychology, social psychology, face and social
-perception, affective science, or related areas.
+Research experience in emotion science, affective science, cross-cultural
+psychology, social psychology, face perception, social perception, or related
+areas is particularly welcome.
 
-We also welcome outstanding applicants from other related research fields whose
-expertise can contribute meaningfully to research on emotion, culture, or
-social cognition.
+Applicants from other relevant disciplines are also encouraged to apply if
+their methodological or theoretical expertise can contribute to research on
+emotion, culture, or social cognition.
 
 ## Salary and Benefits
 
-1. Compensation and benefits are implemented in accordance with Zhejiang
+1. Compensation and benefits are provided in accordance with Zhejiang
    University's postdoctoral policies (see the
    [Zhejiang University Postdoctoral website](http://hr.zju.edu.cn/postdoctor/)).
-2. Postdoctoral fellows enjoy the unified benefits provided by the state and by
-   Zhejiang University, including five social insurances and one housing fund,
+2. Postdoctoral fellows receive the standard benefits provided by the state and
+   by Zhejiang University, including five types of social insurance and a housing fund,
    eligibility to rent university faculty apartments at preferential rates,
    Hangzhou household registration, childcare enrollment support, etc.
 3. In line with Zhejiang University's postdoctoral management regulations,
-   fellows who have completed two years in post may apply for senior
+   fellows who have completed two years in the position may apply for senior
    professional titles.
 4. The lab provides strong experimental and research support, as well as
    opportunities to attend high-level academic conferences in China and abroad.
-5. Fellows may serve as Principal Investigators to apply for the National Natural
-   Science Foundation of China (NSFC) and the China Postdoctoral Science
+5. Fellows may apply as principal investigators for funding from the National
+   Natural Science Foundation of China (NSFC) and the China Postdoctoral Science
    Foundation.
 6. The university provides postdoctoral apartments (available for rent at
    preferential rates).
@@ -128,7 +135,6 @@ Department of Psychology and Behavioral Sciences, Zhejiang University
 
 ## Additional Information
 
-Applications will be screened against the position requirements. Shortlisted
-candidates will be notified by email and invited to an interview.
-
-Application materials will not be returned.
+Applications will be reviewed on a rolling basis. Candidates whose
+qualifications and research interests are a strong match for the position will
+be contacted by email for an interview.
