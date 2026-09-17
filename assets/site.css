@@ -686,43 +686,106 @@ section[id], .page-prose [id] { scroll-margin-top: calc(var(--appbar-h) + 1.5rem
 .prose a:hover { text-decoration: none; }
 .prose strong { color: var(--ink); }
 
-/* ── research interests ── */
-.research { margin-bottom: 4rem; }
-.research-card {
-  position: relative; overflow: hidden;
-  background: #fff; border: 1px solid #fff;
-  border-radius: var(--radius-m); padding: 2rem 2.1rem; box-shadow: var(--shadow-soft);
-  transition: box-shadow 0.3s var(--ease-standard), transform 0.3s var(--ease-spring);
+/* ── Research areas, approach and highlights ── */
+.research { margin-top: 1.5rem; margin-bottom: 4.5rem; }
+.research-head {
+  display: grid; grid-template-columns: 492px minmax(0, 1fr); align-items: end;
+  gap: 2rem; padding-bottom: 2.5rem;
 }
-[data-theme="dark"] .research-card {
-  background: var(--surface-2);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+.research-title {
+  font-family: var(--brand);
+  font-size: clamp(2.5rem, 4.5vw, 3.5rem); font-weight: 400;
+  letter-spacing: -0.045em; line-height: 1.05; color: var(--ink);
 }
-/* hover: see @media (hover: hover) block at end of file */
-.research-intro { color: var(--ink-soft); line-height: 1.85; max-width: 80ch; margin-bottom: 1.75rem; position: relative; z-index: 1; }
-.research-areas { display: flex; flex-direction: column; gap: 1.75rem; position: relative; z-index: 1; }
+.research-intro { color: var(--ink-soft); line-height: 1.75; max-width: 47ch; }
+.research-area {
+  display: grid; grid-template-columns: 200px 260px minmax(0, 1fr);
+  grid-template-areas: "art title description"; align-items: center;
+  gap: 2rem; padding: 2rem 0; border-top: 1px solid var(--outline);
+}
+.research-area:last-child { border-bottom: 1px solid var(--outline); }
 .research-area-title {
-  font-size: 0.78rem; font-weight: 700; letter-spacing: var(--label-track); text-transform: uppercase;
-  color: var(--primary); margin-bottom: 0.8rem;
-  padding-bottom: 0.5rem; border-bottom: 2px solid var(--outline-soft);
-  position: relative;
+  grid-area: title;
+  font-family: var(--brand);
+  font-size: clamp(1.6rem, 2.4vw, 2rem); font-weight: 400;
+  letter-spacing: -0.035em; line-height: 1.15; color: var(--ink);
+  text-wrap: balance;
 }
-.research-area-title::after {
-  content: ""; position: absolute; bottom: -2px; left: 0; width: 40px; height: 2px;
-  background: var(--gradient-primary); border-radius: var(--shape-full);
+.research-illustration { grid-area: art; width: 100%; max-width: 200px; }
+.research-illustration svg { display: block; width: 100%; height: auto; overflow: visible; }
+.research-illustration .art-red { color: var(--logo-red); }
+.research-illustration .art-orange { color: var(--logo-orange); }
+.research-illustration .art-blue { color: var(--logo-blue); }
+.research-illustration .art-line {
+  fill: none; stroke: currentColor; stroke-width: 2.5;
+  stroke-linecap: round; stroke-linejoin: round;
 }
-.research-list { list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 0.5rem 1.5rem; }
-.research-list li {
-  position: relative; padding-left: 1.3rem; font-size: 0.92rem; line-height: 1.5; color: var(--ink-soft);
-  transition: color 0.2s, transform 0.2s var(--ease-spring);
+.research-illustration .art-fill { fill: currentColor; }
+.research-illustration .art-tint { fill: currentColor; opacity: 0.12; }
+.research-illustration .art-paper { fill: var(--bg); }
+.research-description { grid-area: description; color: var(--ink-soft); font-size: 0.96rem; line-height: 1.8; }
+.research-description strong, .hero-lead strong { color: var(--ink); font-weight: 650; }
+.research-approach { margin-bottom: 4rem; }
+.approach-copy { max-width: 85ch; }
+.highlights { padding-bottom: 4rem; }
+.highlights-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1.75rem; }
+.highlights-head .section-h { margin-bottom: 0; }
+.highlights-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.75rem; }
+.highlight-card {
+  display: flex; flex-direction: column;
+  padding-bottom: 1.2rem;
+  text-decoration: none; color: var(--ink); outline-offset: 6px;
 }
-/* hover: see @media (hover: hover) block at end of file */
-.research-list li::before {
-  content: ""; position: absolute; left: 0; top: 0.55em; width: 7px; height: 7px;
-  border-radius: var(--shape-full); background: var(--gradient-primary);
-  transition: transform 0.3s var(--ease-spring);
+.highlight-media {
+  aspect-ratio: 3 / 2; overflow: hidden; border-radius: var(--shape-xs);
+  background: var(--surface-2);
 }
-/* hover: see @media (hover: hover) block at end of file */
+.highlight-media img {
+  display: block; width: 100%; height: 100%; object-fit: cover;
+  transition: transform 0.4s var(--ease-standard);
+}
+.highlight-media--contain img { object-fit: contain; padding: 0.6rem; }
+.highlight-body { flex: 1; display: flex; flex-direction: column; align-items: flex-start; gap: 0.85rem; padding-top: 1.15rem; }
+.highlight-meta {
+  display: flex; justify-content: space-between; gap: 0.5rem 1rem; flex-wrap: wrap;
+  width: 100%; font-size: 0.72rem; color: var(--muted); line-height: 1.4;
+}
+.highlight-meta span { font-weight: 650; letter-spacing: 0.07em; text-transform: uppercase; color: var(--ink-soft); }
+.highlight-card h3 { font-size: 1.23rem; font-weight: 700; line-height: 1.35; letter-spacing: -0.015em; text-wrap: balance; }
+.highlight-card p { color: var(--ink-soft); font-size: 0.92rem; line-height: 1.7; }
+.highlight-cta {
+  display: flex; align-items: center; justify-content: space-between; width: 100%;
+  margin-top: auto; padding-top: 0.6rem; color: var(--ink); font-size: 0.86rem; font-weight: 650;
+}
+.highlight-cta span { font-size: 1.3rem; font-weight: 400; transition: transform 0.25s var(--ease-standard); }
+.highlight-card:focus-visible { outline: 2px solid var(--primary); }
+@media (max-width: 1050px) {
+  .research-head { grid-template-columns: 1fr; gap: 1.25rem; padding-bottom: 2rem; }
+  .research-area {
+    grid-template-columns: 176px minmax(0, 1fr);
+    grid-template-areas: "art title" "art description";
+    gap: 0.9rem 1.75rem;
+  }
+}
+@media (max-width: 760px) {
+  .highlights-grid { grid-template-columns: 1fr; gap: 2rem; }
+  .highlights-head { align-items: flex-start; flex-direction: column; }
+  .highlight-card h3 { text-wrap: pretty; }
+}
+@media (max-width: 600px) {
+  .research-area {
+    grid-template-columns: 128px minmax(0, 1fr);
+    grid-template-areas: "art title" "description description";
+    gap: 1.15rem 1rem; padding: 1.75rem 0;
+  }
+  .research-area-title { font-size: clamp(1.4rem, 6vw, 1.75rem); text-wrap: pretty; }
+  .research-description { font-size: 1rem; }
+}
+@media (max-width: 360px) {
+  .research-area { grid-template-columns: 1fr; grid-template-areas: "art" "title" "description"; }
+  .research-illustration { width: 156px; justify-self: center; }
+  .research-area-title { font-size: 1.7rem; text-align: center; text-wrap: balance; }
+}
 
 /* ══════════════════════════════════════════════
    Section dividers
@@ -1647,6 +1710,9 @@ section[id], .page-prose [id] { scroll-margin-top: calc(var(--appbar-h) + 1.5rem
    Prevents "stuck" hover states on touchscreens.
    ══════════════════════════════════════════════ */
 @media (hover: hover) and (pointer: fine) {
+  .highlight-card:hover h3 { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.2em; }
+  .highlight-card:hover .highlight-media:not(.highlight-media--contain) img { transform: scale(1.025); }
+  .highlight-card:hover .highlight-cta span { transform: translate(2px, -2px); }
   /* appbar brand logo */
   .appbar-brand:hover .appbar-logo svg,
   .appbar-brand:hover .appbar-logo img {
@@ -1699,11 +1765,6 @@ section[id], .page-prose [id] { scroll-margin-top: calc(var(--appbar-h) + 1.5rem
 
   /* prose links */
   .prose a:hover::after { transform: scaleX(1); transform-origin: left; }
-
-  /* research */
-  .research-card:hover { box-shadow: var(--shadow-warm); transform: translateY(-6px) scale(1.01); }
-  .research-list li:hover { color: var(--ink); transform: translateX(4px); }
-  .research-list li:hover::before { transform: scale(1.4); }
 
   /* footer */
   .footer-email:hover::after { transform: scaleX(1); transform-origin: left; }

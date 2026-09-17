@@ -57,9 +57,18 @@ dist/                    generated output (git-ignored)
 - **Images / documents**: drop files into `assets/img/` or `assets/files/` and
   reference them with an absolute path (e.g. `/assets/img/people/name.jpg`).
 
-Resources combines the Research Digest (`/journal/`) and four emotion databases.
-Database links are always visible and indented beneath Emotion Databases in
-the desktop and mobile navigation.
+The Research homepage uses the copy in `content/pages/home.md`; its `highlights`
+list selects three articles by their news slugs, displayed newest first. The archive
+and individual articles retain their `/news/` URLs. Resources brings together
+the Research Digest (`/journal/`) and the four emotion databases. In navigation,
+the four database links are always visible and indented beneath Emotion
+Databases, on both desktop and mobile.
+
+Highlights use each post's `thumbnail`, with optional `highlight_image` and
+`highlight_image_alt` overrides. Use `highlight_image_fit: contain` for posters
+whose text should remain visible. Research-area drawings live in
+`templates/illustrations/`, are included by `templates/research-art.html`, and
+use the three lab-logo colors.
 
 Join Us links to the permanent `/join-us/postdoctoral-positions/` page and to
 sections for graduate students, research assistants / interns, and visitors.

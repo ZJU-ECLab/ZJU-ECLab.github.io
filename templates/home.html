@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "research-art.html" import research_art %}
 
 {% block title %}{{ site.name }} · Zhejiang University{% endblock %}
 
@@ -12,12 +13,12 @@
     <!-- Left: identity + statement -->
     <div class="hero-copy">
       <span class="hero-eyebrow">浙江大学 · Zhejiang University</span>
-      <h1 class="hero-title">Emotion&nbsp;&amp; Culture Lab</h1>
+      <h1 class="hero-title">{{ page.hero.title }}</h1>
       {% if page.hero.tagline %}
       <p class="hero-tagline">{{ page.hero.tagline }}</p>
       {% endif %}
       {% if page.hero.lead %}
-      <p class="hero-lead">{{ page.hero.lead }}</p>
+      <p class="hero-lead">{{ page.hero.lead | inline_md }}</p>
       {% endif %}
       {% if page.hero.actions %}
       <div class="hero-actions">
@@ -36,35 +37,60 @@
     </figure>
   </section>
 
-  <!-- ── Welcome / intro prose ── -->
-  {% if content %}
-  <section class="home-intro prose reveal">
-    {{ content | safe }}
-  </section>
-  {% endif %}
 </div>
 
-<!-- ── Research interests & fields ── -->
-{% if page.research %}
-<section class="research">
-  <h2 class="section-h reveal">{{ page.research.heading }}</h2>
-  <article class="research-card reveal">
-    {% if page.research.intro %}
+<section class="research" id="research-areas" aria-labelledby="research-heading">
+  <div class="research-head reveal">
+    <h2 class="research-title" id="research-heading">{{ page.research.heading }}</h2>
     <p class="research-intro">{{ page.research.intro }}</p>
-    {% endif %}
-    <div class="research-areas">
-      {% for area in page.research.areas %}
-      <div class="research-area">
-        <h3 class="research-area-title">{{ area.name }}</h3>
-        <ul class="research-list reveal-stagger">
-          {% for topic in area.topics %}
-          <li>{{ topic }}</li>
-          {% endfor %}
-        </ul>
+  </div>
+  <div class="research-areas">
+    {% for area in page.research.areas %}
+    <article class="research-area reveal">
+      <div class="research-illustration" aria-hidden="true">{{ research_art(area.illustration) }}</div>
+      <h3 class="research-area-title">{{ area.name }}</h3>
+      <p class="research-description">{{ area.description | inline_md }}</p>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="research-approach" aria-labelledby="approach-heading">
+  <h2 class="section-h reveal" id="approach-heading">{{ page.approach.heading }}</h2>
+  <div class="approach-copy prose reveal">
+    {% for paragraph in page.approach.paragraphs %}
+    <p>{{ paragraph | inline_md }}</p>
+    {% endfor %}
+  </div>
+</section>
+
+{% if highlights %}
+<section class="highlights" id="recent-highlights" aria-labelledby="highlights-heading">
+  <div class="highlights-head reveal">
+    <h2 class="section-h" id="highlights-heading">Recent Highlights</h2>
+    <a class="btn btn-text" href="/news/">All highlights <span aria-hidden="true">→</span></a>
+  </div>
+  <div class="highlights-grid reveal-stagger">
+    {% for post in highlights %}
+    <a class="highlight-card" href="{{ post.url }}">
+      {% set cover = post.meta.highlight_image | default(post.meta.thumbnail) %}
+      {% if cover %}
+      <div class="highlight-media{% if post.meta.highlight_image_fit == 'contain' %} highlight-media--contain{% endif %}">
+        <img src="{{ cover }}" alt="{{ post.meta.highlight_image_alt | default('') }}" loading="lazy" decoding="async" />
       </div>
-      {% endfor %}
-    </div>
-  </article>
+      {% endif %}
+      <div class="highlight-body">
+        <div class="highlight-meta">
+          <time datetime="{{ post.date }}">{{ post.date_display }}</time>
+          {% if post.meta.category %}<span>{{ post.meta.category }}</span>{% endif %}
+        </div>
+        <h3>{{ post.meta.highlight_title | default(post.meta.title) }}</h3>
+        <p>{{ post.meta.excerpt | inline_md }}</p>
+        <span class="highlight-cta">Read more <span aria-hidden="true">↗</span></span>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
 </section>
 {% endif %}
 {% endblock %}

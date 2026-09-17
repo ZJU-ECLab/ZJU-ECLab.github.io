@@ -2,6 +2,9 @@
 title: "Recruitment | Postdoctoral Fellow Position in the Emotion and Culture Lab"
 date: 2026-09-15
 category: Recruitment
+highlight_title: Postdoctoral Position Open
+highlight_image_alt: Emotion & Culture Lab logo
+highlight_image_fit: contain
 thumbnail: /assets/logo.svg
 slug: 2026-09-15-postdoc-recruitment
 excerpt: >-

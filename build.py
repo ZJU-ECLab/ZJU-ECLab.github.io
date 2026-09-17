@@ -381,6 +381,15 @@ def build_pages(env: Environment, posts: list[dict]) -> None:
             accent=doc.meta.get("accent", ACCENTS.get(slug, DEFAULT_ACCENT)),
             complement=COMPLEMENTS.get(slug, ACCENTS.get(slug, DEFAULT_ACCENT)),
         )
+        if slug == "home":
+            highlight_slugs = doc.meta.get("highlights", [])
+            selected_posts = (
+                [posts_by_slug[key] for key in highlight_slugs]
+                if highlight_slugs else posts[:3]
+            )
+            ctx["highlights"] = sorted(
+                selected_posts, key=lambda post: str(post["date"]), reverse=True
+            )
         # Keep permanent recruitment details and the announcement in sync.
         if doc.meta.get("news_post"):
             ctx["content"] += posts_by_slug[doc.meta["news_post"]]["html"]

@@ -1,65 +1,75 @@
 ---
-title: Home
+title: Research
 slug: home
 template: home.html
 description: >-
-  The Emotion & Culture Lab at Zhejiang University studies how people express
-  and perceive emotion across cultures.
+  We study how emotions are expressed, perceived, and communicated across cultures.
+  Explore our research in emotion science and cultural psychology at Zhejiang University.
 
 hero:
   title: Emotion & Culture Lab
   tagline: Understanding emotion across expressions and cultures.
   lead: >-
-    At Zhejiang University, we study how people express and perceive emotion —
-    across faces, voices, bodies, and the arts — and how culture shapes every
-    step of that process.
+    We study how **emotions are expressed, perceived, and communicated across cultures**.
+    Our research examines emotional communication across multiple channels and
+    forms — from **facial expressions, voices, and body movements to drawings,
+    music, and film**. Across these contexts, we investigate what is shared across
+    cultures, what varies, and how **culture shapes emotional experience,
+    expression, and understanding**.
   actions:
-    - { label: "Read our research", href: "/publications/" }
-    - { label: "Meet the lab", href: "/people/" }
-
-journal:
-  eyebrow: Weekly Journal
-  title: 东西情报 · ECLab News
-  desc: >-
-    Our weekly digest of the latest emotion-psychology research — recent papers
-    organised by keyword and journal, each with a concise Chinese summary.
-  cta: Browse the latest issue
-  href: /journal/
+    - { label: "Our Research", href: "/#research-areas" }
+    - { label: "Join Us", href: "/join-us/" }
 
 research:
-  heading: Research Interests & Fields
+  heading: Research Areas
   intro: >-
-    We investigate emotion expression, emotion perception, and how culture shapes
-    these processes — as well as how emotion affects social cognition and
-    behaviour — by combining methods such as facial-movement analysis, eye
-    tracking, and mouse tracking with statistical approaches including
-    multi-level modelling, Bayesian methods, and machine learning. The emotion
-    channels we examine include facial expressions, vocal bursts, and speech
-    prosody, as well as the arts (music, painting, dance, and more).
+    Our research spans four interconnected areas in emotion science and cultural psychology.
   areas:
-    - name: Emotional Science
-      topics:
-        - Static / dynamic facial expression generation and perception
-        - Spontaneous expressions and performance expressions
-        - Emotional speech production and perception
-        - Emotion production and perception across artistic forms (music, painting, dance…)
-        - Emotion experience induced by different artistic forms
-        - Emotion regulation
-        - The influence of emotion on basic and social cognitive processes
-    - name: Cross-cultural Comparison
-      topics:
-        - Similarities and differences of emotional processes across cultures
+    - name: Culture and Emotion
+      illustration: culture
+      description: >-
+        We investigate how **culture shapes emotional experience, expression,
+        perception, and understanding**. Our work examines both similarities
+        and variation across cultures, from widely studied emotions to more
+        complex and culturally salient emotional experiences.
+    - name: Multimodal Emotion Communication
+      illustration: multimodal
+      description: >-
+        We study how emotions are communicated through **faces and voices**,
+        and how people use information from different channels to understand
+        others' emotions. Our work includes facial expressions, vocal bursts,
+        speech prosody, body movements, and the integration of emotional signals
+        across modalities.
+    - name: Emotion in the Arts
+      illustration: arts
+      description: >-
+        We examine how emotions are **expressed, perceived, and experienced
+        through artistic forms**, including **drawing, music, film, and dance**.
+        We are particularly interested in how artistic forms communicate emotion
+        across cultures and how cultural experience shapes their interpretation.
+    - name: Emotion and Social Cognition
+      illustration: social
+      description: >-
+        We investigate how **emotion and culture shape the way people perceive,
+        evaluate, and understand others**. This work examines how emotional,
+        contextual, and temporal information is integrated in social judgment
+        and impression formation.
+
+highlights:
+  - 2026-09-15-postdoc-recruitment
+  - 2026-07-15-emotion-culture-social-cognition-symposium
+  - 2026-06-22-isre-early-career-award
+
+approach:
+  heading: Research Approach
+  paragraphs:
+    - >-
+      We combine **behavioural experiments** with methods such as
+      **facial-movement analysis, acoustic analysis, eye tracking, and mouse
+      tracking**, alongside statistical and computational approaches including
+      **multilevel modelling, Bayesian methods, and machine learning**.
+    - >-
+      Across our work, we aim to connect carefully controlled experiments with
+      questions about how emotion operates in the diverse ways people
+      communicate and interact in everyday life.
 ---
-
-**Welcome to the Emotion and Culture Lab!**
-
-We focus on the fascinating intersection of emotion science and cross-cultural
-psychology. We delve into how individuals express and perceive emotions through
-various channels — including bodily signals such as facial expressions,
-vocalizations, and body movements, as well as artistic forms like music, film,
-and painting. Furthermore, we investigate how cultural backgrounds — particularly
-those of East Asian and North American / Western European cultures — influence
-these emotional communication processes.
-
-If you're passionate about understanding how emotion and culture intertwine
-across various forms of expression, we invite you to [join us](/join-us/)!
