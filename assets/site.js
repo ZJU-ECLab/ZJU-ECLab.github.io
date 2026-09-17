@@ -671,4 +671,39 @@
       }
     });
   })();
+
+  // ── News carousel (matches alumni carousel) ──
+  (function initNewsCarousels() {
+    var carousels = document.querySelectorAll('.news-carousel');
+    Array.prototype.forEach.call(carousels, function (root) {
+      var track = root.querySelector('.news-carousel-track');
+      var prev = root.querySelector('.news-carousel-btn.prev');
+      var next = root.querySelector('.news-carousel-btn.next');
+      if (!track) return;
+
+      function step() {
+        // scroll by roughly one item width
+        var item = track.querySelector('.news-carousel-slide');
+        return item ? item.getBoundingClientRect().width + 16 : track.clientWidth * 0.8;
+      }
+      function update() {
+        var maxScroll = track.scrollWidth - track.clientWidth - 1;
+        if (prev) prev.disabled = track.scrollLeft <= 0;
+        if (next) next.disabled = track.scrollLeft >= maxScroll;
+        // hide both buttons entirely if nothing overflows
+        var overflows = track.scrollWidth > track.clientWidth + 2;
+        if (prev) prev.hidden = !overflows;
+        if (next) next.hidden = !overflows;
+      }
+      if (prev) prev.addEventListener('click', function () { track.scrollLeft -= step(); });
+      if (next) next.addEventListener('click', function () { track.scrollLeft += step(); });
+      track.addEventListener('scroll', function () {
+        requestAnimationFrame(update);
+      }, { passive: true });
+      window.addEventListener('resize', function () { requestAnimationFrame(update); });
+      // run after images may have changed layout
+      update();
+      window.addEventListener('load', update);
+    });
+  })();
 })();

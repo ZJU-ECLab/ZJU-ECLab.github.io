@@ -57,6 +57,12 @@ dist/                    generated output (git-ignored)
 - **Images / documents**: drop files into `assets/img/` or `assets/files/` and
   reference them with an absolute path (e.g. `/assets/img/people/name.jpg`).
 
+Article images support Markdown attributes such as
+`![Description](/assets/img/example.webp){.news-img-center width="100%"}`
+(`.news-img-left` and `.news-img-right` are also supported). Standalone images
+open in the shared lightbox. The symposium article demonstrates paired image
+groups and horizontally scrollable carousels.
+
 ## Build & preview
 
 ```bash

@@ -166,7 +166,12 @@ class Document:
 
 
 def parse_markdown(path: Path) -> Document:
-    """Split YAML front-matter from Markdown body and render the body to HTML."""
+    """Split YAML front-matter from Markdown body and render the body to HTML.
+
+    Supports inline image placement with attributes:
+    ![alt text](/path/to/image.jpg){width="500px" .news-img-center}
+    ![alt text](/path/to/image.jpg){width="50%" .news-img-left}
+    """
     raw = path.read_text(encoding="utf-8")
     meta: dict = {}
     body = raw
@@ -179,7 +184,55 @@ def parse_markdown(path: Path) -> Document:
         output_format="html5",
     )
     html = renderer.convert(body)
+    # Post-process images to add zoomable class and data attribute
+    html = _process_inline_images(html)
     return Document(meta=meta, html=html, source=path)
+
+
+def _process_inline_images(html: str) -> str:
+    """Post-process inline images to add zoomable functionality and styling.
+
+    Wraps images in a container div and adds the zoomable class.
+    The attr_list extension handles width and class attributes.
+    """
+    # Pattern to match img tags that are in <p> tags (inline images)
+    img_pattern = re.compile(
+        r'<p>(<img[^>]+>)</p>',
+        re.IGNORECASE
+    )
+
+    def replace_img(match):
+        img_tag = match.group(1)
+        # Add zoomable class and data-zoomable attribute if not already present
+        if 'class=' in img_tag:
+            img_tag = re.sub(
+                r'class="([^"]*?)"',
+                r'class="\1 zoomable"',
+                img_tag
+            )
+        else:
+            img_tag = img_tag.replace('<img', '<img class="zoomable"')
+
+        # Add data-zoomable attribute
+        src_match = re.search(r'src="([^"]+)"', img_tag)
+        if src_match and 'data-zoomable' not in img_tag:
+            img_tag = img_tag.replace('<img', f'<img data-zoomable="{src_match.group(1)}"')
+
+        # Check for alignment classes
+        is_left = 'news-img-left' in img_tag
+        is_right = 'news-img-right' in img_tag
+
+        wrapper_class = 'news-img-wrapper'
+        if is_left:
+            wrapper_class += ' left'
+        elif is_right:
+            wrapper_class += ' right'
+        else:
+            wrapper_class += ' center'
+
+        return f'<div class="{wrapper_class}">{img_tag}</div>'
+
+    return img_pattern.sub(replace_img, html)
 
 
 def load_yaml(path: Path) -> dict | list:
