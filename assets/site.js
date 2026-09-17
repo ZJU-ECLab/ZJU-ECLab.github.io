@@ -75,6 +75,9 @@
     setDrawer(!drawer.classList.contains('open'));
   });
   if (scrim) scrim.addEventListener('click', function () { setDrawer(false); });
+  if (drawer) drawer.addEventListener('click', function (e) {
+    if (e.target.closest('a')) setDrawer(false);
+  });
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') setDrawer(false);
   });
@@ -502,6 +505,8 @@
     if (!navItems.length) return;
     
     var openSubmenu = null;
+    var openNavItem = null;
+    var returningFocus = false;
     var closeTimer = null;
     
     function positionSubmenu(navItem, submenu) {
@@ -543,11 +548,7 @@
     function showSubmenu(navItem, submenu) {
       // Close any other open submenu
       if (openSubmenu && openSubmenu !== submenu) {
-        openSubmenu.classList.remove('open');
-        var prevNavItem = Array.prototype.find.call(navItems, function(item) {
-          return item.querySelector('.nav-submenu') === openSubmenu;
-        });
-        if (prevNavItem) prevNavItem.classList.remove('submenu-open');
+        hideSubmenu(openNavItem, openSubmenu, true);
       }
       
       clearTimeout(closeTimer);
@@ -557,22 +558,27 @@
       }
       submenu.classList.add('open');
       navItem.classList.add('submenu-open');
+      navItem.querySelector('.nav-link').setAttribute('aria-expanded', 'true');
       openSubmenu = submenu;
+      openNavItem = navItem;
     }
     
     function hideSubmenu(navItem, submenu, immediate) {
       clearTimeout(closeTimer);
-      if (immediate) {
+      function close() {
         submenu.classList.remove('open');
         navItem.classList.remove('submenu-open');
-        if (openSubmenu === submenu) openSubmenu = null;
+        navItem.querySelector('.nav-link').setAttribute('aria-expanded', 'false');
+        if (openSubmenu === submenu) {
+          openSubmenu = null;
+          openNavItem = null;
+        }
+      }
+      if (immediate) {
+        close();
       } else {
         // Delay to allow moving from link to submenu
-        closeTimer = setTimeout(function() {
-          submenu.classList.remove('open');
-          navItem.classList.remove('submenu-open');
-          if (openSubmenu === submenu) openSubmenu = null;
-        }, 150);
+        closeTimer = setTimeout(close, 150);
       }
     }
     
@@ -606,7 +612,15 @@
       
       // Show on focus (keyboard navigation)
       navLink.addEventListener('focus', function() {
-        showSubmenu(navItem, submenu);
+        if (!returningFocus) showSubmenu(navItem, submenu);
+      });
+
+      navLink.addEventListener('keydown', function(e) {
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          showSubmenu(navItem, submenu);
+          submenu.querySelector('a').focus();
+        }
       });
       
       // Keep open when focusing items in submenu
@@ -647,12 +661,12 @@
     // Close on Escape key
     document.addEventListener('keydown', function(e) {
       if (e.key === 'Escape' && openSubmenu) {
-        openSubmenu.classList.remove('open');
-        var navItem = Array.prototype.find.call(navItems, function(item) {
-          return item.querySelector('.nav-submenu') === openSubmenu;
-        });
-        if (navItem) navItem.classList.remove('submenu-open');
-        openSubmenu = null;
+        e.preventDefault();
+        var trigger = openNavItem.querySelector('.nav-link');
+        hideSubmenu(openNavItem, openSubmenu, true);
+        returningFocus = true;
+        trigger.focus();
+        returningFocus = false;
       }
     });
     
@@ -662,12 +676,7 @@
       var clickedNavItem = e.target.closest('.nav-item.has-children');
       var clickedSubmenu = e.target.closest('.nav-submenu');
       if (!clickedNavItem && !clickedSubmenu) {
-        openSubmenu.classList.remove('open');
-        var navItem = Array.prototype.find.call(navItems, function(item) {
-          return item.querySelector('.nav-submenu') === openSubmenu;
-        });
-        if (navItem) navItem.classList.remove('submenu-open');
-        openSubmenu = null;
+        hideSubmenu(openNavItem, openSubmenu, true);
       }
     });
   })();

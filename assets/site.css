@@ -163,6 +163,9 @@ a { color: var(--primary); }
 .nav-submenu {
   position: fixed;
   min-width: 180px;
+  max-width: calc(100vw - 28px);
+  max-height: calc(100dvh - 110px);
+  overflow-y: auto;
   background: color-mix(in srgb, var(--bg) 70%, transparent);
   border: 1px solid color-mix(in srgb, var(--accent) 10%, rgba(255, 255, 255, .2));
   border-radius: var(--radius-s);
@@ -220,6 +223,8 @@ a { color: var(--primary); }
 .nav-submenu.open {
   opacity: 1; visibility: visible;
   transform: translateY(0) scale(1);
+  /* Make links focusable immediately while the visual entrance animates. */
+  transition-property: opacity, transform;
 }
 /* hover: see @media (hover: hover) block at end of file */
 .nav-subitem {
@@ -228,6 +233,14 @@ a { color: var(--primary); }
   text-align: center; white-space: nowrap;
   transition: background-color 0.15s var(--ease-standard), color 0.15s var(--ease-standard);
 }
+.nav-submenu:has(.nav-subcategory) { width: 310px; }
+.nav-submenu:has(.nav-subcategory) > .nav-subitem { text-align: left; }
+.nav-subcategory-label { display: block; font-weight: 650; text-align: left; }
+.nav-subcategory-items {
+  display: flex; flex-direction: column;
+  margin-bottom: 0.35rem; padding-left: 1rem;
+}
+.nav-subcategory-items .nav-subitem { white-space: normal; text-align: left; line-height: 1.5; }
 /* hover: see @media (hover: hover) block at end of file */
 
 .appbar-actions { display: flex; align-items: center; gap: 0.2rem; }
@@ -292,6 +305,8 @@ a { color: var(--primary); }
   font-weight: 500; color: var(--ink-soft); text-decoration: none; border-radius: var(--shape-sm);
   transition: background-color 0.15s, transform 0.2s var(--ease-spring);
 }
+.drawer-subcategory-label { font-weight: 650; }
+.drawer-subcategory-items .drawer-sublink { padding-left: 2.9rem; font-size: 0.88rem; }
 /* hover: see @media (hover: hover) block at end of file */
 .drawer-scrim {
   position: fixed; inset: 0; background: color-mix(in srgb, var(--ink) 40%, transparent);
@@ -304,6 +319,7 @@ a { color: var(--primary); }
    ══════════════════════════════════════════════ */
 #content { min-height: 60vh; flex: 1 0 auto; position: relative; padding-top: var(--appbar-h); }
 section { max-width: var(--w); margin: 0 auto; padding: 0 1.5rem; }
+section[id], .page-prose [id] { scroll-margin-top: calc(var(--appbar-h) + 1.5rem); }
 .section-h {
   position: relative; font-size: var(--title-size); font-weight: var(--title-weight);
   color: var(--ink); margin: 0 0 1.1rem; padding-left: 0.9rem;
@@ -1323,25 +1339,27 @@ section { max-width: var(--w); margin: 0 auto; padding: 0 1.5rem; }
    ══════════════════════════════════════════════ */
 .page-subtitle { margin-top: 0.5rem; color: var(--muted); font-size: 1rem; max-width: 70ch; }
 .page-prose { padding-top: 1.5rem; padding-bottom: 3rem; }
+/* Keep anchored headings stable while the prose fades in. */
+.page-prose.reveal { transform: none; }
 .page-prose h2 {
   font-size: var(--title-size); font-weight: var(--title-weight);
   color: var(--ink); margin: 1.75rem 0 0.8rem;
 }
-.page-prose ul { margin: 0 0 1rem; padding-left: 1.2rem; }
+.page-prose ol, .page-prose ul { margin: 0 0 1rem; padding-left: 1.2rem; }
 .page-prose li { margin-bottom: 0.4rem; color: var(--ink-soft); line-height: 1.7; }
 .page-prose li::marker { color: var(--primary); }
 
 /* ══════════════════════════════════════════════
    Resources — dataset showroom pattern with organic shapes
    ══════════════════════════════════════════════ */
-.resource-index { padding: 2rem 0 3rem; }
+.resource-index { padding: 0 1.5rem 3rem; }
 .resource-grid {
   display: grid; 
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); 
+  grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
   gap: 1.5rem;
   max-width: var(--w);
   margin: 0 auto;
-  padding: 0 1.5rem;
+  padding: 0;
 }
 .resource-card {
   display: flex; 

@@ -1,8 +1,8 @@
 # ZJU-ECLab.github.io
 
 The website of the **Emotion & Culture Lab, Zhejiang University** — including the
-lab pages (Home, News, People, Publications, Resources, Courses, Join Us,
-Contact) and the online edition of the weekly literature digest _《东西情报》_
+lab pages (Research, People, Publications, Resources, Courses, Join Us,
+Contact) and the online edition of the weekly research digest _《东西情报》_
 (ECLab News).
 
 Live at <https://zju-eclab.github.io>.
@@ -56,6 +56,15 @@ dist/                    generated output (git-ignored)
   `content/data/`. In publications, wrap lab authors in `**bold**`.
 - **Images / documents**: drop files into `assets/img/` or `assets/files/` and
   reference them with an absolute path (e.g. `/assets/img/people/name.jpg`).
+
+Resources combines the Research Digest (`/journal/`) and four emotion databases.
+Database links are always visible and indented beneath Emotion Databases in
+the desktop and mobile navigation.
+
+Join Us links to the permanent `/join-us/postdoctoral-positions/` page and to
+sections for graduate students, research assistants / interns, and visitors.
+The permanent postdoctoral page uses a `news_post` front-matter key to reuse the
+recruitment announcement's body, so its details need editing in only one place.
 
 Article images support Markdown attributes such as
 `![Description](/assets/img/example.webp){.news-img-center width="100%"}`

@@ -28,7 +28,6 @@ import argparse
 import datetime as dt
 import html as html_lib
 import itertools
-import json
 import re
 import shutil
 import sys
@@ -81,11 +80,8 @@ COMPLEMENTS = {
 }
 
 # Site-wide navigation. `children` render as a dropdown / submenu.
-# Per the migration decisions: RESEARCH points straight to Publications, and the
-# Weekly Journal is promoted to a dominant Home feature (still linkable in nav).
 NAV = [
-    {"label": "Home", "href": "/"},
-    {"label": "News", "href": "/news/"},
+    {"label": "Research", "href": "/"},
     {
         "label": "People",
         "href": "/people/",
@@ -94,41 +90,54 @@ NAV = [
             {"label": "Alumni", "href": "/alumni/"},
         ],
     },
-    {"label": "Research", "href": "/publications/"},
+    {"label": "Publications", "href": "/publications/"},
     {
         "label": "Resources",
         "href": "/resources/",
         "children": [
-            {"label": "CEWD (Word)", "href": "/resources/cewd/"},
-            {"label": "CDFED (Face)", "href": "/resources/cdfed/"},
-            {"label": "CEPD (Prosody)", "href": "/resources/cepd/"},
-            {"label": "CNVD (Vocalization)", "href": "/resources/cnvd/"},
+            {"label": "Research Digest", "href": "/journal/"},
+            {
+                "label": "Emotion Databases",
+                "href": "/resources/#emotion-databases",
+                "children": [
+                    {"label": "CEWD — Emotion Words", "href": "/resources/cewd/"},
+                    {"label": "CDFED — Facial Expressions", "href": "/resources/cdfed/"},
+                    {"label": "CEPD — Speech Prosody", "href": "/resources/cepd/"},
+                    {"label": "CNVD — Nonverbal Vocalizations", "href": "/resources/cnvd/"},
+                ],
+            },
         ],
     },
     {"label": "Courses", "href": "/courses/"},
-    {"label": "Join Us", "href": "/join-us/"},
+    {
+        "label": "Join Us",
+        "href": "/join-us/",
+        "children": [
+            {"label": "Postdoctoral Positions", "href": "/join-us/postdoctoral-positions/"},
+            {"label": "Graduate Students", "href": "/join-us/#graduate-students"},
+            {"label": "Research Assistants / Interns", "href": "/join-us/#research-assistants-interns"},
+            {"label": "Visiting Students & Researchers", "href": "/join-us/#visiting-students-researchers"},
+        ],
+    },
     {"label": "Contact", "href": "/contact/"},
-    {"label": "Journal", "href": "/journal/"},
 ]
 
 # Quick-nav cards for the homepage: every top-level section accessible at a glance.
 QUICK_NAV = [
-    {"label": "News", "href": "/news/", "icon": "news",
+    {"label": "Recent Highlights", "href": "/#recent-highlights", "icon": "news",
      "desc": "Latest updates from the lab"},
     {"label": "People", "href": "/people/", "icon": "people",
      "desc": "Meet our team"},
-    {"label": "Research", "href": "/publications/", "icon": "research",
+    {"label": "Publications", "href": "/publications/", "icon": "research",
      "desc": "Our publications"},
     {"label": "Resources", "href": "/resources/", "icon": "resources",
-     "desc": "Open datasets & tools"},
+     "desc": "Emotion databases & research digest"},
     {"label": "Courses", "href": "/courses/", "icon": "courses",
      "desc": "Teaching & workshops"},
     {"label": "Join Us", "href": "/join-us/", "icon": "join",
      "desc": "Open positions"},
     {"label": "Contact", "href": "/contact/", "icon": "contact",
      "desc": "Get in touch"},
-    {"label": "Journal", "href": "/journal/", "icon": "journal",
-     "desc": "Weekly literature digest"},
 ]
 
 # Canonical origin for the published site. Every page emits a rel=canonical
@@ -353,30 +362,10 @@ def page_url(rel: Path) -> str:
     return "/" + "/".join(parts) + "/"
 
 
-def build_pages(env: Environment) -> None:
+def build_pages(env: Environment, posts: list[dict]) -> None:
     """Render every Markdown page under content/pages (recursively)."""
     pages_dir = CONTENT / "pages"
-    # Pre-read latest journal issue for the home page
-    latest_journal_href = None
-    latest_journal_title = None
-    manifest_path = ROOT / "journal" / "data" / "manifest.json"
-    if manifest_path.exists():
-        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-        issues = manifest.get("issues", [])
-        if issues:
-            latest = issues[0]
-            latest_journal_href = f"/journal/#/issue/{latest['label']}"
-            # Format a short date label from the issue label (e.g. "2026-06-01_2026-06-07" → "Jun 1–7, 2026")
-            try:
-                start_str, end_str = latest["label"].split("_")
-                start = dt.date.fromisoformat(start_str)
-                end = dt.date.fromisoformat(end_str)
-                if start.month == end.month:
-                    latest_journal_title = f"{start.strftime('%b')} {start.day}–{end.day}, {start.year}"
-                else:
-                    latest_journal_title = f"{start.strftime('%b %d')} – {end.strftime('%b %d')}, {start.year}"
-            except Exception:
-                latest_journal_title = latest.get("title", "")
+    posts_by_slug = {post["meta"]["slug"]: post for post in posts}
 
     for src in sorted(pages_dir.rglob("*.md")):
         rel = src.relative_to(pages_dir)
@@ -392,9 +381,9 @@ def build_pages(env: Environment) -> None:
             accent=doc.meta.get("accent", ACCENTS.get(slug, DEFAULT_ACCENT)),
             complement=COMPLEMENTS.get(slug, ACCENTS.get(slug, DEFAULT_ACCENT)),
         )
-        if slug == "home" and latest_journal_href:
-            ctx["latest_journal_href"] = latest_journal_href
-            ctx["latest_journal_title"] = latest_journal_title
+        # Keep permanent recruitment details and the announcement in sync.
+        if doc.meta.get("news_post"):
+            ctx["content"] += posts_by_slug[doc.meta["news_post"]]["html"]
         if slug == "progress":
             members, leader_id = _progress_members(load_yaml(CONTENT / "data" / "members.yml"))
             ctx["members"] = members
@@ -474,11 +463,11 @@ def _format_date(value) -> str:
         return str(value)
 
 
-def build_news(env: Environment) -> None:
-    """Render the news list and each individual post page."""
+def load_news() -> list[dict]:
+    """Read posts once for the homepage highlights, archive and full articles."""
     news_dir = CONTENT / "news"
     if not news_dir.exists():
-        return
+        return []
 
     posts = []
     for src in news_dir.glob("*.md"):
@@ -496,12 +485,17 @@ def build_news(env: Environment) -> None:
 
     # newest first
     posts.sort(key=lambda p: str(p["date"]), reverse=True)
+    return posts
+
+
+def build_news(env: Environment, posts: list[dict]) -> None:
+    """Render the highlights archive and each individual post page."""
 
     # list page
     list_tmpl = env.get_template("news-list.html")
     write_page("/news/", list_tmpl.render(
         site=SITE,
-        page={"title": "News", "slug": "news", "url": "/news/"},
+        page={"title": "Highlights", "slug": "news", "url": "/news/"},
         posts=posts,
         accent=ACCENTS["news"],
         complement=COMPLEMENTS["news"],
@@ -540,7 +534,8 @@ def build() -> None:
     copy_assets()
     copy_static()
     env = make_env()
-    build_pages(env)
+    posts = load_news()
+    build_pages(env, posts)
     build_data_page(env, template="people.html", data_file="people.yml",
                     url="/people/", title="Lab Members", slug="people")
     build_data_page(env, template="alumni.html", data_file="alumni.yml",
@@ -550,7 +545,7 @@ def build() -> None:
                     transform=_group_publications)
     build_data_page(env, template="courses.html", data_file="courses.yml",
                     url="/courses/", title="Courses", slug="courses")
-    build_news(env)
+    build_news(env, posts)
     build_404(env)
     copy_journal()
     build_sitemap_and_robots()

@@ -3,7 +3,13 @@ title: Resources
 slug: resources
 template: resources-index.html
 subtitle: >-
-  Open emotion-stimulus databases developed by the Emotion & Culture Lab.
+  Explore our research digest and open emotion-stimulus databases.
+digest:
+  title: 东西情报 · ECLab News
+  description: >-
+    Our weekly digest of the latest emotion-psychology research — recent papers
+    organised by keyword and journal, each with a concise Chinese summary.
+  href: /journal/
 databases:
   - abbr: CEWD
     name: Chinese Emotion Word Database
