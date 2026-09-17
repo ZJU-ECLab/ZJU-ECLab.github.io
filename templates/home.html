@@ -66,11 +66,11 @@
 
 {% if highlights %}
 <section class="highlights" id="recent-highlights" aria-labelledby="highlights-heading">
-  <div class="highlights-head reveal">
+  <div class="highlights-head">
     <h2 class="section-h" id="highlights-heading">Recent Highlights</h2>
     <a class="btn btn-text" href="/news/">All highlights <span aria-hidden="true">→</span></a>
   </div>
-  <div class="highlights-grid reveal-stagger">
+  <div class="highlights-grid">
     {% for post in highlights %}
     <a class="highlight-card" href="{{ post.url }}">
       {% set cover = post.meta.highlight_image | default(post.meta.thumbnail) %}

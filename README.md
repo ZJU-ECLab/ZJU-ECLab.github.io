@@ -70,6 +70,10 @@ whose text should remain visible. Research-area drawings live in
 `templates/illustrations/`, are included by `templates/research-art.html`, and
 use the three lab-logo colors.
 
+News articles, the archive, and homepage highlights render visibly from HTML.
+Keep scroll-reveal classes off these sections so article text never depends on
+JavaScript, image loading, or an intersection threshold to become readable.
+
 Join Us links to the permanent `/join-us/postdoctoral-positions/` page and to
 sections for graduate students, research assistants / interns, and visitors.
 The permanent postdoctoral page uses a `news_post` front-matter key to reuse the
