@@ -1,10 +1,27 @@
 # Alumni — edit to update the Alumni page.
-# Two sections: `advisees` (grouped by institution) and `past_members` (group photos by year).
+# Two sections: `alumni_groups` (grouped by institution) and `past_members` (group photos by year).
 
-advisees:
+alumni_groups:
   - institution: Zhejiang University, China
-    note: "The following are thesis advisees, with their current institutions noted in parentheses:"
+    note: "Former students and lab members, with reported next institutions or positions noted where available:"
     students:
+      - name: Hongxu Zhou
+        degree: MS 2026
+        current: "User Researcher, miHoYo"
+        current_url: https://www.mihoyo.com/
+      - name: Jiawen Zhu
+        degree: MS 2026
+        current: "Product Manager, Rouzao Technology Co., Ltd."
+        current_url: https://rouzao.com/home
+      - name: Hweemin Tan
+        degree: MS 2026
+        current: Seeking employment
+      - name: Feiyu Zhang
+        degree: BS 2026
+        current: "Master's Student, East China Normal University"
+        current_url: https://www.ecnu.edu.cn/
+      - name: Ruotian Zheng
+        degree: "Undergraduate, departed 2026"
       - name: Youxun Ge
         degree: MS 2025
         current: Central Commission for Discipline Inspection
@@ -36,14 +53,9 @@ advisees:
         current: "Master's Student, University of Southern California"
         current_url: https://www.usc.edu/
       - name: Siqi Liu
-        degree: BS 2024
+        degree: BS 2023
         current: "Master's Student, University College London"
         current_url: https://www.ucl.ac.uk/
-      - name: Huimin Chen
-        degree: BS 2023
-        note: Final Year Thesis advisee
-        current: "Master's Student, Zhejiang University"
-        current_url: https://www.zju.edu.cn/
       - name: Jinpeng Fu
         degree: BS 2023
         note: Final Year Thesis advisee
@@ -58,6 +70,7 @@ advisees:
         degree: BS 2022
         note: Final Year Thesis advisee
         current: "Master's Student, New York University"
+        current_url: https://www.nyu.edu/
 
   - institution: York University, Canada
     note: "Co-mentored with Dr. Kerry Kawakami during postdoctoral research:"

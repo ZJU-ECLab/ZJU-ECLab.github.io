@@ -7,8 +7,8 @@
 <div class="section-wave-gradient" aria-hidden="true"></div>
 
 <section class="alumni-section">
-  <h2 class="section-h reveal">Students</h2>
-  {% for grp in data.advisees %}
+  <h2 class="section-h reveal">Former Students and Lab Members</h2>
+  {% for grp in data.alumni_groups %}
   <div class="advisee-group reveal">
     <h3 class="advisee-inst">{{ grp.institution }}</h3>
     {% if grp.note %}<p class="advisee-note">{{ grp.note }}</p>{% endif %}
