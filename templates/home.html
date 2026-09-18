@@ -42,7 +42,9 @@
 <section class="research" id="research-areas" aria-labelledby="research-heading">
   <div class="research-head reveal">
     <h2 class="research-title" id="research-heading">{{ page.research.heading }}</h2>
+    {% if page.research.intro %}
     <p class="research-intro">{{ page.research.intro }}</p>
+    {% endif %}
   </div>
   <div class="research-areas">
     {% for area in page.research.areas %}
