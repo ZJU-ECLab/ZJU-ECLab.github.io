@@ -72,6 +72,14 @@
   --w: 1100px;
   --appbar-h: 68px;
 
+  /* Header glass: tint keeps labels readable over the moving backdrop. */
+  --glass-tint: color-mix(in srgb, var(--surface) 60%, transparent);
+  --glass-clear-tint: color-mix(in srgb, var(--surface) 42%, transparent);
+  --glass-rim: rgba(255, 255, 255, .72);
+  --glass-reflection: rgba(255, 255, 255, .5);
+  --glass-shade: rgba(45, 35, 42, .12);
+  --glass-shadow: rgba(45, 35, 42, .1);
+
   /* expressive gradient tokens */
   --gradient-primary: linear-gradient(135deg, color-mix(in oklch, var(--accent), black 8%), color-mix(in oklch, var(--accent), white 26%));
   --gradient-surface: linear-gradient(180deg, var(--surface-1), var(--bg));
@@ -100,6 +108,12 @@
   --elev-4: 0 6px 12px 4px rgba(0, 0, 0, 0.35), 0 2px 4px rgba(0, 0, 0, 0.4);
   --gradient-primary: linear-gradient(135deg, color-mix(in oklch, var(--accent), black 4%), color-mix(in oklch, var(--accent), white 22%));
   --gradient-glow: radial-gradient(ellipse at 50% 0%, color-mix(in srgb, var(--accent) 12%, transparent), transparent 70%);
+  --glass-tint: color-mix(in srgb, var(--surface) 70%, transparent);
+  --glass-clear-tint: color-mix(in srgb, var(--surface) 58%, transparent);
+  --glass-rim: rgba(255, 255, 255, .25);
+  --glass-reflection: rgba(255, 255, 255, .14);
+  --glass-shade: rgba(0, 0, 0, .3);
+  --glass-shadow: rgba(0, 0, 0, .3);
 }
 
 /* ── reset & base ── */
@@ -130,7 +144,7 @@ a { color: var(--primary); }
 }
 
 /* ══════════════════════════════════════════════
-   Top app bar — Pill-shaped, fixed, transparent with blur
+   Top app bar — Liquid Glass, with a refracting backdrop and a polished rim
    ══════════════════════════════════════════════ */
 .site-appbar {
   position: fixed; top: 12px; z-index: 980;
@@ -139,24 +153,69 @@ a { color: var(--primary); }
   left: 14px; right: 14px; margin: 0 auto;
   height: var(--appbar-h);
   padding: 10px 14px 10px 22px;
-  background: color-mix(in srgb, var(--bg) 50%, transparent);
-  backdrop-filter: saturate(180%) blur(16px);
-  -webkit-backdrop-filter: saturate(180%) blur(16px);
-  border: 1px solid color-mix(in srgb, var(--accent) 8%, rgba(255, 255, 255, .2));
+  background: transparent;
+  border: 1px solid var(--glass-rim);
   border-radius: var(--shape-full);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, .06);
-  transition: background-color 0.3s var(--ease-standard), box-shadow 0.3s var(--ease-standard);
+  box-shadow: 0 8px 28px var(--glass-shadow), 0 1px 4px var(--glass-shade),
+              inset 0 1px 0 var(--glass-reflection), inset 0 -1px 0 var(--glass-shade);
+  transition: box-shadow 0.3s var(--ease-standard);
 }
-[data-theme="dark"] .site-appbar {
-  background: color-mix(in srgb, var(--accent) 5%, rgba(29, 27, 32, .5));
-  border: 1px solid color-mix(in srgb, var(--accent) 10%, rgba(255, 255, 255, .08));
+.appbar-glass-defs {
+  position: fixed; width: 0; height: 0; pointer-events: none;
 }
 .site-appbar.scrolled {
-  box-shadow: 0 8px 30px rgba(0, 0, 0, .1);
-  background: color-mix(in srgb, var(--bg) 70%, transparent);
+  box-shadow: 0 12px 36px var(--glass-shadow), 0 2px 6px var(--glass-shade),
+              inset 0 1px 0 var(--glass-reflection), inset 0 -1px 0 var(--glass-shade);
 }
-[data-theme="dark"] .site-appbar.scrolled {
-  background: color-mix(in srgb, var(--accent) 6%, rgba(29, 27, 32, .7));
+/* Keep clipping and backdrop filtering off the header itself. */
+.appbar-glass {
+  position: absolute; inset: 0; z-index: -1;
+  border-radius: inherit; overflow: hidden; pointer-events: none;
+  background: var(--surface);
+}
+.appbar-glass::before,
+.appbar-glass::after {
+  content: ""; position: absolute; inset: 0; border-radius: inherit;
+}
+.appbar-glass::before {
+  background: linear-gradient(165deg, var(--glass-reflection), transparent 38%, var(--glass-shade));
+  box-shadow: inset 1px 1px 1px var(--glass-rim), inset -1px -1px 1px var(--glass-reflection),
+              inset 0 0 12px color-mix(in srgb, var(--glass-reflection) 45%, transparent);
+}
+.appbar-glass::after {
+  background: radial-gradient(ellipse 260px 90px at var(--glass-pointer-x, 25%) var(--glass-pointer-y, 0%),
+                var(--glass-reflection), transparent 75%);
+  opacity: .7;
+}
+/* Browsers without backdrop filtering keep the opaque surface above. */
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .appbar-glass {
+    background: var(--glass-tint);
+    -webkit-backdrop-filter: blur(16px) saturate(1.6);
+    backdrop-filter: blur(16px) saturate(1.6);
+  }
+}
+/* JS enables this only on engines that render SVG backdrop displacement. */
+.site-appbar.glass-refracts .appbar-glass {
+  background: var(--glass-clear-tint);
+  backdrop-filter: url("#appbar-refraction") saturate(1.5);
+}
+.site-appbar :is(.appbar-brand, .nav-link, .icon-btn):focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more), (forced-colors: active) {
+  .site-appbar .appbar-glass,
+  .site-appbar.glass-refracts .appbar-glass {
+    background: var(--surface);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  .appbar-glass::before, .appbar-glass::after { display: none; }
+}
+@media (forced-colors: active) {
+  .site-appbar { border-color: CanvasText; box-shadow: none; }
+  .site-appbar .appbar-glass { background: Canvas; }
 }
 
 /* ── Dropdown submenu — transparent with blur ── */

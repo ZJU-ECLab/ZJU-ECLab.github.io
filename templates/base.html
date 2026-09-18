@@ -45,8 +45,20 @@
 
 <div id="progress-bar"></div>
 
-<!-- ── M3 Expressive top app bar ── -->
+<!-- The filter bends only the backdrop; navigation stays on a separate layer. -->
+<svg class="appbar-glass-defs" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+  <defs>
+    <filter id="appbar-refraction" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feImage id="appbar-refraction-map" x="0" y="0" preserveAspectRatio="none" result="refraction-map" />
+      <feGaussianBlur in="SourceGraphic" stdDeviation="0.8" result="softened" />
+      <feDisplacementMap in="softened" in2="refraction-map" scale="32" xChannelSelector="R" yChannelSelector="G" />
+    </filter>
+  </defs>
+</svg>
+
+<!-- ── Liquid Glass top app bar ── -->
 <header class="site-appbar" id="site-appbar">
+  <span class="appbar-glass" aria-hidden="true"></span>
   <a class="appbar-brand" href="/" aria-label="{{ site.name }} home">
     <span class="appbar-logo" aria-hidden="true">
       <img src="/assets/logo.svg" height="22" alt="" />
@@ -168,6 +180,7 @@
 </button>
 
 <script src="/assets/site.js"></script>
+<script src="/assets/liquid-glass.js"></script>
 <script src="/assets/shape-morph.js"></script>
 {% if page.extra_js %}
 {% for src in page.extra_js %}

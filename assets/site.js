@@ -96,7 +96,7 @@
   // ── appbar scroll state ──
   var appbar = document.getElementById('site-appbar');
   if (appbar) {
-    var lastScrollY = 0;
+    appbar.classList.toggle('scrolled', window.scrollY > 20);
     var appbarTick = false;
     window.addEventListener('scroll', function () {
       if (!appbarTick) {
