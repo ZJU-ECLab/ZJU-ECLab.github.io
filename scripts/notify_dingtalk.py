@@ -34,6 +34,9 @@ def build_message(issue_path: str) -> tuple[str, str]:
     lines.append(
         "- 不要忘了更新项目进度～（建议在浏览器中打开）："
         "https://zju-eclab.github.io/progress/"
+        ""
+        "- 请及时备份数据："
+        "https://emmafang.cn3.quickconnect.cn/"
     )
     return title, "\n".join(lines)
 
