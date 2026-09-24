@@ -10,7 +10,7 @@ hero:
   lead: >-
     We study how **emotions are expressed, perceived, and communicated across cultures**. Our research examines emotional communication across multiple channels and forms — from **facial expressions, voices, and body movements to drawings, music, and film**. Across these contexts, we investigate what is shared across cultures, what varies, and how **culture shapes emotional experience, expression, and understanding**.
   actions:
-    - {label: "Our Research", href: "/#research-areas"}
+    - {label: "Our Research", href: "/publications/"}
     - {label: "Join Us", href: "/join-us/"}
 research:
   heading: Research Areas
