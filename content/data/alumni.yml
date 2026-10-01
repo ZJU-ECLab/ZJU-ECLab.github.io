@@ -1,6 +1,5 @@
 # Alumni — edit to update the Alumni page.
 # Two sections: `alumni_groups` (grouped by institution) and `past_members` (group photos by year).
-
 alumni_groups:
   - institution: Zhejiang University, China
     note: "Former students and lab members, with reported next institutions or positions noted where available:"
@@ -71,7 +70,6 @@ alumni_groups:
         note: Final Year Thesis advisee
         current: "Master's Student, New York University"
         current_url: https://www.nyu.edu/
-
   - institution: York University, Canada
     note: "Co-mentored with Dr. Kerry Kawakami during postdoctoral research:"
     students:
@@ -92,7 +90,6 @@ alumni_groups:
       - name: Naureen Ahmed
         degree: BS 2019
         note: Final Year Thesis advisee
-
   - institution: University of Amsterdam, Netherlands
     note: "Thesis advisees (Master's and internship theses):"
     students:
@@ -106,8 +103,9 @@ alumni_groups:
         note: Internship Thesis advisee
       - name: Margueriee Nolan
         degree: MS 2014
-
 past_members:
+  - year: "2026-2027"
+    photo: /assets/img/alumni/lab-2026-2027.jpg
   - year: "2025–2026"
     photo: /assets/img/alumni/lab-2025-2026.jpg
   - year: "2024–2025"
