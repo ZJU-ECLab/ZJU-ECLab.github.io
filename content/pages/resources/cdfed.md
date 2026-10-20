@@ -31,7 +31,7 @@ masculinity–femininity.
 
 To access the CDFED, please complete and print the Database Usage Agreement.
 After signing it by hand, send a scanned PDF copy of the agreement to
-[x.fang@zju.edu.cn](mailto:x.fang@zju.edu.cn).
+[zju_eclab@163.com](mailto:zju_eclab@163.com).
 
 - [CDFED User Agreement (English)](/assets/files/forms/cdfed-agreement-en.docx)
 - [CDFED User Agreement（中文）](/assets/files/forms/cdfed-agreement-cn.docx)
@@ -39,6 +39,6 @@ After signing it by hand, send a scanned PDF copy of the agreement to
 ## Citation
 
 Pan, Z., Tan, H., Liu, S., & Fang, X. (2026). Beyond the basic six, static, and
-WEIRD: Exploring the range of emotions conveyed by facial expressions. *Journal
-of Experimental Social Psychology, 122*, 104836.
+WEIRD: Exploring the range of emotions conveyed by facial expressions. _Journal
+of Experimental Social Psychology, 122_, 104836.
 [https://doi.org/10.1016/j.jesp.2025.104836](https://doi.org/10.1016/j.jesp.2025.104836)
