@@ -20,7 +20,7 @@ Applications are reviewed on a rolling basis.
 Prospective graduate students interested in our research are welcome to get in
 touch. Please email Dr. Fang with the completed graduate application form.
 
-- [Application Form — Graduate](/assets/files/forms/application-graduate.docx)
+- Application Form — Graduate: [English (Word)](/assets/files/forms/application-graduate-en.docx) · [中文 (Word)](/assets/files/forms/application-graduate.docx)
 
 ## Research Assistants / Interns {#research-assistants-interns}
 
@@ -28,8 +28,8 @@ If you are interested in research assistant or internship opportunities, please
 contact Dr. Fang to discuss your interests and possible ways to contribute.
 Please include the application form appropriate to your current stage of study.
 
-- [Application Form — Undergraduate](/assets/files/forms/application-undergraduate.docx)
-- [Application Form — Graduate](/assets/files/forms/application-graduate.docx)
+- Application Form — Undergraduate: [English (Word)](/assets/files/forms/application-undergraduate-en.docx) · [中文 (Word)](/assets/files/forms/application-undergraduate.docx)
+- Application Form — Graduate: [English (Word)](/assets/files/forms/application-graduate-en.docx) · [中文 (Word)](/assets/files/forms/application-graduate.docx)
 
 ## Visiting Students & Researchers {#visiting-students-researchers}
 
