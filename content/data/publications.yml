@@ -3,6 +3,8 @@
 #   authors : use **bold** for lab authors (e.g. **Fang, X.**) and *italics* if needed.
 #   venue   : journal / book; wrap the part to italicise in *asterisks*.
 #   doi     : full URL.
+#   manuscript : manuscript PDF path (button label: "Manuscript").
+#   supplementary_materials : supplementary PDF path (button label: "Supplementary Materials").
 #   pdfs    : list of { label, href }. Label defaults to "PDF".
 # Entries are grouped by `year` automatically (newest first).
 note: "*Corresponding author; #Co-first authors"
@@ -14,6 +16,13 @@ items:
     doi: https://doi.org/10.1016/j.jesp.2026.105015
     pdfs:
       - {href: "/assets/files/publications/2027-tan-bimodal-emotion-decoding.pdf"}
+  - year: 2026
+    authors: "**Fang, X.**\\*, Sauter, D., Tan, H., Wang, S., Wang, R., Kamble, S., & Kawakami, K."
+    title: "Communicating Emotion Through Drawings Across Cultures."
+    venue: "*Journal of Personality and Social Psychology*. In press."
+    doi: https://doi.org/10.1037/pspa0000503
+    manuscript: /assets/files/publications/2026-fang-emotion-drawing-culture.pdf
+    supplementary_materials: /assets/files/publications/2026-fang-emotion-drawing-culture-sm.pdf
   - year: 2026
     authors: "Simpson, B., Eriksson, K., Vartanova, I., Strimling, P., Merchan Tamayo, J. P., Abdi, K. A., Ad, N., Aldashev, A., Ali, H. M., Alì, M., Aliyev, K., Alrefaee, Y., Alvarado Ortiz, A. E., Andersson, P. A., Andrighetto, G., Arikan, G., Benzon R. Aruta, J. J., Ayikwa, C. L., Baños-Chaparro, J., … **Fang, X.**, ... Van Lange, P. A. M."
     title: "How norms depend on the presence and status of observers: the relational contingency of everyday behaviors in 90 societies."

@@ -1,4 +1,10 @@
 {% extends "base.html" %}
+{% macro attachment_link(href, label) %}
+<a class="pub-pdf-btn" href="{{ href }}" target="_blank" rel="noopener">
+  <svg viewBox="0 -960 960 960" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M320-240h320v-80H320v80Zm0-160h320v-80H320v80ZM240-80q-33 0-56.5-23.5T160-160v-640q0-33 23.5-56.5T240-880h320l240 240v480q0 33-23.5 56.5T720-80H240Zm280-520v-200H240v640h480v-440H520ZM240-800v200-200 640-640Z"/></svg>
+  {{ label }}
+</a>
+{% endmacro %}
 {% block content %}
 <section class="page-head reveal">
   <h1 class="page-title">Publications</h1>
@@ -21,19 +27,27 @@
     <div class="reveal-stagger">
     {% for p in items %}
     <article class="pub-card tilt-card">
-      <a class="pub-link" href="{{ p.doi | default('#') }}" target="_blank" rel="noopener">
+      {% set publication_url = p.doi or p.manuscript %}
+      {% if publication_url %}
+      <a class="pub-link" href="{{ publication_url }}" target="_blank" rel="noopener">
+      {% else %}
+      <div class="pub-link">
+      {% endif %}
         <div class="pub-authors">{{ p.authors | inline_md }}</div>
         <div class="pub-title">{{ p.title | inline_md }}</div>
         <div class="pub-venue">{{ p.venue | inline_md }}{% if p.doi %} <span class="pub-doi">{{ p.doi }}</span>{% endif %}</div>
         {% if p.note %}<div class="pub-note">{{ p.note | inline_md }}</div>{% endif %}
-      </a>
-      {% if p.pdfs %}
+      {% if publication_url %}</a>{% else %}</div>{% endif %}
+      {% if p.manuscript or p.supplementary_materials or p.pdfs %}
       <div class="pub-pdfs">
+        {% if p.manuscript %}
+        {{ attachment_link(p.manuscript, 'Manuscript') }}
+        {% endif %}
+        {% if p.supplementary_materials %}
+        {{ attachment_link(p.supplementary_materials, 'Supplementary Materials') }}
+        {% endif %}
         {% for pdf in p.pdfs %}
-        <a class="pub-pdf-btn" href="{{ pdf.href }}" target="_blank" rel="noopener">
-          <svg viewBox="0 -960 960 960" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M320-240h320v-80H320v80Zm0-160h320v-80H320v80ZM240-80q-33 0-56.5-23.5T160-160v-640q0-33 23.5-56.5T240-880h320l240 240v480q0 33-23.5 56.5T720-80H240Zm280-520v-200H240v640h480v-440H520ZM240-800v200-200 640-640Z"/></svg>
-          {{ pdf.label | default('PDF') }}
-        </a>
+        {{ attachment_link(pdf.href, pdf.label | default('PDF')) }}
         {% endfor %}
       </div>
       {% endif %}
