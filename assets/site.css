@@ -1648,6 +1648,19 @@ section[id], .page-prose [id] { scroll-margin-top: calc(var(--appbar-h) + 1.5rem
 .news-post-body .news-img-wrapper img {
   margin: 0;
 }
+.news-figure {
+  margin: 1.5rem 0;
+}
+.news-figure .news-img-wrapper {
+  margin: 0;
+}
+.news-figure figcaption {
+  margin-top: 0.6rem;
+  color: var(--muted);
+  font-size: 0.875rem;
+  line-height: 1.6;
+  text-align: center;
+}
 /* Image groups - side by side */
 .news-img-group {
   display: flex;

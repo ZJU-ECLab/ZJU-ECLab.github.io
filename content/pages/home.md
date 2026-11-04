@@ -32,9 +32,9 @@ research:
       description: >-
         We investigate how **emotion and culture shape the way people perceive, evaluate, and understand others**. This work examines how emotional, contextual, and temporal information is integrated in social judgment and impression formation.
 highlights:
+  - 2026-11-04-tongxin-tongxing-activities
   - 2026-09-15-postdoc-recruitment
   - 2026-07-15-emotion-culture-social-cognition-symposium
-  - 2026-06-22-isre-early-career-award
 approach:
   heading: Research Approach
   paragraphs:
